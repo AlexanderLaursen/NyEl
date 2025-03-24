@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250324143621_AddPaid")]
+    partial class AddPaid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,9 +226,6 @@ namespace API.Migrations
                     b.Property<DateTime>("InvoicePeriodStart")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Paid")
-                        .HasColumnType("bit");
-
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18, 2)");
 
@@ -238,16 +238,13 @@ namespace API.Migrations
                     b.ToTable("Invoices");
                 });
 
-            modelBuilder.Entity("Common.Models.InvoicePreference", b =>
+            modelBuilder.Entity("Common.Models.InvoiceNotificationPreference", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("InvoiceNotificationPreference")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -256,7 +253,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("InvoicePreferences");
+                    b.ToTable("InvoiceNotificationPreferences");
                 });
 
             modelBuilder.Entity("Common.Models.PricePoint", b =>
@@ -438,7 +435,7 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Common.Models.InvoicePreference", "InvoiceNotificationPreference")
+                    b.HasOne("Common.Models.InvoiceNotificationPreference", "InvoiceNotificationPreference")
                         .WithMany("ConsumerPreferences")
                         .HasForeignKey("InvoiceNotificationPreferenceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -545,7 +542,7 @@ namespace API.Migrations
                     b.Navigation("Invoices");
                 });
 
-            modelBuilder.Entity("Common.Models.InvoicePreference", b =>
+            modelBuilder.Entity("Common.Models.InvoiceNotificationPreference", b =>
                 {
                     b.Navigation("ConsumerPreferences");
                 });

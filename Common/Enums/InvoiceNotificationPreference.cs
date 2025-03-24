@@ -1,6 +1,6 @@
 ﻿namespace Common.Enums
 {
-    public enum InvoicePreference
+    public enum InvoiceNotificationPreference
     {
         Sms,
         Email,

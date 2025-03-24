@@ -18,6 +18,6 @@ namespace Common.Models
         public int InvoiceNotificationPreferenceId { get; set; }
 
         public Consumer Consumer { get; set; }
-        public InvoiceNotificationPreference InvoiceNotificationPreference { get; set; }
+        public InvoicePreference InvoiceNotificationPreference { get; set; }
     }
 }

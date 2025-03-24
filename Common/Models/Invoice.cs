@@ -19,6 +19,8 @@ namespace Common.Models
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalAmount { get; set; }
 
+        public bool Paid { get; set; }
+
         [ForeignKey("Consumer")]
         [Required]
         public int ConsumerId { get; set; }
