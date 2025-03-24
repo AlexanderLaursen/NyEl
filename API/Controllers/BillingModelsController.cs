@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/billing-models")]
     public class BillingModelsController : ControllerBase
     {
         private readonly ICommonRepository<BillingModel> _billingModelRepository;

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Common.Models
 {
-    public class PricePoint
+    public class PriceInfo
     {
         [Key]
         public int Id { get; set; }

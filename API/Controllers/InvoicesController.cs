@@ -10,7 +10,7 @@ namespace API.Controllers
     public class InvoicesController : ControllerBase
     {
         [ApiController]
-        [Route("[controller]")]
+        [Route("/invoices")]
         public class InvoicePreferencesController : ControllerBase
         {
             private readonly ICommonRepository<InvoicePreference> _invoicePreferenceRepository;

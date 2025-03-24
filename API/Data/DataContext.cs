@@ -12,7 +12,7 @@ namespace API.Data
         public DbSet<ConsumptionReading> ConsumptionReadings { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoicePreference> InvoicePreferences { get; set; }
-        public DbSet<PricePoint> PricePoints { get; set; }
+        public DbSet<PriceInfo> PricePoints { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
