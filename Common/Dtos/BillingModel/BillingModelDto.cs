@@ -2,7 +2,7 @@
 
 namespace Common.Dtos.BillingModel
 {
-    public class BillingModelDto
+    public record struct BillingModelDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

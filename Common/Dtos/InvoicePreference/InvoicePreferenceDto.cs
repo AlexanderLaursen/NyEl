@@ -2,7 +2,7 @@
 
 namespace Common.Dtos.InvoicePreference
 {
-    public class InvoicePreferenceDto
+    public record struct InvoicePreferenceDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

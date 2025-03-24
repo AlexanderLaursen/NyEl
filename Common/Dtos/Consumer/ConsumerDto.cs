@@ -1,6 +1,6 @@
 ﻿namespace Common.Dtos.Consumer
 {
-    public class ConsumerDto
+    public record struct ConsumerDto
     {
         public int Id { get; set; }
         public string FirstName { get; set; }

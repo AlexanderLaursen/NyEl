@@ -1,6 +1,6 @@
 ﻿namespace Common.Dtos.ConsumptionReading
 {
-    public class ConsumptionReadingDto
+    public record struct ConsumptionReadingDto
     {
         public int Id { get; set; }
         public DateTime Timestamp { get; set; }

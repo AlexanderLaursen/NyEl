@@ -1,4 +1,6 @@
 using API.Data;
+using API.Repositories;
+using API.Repositories.Interfaces;
 using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -31,6 +33,9 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<AppUser>()
     .AddEntityFrameworkStores<DataContext>();
+
+
+builder.Services.AddScoped(typeof(ICommonRepository<>), typeof(CommonRepository<>));
 
 // Build
 var app = builder.Build();

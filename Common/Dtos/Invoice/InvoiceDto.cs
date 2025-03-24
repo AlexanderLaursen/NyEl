@@ -1,6 +1,6 @@
 ﻿namespace Common.Dtos.Invoice
 {
-    public class InvoiceDto
+    public record struct InvoiceDto
     {
         public int Id { get; set; }
         public DateTime InvoicePeriodStart { get; set; }

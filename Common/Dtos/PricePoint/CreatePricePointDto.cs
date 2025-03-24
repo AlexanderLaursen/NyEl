@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Dtos.PricePoint
 {
-    public class CreatePricePointDto
+    public record struct CreatePricePointDto
     {
         public int Id { get; set; }
         public DateTime Timestamp { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Common.Dtos.PricePoint
 {
-    public class PricePointDto
+    public record struct PricePointDto
     {
         public int Id { get; set; }
         public DateTime Timestamp { get; set; }
