@@ -275,7 +275,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PricePoints");
+                    b.ToTable("PriceInfos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

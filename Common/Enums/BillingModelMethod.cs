@@ -2,7 +2,7 @@
 {
     public enum BillingModelMethod
     {
-        FixedPriceBilling,
-        HourlyBilling
+        FixedPrice,
+        Hourly
     }
 }

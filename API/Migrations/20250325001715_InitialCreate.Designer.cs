@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250324122500_InitalCreate")]
-    partial class InitalCreate
+    [Migration("20250325001715_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,6 +88,197 @@ namespace API.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Common.Models.BillingModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BillingModelMethod")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BillingModels");
+                });
+
+            modelBuilder.Entity("Common.Models.Consumer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BillingModelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CPR")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BillingModelId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Consumers");
+                });
+
+            modelBuilder.Entity("Common.Models.ConsumerInvoicePreference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConsumerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InvoiceNotificationPreferenceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsumerId");
+
+                    b.HasIndex("InvoiceNotificationPreferenceId");
+
+                    b.ToTable("ConsumerInvoicePreferences");
+                });
+
+            modelBuilder.Entity("Common.Models.ConsumptionReading", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConsumerId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Consumption")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsumerId");
+
+                    b.ToTable("ConsumptionReadings");
+                });
+
+            modelBuilder.Entity("Common.Models.Invoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BillingModelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ConsumerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("InvoicePeriodEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("InvoicePeriodStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Paid")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BillingModelId");
+
+                    b.HasIndex("ConsumerId");
+
+                    b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("Common.Models.InvoicePreference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InvoiceNotificationPreference")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InvoicePreferences");
+                });
+
+            modelBuilder.Entity("Common.Models.PriceInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("PricePerKwh")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PriceInfos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -223,6 +414,74 @@ namespace API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Common.Models.Consumer", b =>
+                {
+                    b.HasOne("Common.Models.BillingModel", "BillingModel")
+                        .WithMany()
+                        .HasForeignKey("BillingModelId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Common.Models.AppUser", "User")
+                        .WithOne("Consumer")
+                        .HasForeignKey("Common.Models.Consumer", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BillingModel");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Common.Models.ConsumerInvoicePreference", b =>
+                {
+                    b.HasOne("Common.Models.Consumer", "Consumer")
+                        .WithMany("InvoicePreferences")
+                        .HasForeignKey("ConsumerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Common.Models.InvoicePreference", "InvoiceNotificationPreference")
+                        .WithMany("ConsumerPreferences")
+                        .HasForeignKey("InvoiceNotificationPreferenceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Consumer");
+
+                    b.Navigation("InvoiceNotificationPreference");
+                });
+
+            modelBuilder.Entity("Common.Models.ConsumptionReading", b =>
+                {
+                    b.HasOne("Common.Models.Consumer", "Consumer")
+                        .WithMany("ConsumptionReadings")
+                        .HasForeignKey("ConsumerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Consumer");
+                });
+
+            modelBuilder.Entity("Common.Models.Invoice", b =>
+                {
+                    b.HasOne("Common.Models.BillingModel", "BillingModel")
+                        .WithMany()
+                        .HasForeignKey("BillingModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Common.Models.Consumer", "Consumer")
+                        .WithMany("Invoices")
+                        .HasForeignKey("ConsumerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BillingModel");
+
+                    b.Navigation("Consumer");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -272,6 +531,26 @@ namespace API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Common.Models.AppUser", b =>
+                {
+                    b.Navigation("Consumer")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Common.Models.Consumer", b =>
+                {
+                    b.Navigation("ConsumptionReadings");
+
+                    b.Navigation("InvoicePreferences");
+
+                    b.Navigation("Invoices");
+                });
+
+            modelBuilder.Entity("Common.Models.InvoicePreference", b =>
+                {
+                    b.Navigation("ConsumerPreferences");
                 });
 #pragma warning restore 612, 618
         }
