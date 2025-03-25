@@ -1,7 +1,16 @@
+using MVC.Services;
+using MVC.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSession();
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<CommonApiService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
@@ -17,6 +26,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapStaticAssets();
 
