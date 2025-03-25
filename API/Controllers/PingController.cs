@@ -4,7 +4,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("/ping")]
-    public class PingController : Controller
+    public class PingController : ControllerBase
     {
         [HttpGet]
         public IActionResult Index()

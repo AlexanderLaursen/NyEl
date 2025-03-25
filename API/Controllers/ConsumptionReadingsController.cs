@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("/consumption-readings")]
+    [Route("api/v1/consumption-readings")]
     public class ConsumptionReadingsController : ControllerBase
     {
         private readonly ICommonRepository<ConsumptionReading> _consumptionReadingRepository;

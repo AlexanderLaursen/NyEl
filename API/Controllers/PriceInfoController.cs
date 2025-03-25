@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("price-info")]
+    [Route("api/v1/price-info")]
     public class PriceInfoController : ControllerBase
     {
         private readonly ICommonRepository<PriceInfo> _priceInfoRepository;

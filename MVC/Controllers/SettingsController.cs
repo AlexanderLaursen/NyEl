@@ -2,7 +2,7 @@
 
 namespace MVC.Controllers
 {
-    public class ComsumptionController1 : Controller
+    public class SettingsController : Controller
     {
         public IActionResult Index()
         {
