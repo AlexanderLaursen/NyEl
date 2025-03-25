@@ -31,7 +31,7 @@ namespace Common.Models
 
         [ForeignKey("BillingModel")]
         [Required]
-        public int BillingModelId { get; set; }
+        public int BillingModelId { get; set; } = 1;
 
         [ForeignKey("User")]
         [Required]

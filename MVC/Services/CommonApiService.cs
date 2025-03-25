@@ -7,7 +7,7 @@ using MVC.Services.Interfaces;
 
 namespace MVC.Services
 {
-    public class CommonApiService : ICommonApiService
+    public class CommonApiService
     {
         protected readonly HttpClient _httpClient;
         private readonly ILogger<CommonApiService> _logger;
@@ -35,6 +35,11 @@ namespace MVC.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new ApiResponseException($"Failed to retrieve the requested data from the API with status code {response.StatusCode}", response.StatusCode);
+                }
+
+                if (response.Content.Headers.ContentLength == 0)
+                {
+                    return Result<T>.Success(default);
                 }
 
                 T? result = await response.Content.ReadFromJsonAsync<T>(
@@ -81,6 +86,11 @@ namespace MVC.Services
                     throw new ApiResponseException($"Failed to post data to the API with status code {response.StatusCode}", response.StatusCode);
                 }
 
+                if (response.Content.Headers.ContentLength == 0)
+                {
+                    return Result<T>.Success(default);
+                }
+
                 T? result = await response.Content.ReadFromJsonAsync<T>(
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
@@ -123,6 +133,11 @@ namespace MVC.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new ApiResponseException($"Failed to update data in the API with status code {response.StatusCode}", response.StatusCode);
+                }
+
+                if (response.Content.Headers.ContentLength == 0)
+                {
+                    return Result<T>.Success(default);
                 }
 
                 T? result = await response.Content.ReadFromJsonAsync<T>(
@@ -180,6 +195,54 @@ namespace MVC.Services
             {
                 _logger.LogError(ex, "Unknown error occurred while deleting from API.");
                 return Result<bool>.Failure();
+            }
+        }
+
+        public async Task<Result<T>> PostCustomUrlAsync<T>(string url, object data, string? bearerToken = default)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(bearerToken))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+                }
+
+                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(url, data);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApiResponseException($"Failed to post data to the API with status code {response.StatusCode}", response.StatusCode);
+                }
+
+                if (response.Content.Headers.ContentLength == 0)
+                {
+                    return Result<T>.Success(default);
+                }
+
+                T? result = await response.Content.ReadFromJsonAsync<T>(
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (result == null)
+                {
+                    throw new SerializationException("Failed to deserialize API response.");
+                }
+
+                return Result<T>.Success(result);
+            }
+            catch (ApiResponseException ex)
+            {
+                _logger.LogError(ex.Message);
+                return HandleError<T>(ex.StatusCode);
+            }
+            catch (SerializationException ex)
+            {
+                _logger.LogError(ex.Message);
+                return Result<T>.Failure("Failed to deserialize API response.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unknown error occurred while posting to API.");
+                return Result<T>.Failure();
             }
         }
 

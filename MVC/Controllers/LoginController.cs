@@ -20,13 +20,14 @@ namespace MVC.Controllers
             _userService = userService;
         }
 
+        [HttpGet()]
         public IActionResult Index()
         {
             return View();
         }
 
         [HttpPost("/login")]
-        public async Task<IActionResult> Index(LoginDto loginDto)
+        public async Task<IActionResult> Login(LoginDto loginDto)
         {
             if (!ModelState.IsValid)
             {
@@ -55,7 +56,7 @@ namespace MVC.Controllers
         }
 
         [HttpGet("/logout")]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
             HttpContext.Session.Remove("Bearer");
             HttpContext.Session.Remove("Username");

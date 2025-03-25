@@ -42,12 +42,13 @@ namespace API.Repositories
             }
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<int> AddAsync(T entity)
         {
             try
             {
                 await _context.Set<T>().AddAsync(entity);
-                await _context.SaveChangesAsync();
+                var succesfulWrites = await _context.SaveChangesAsync();
+                return succesfulWrites;
             }
             catch (Exception ex)
             {
