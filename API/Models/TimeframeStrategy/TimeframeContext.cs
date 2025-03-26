@@ -1,4 +1,5 @@
 ﻿using Common.Enums;
+using Common.Exceptions;
 using Common.Models;
 
 namespace API.Models.TimeframeStrategy
@@ -7,13 +8,17 @@ namespace API.Models.TimeframeStrategy
     {
         private ITimeframeStrategy _strategy;
 
-        public TimeframeContext(TimeframeOptions timeframeOptions)
+        public TimeframeContext()
         {
-            SetStrategy(timeframeOptions);
         }
 
         public Timeframe GetTimeframe(DateTime startDateTime)
         {
+            if (_strategy == null)
+            {
+                throw new NoStrategyException("No strategy selected.");
+            }
+
             return _strategy.GetTimeframe(startDateTime);
         }
 

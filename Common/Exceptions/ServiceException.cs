@@ -1,5 +1,4 @@
-﻿
-namespace Common.Exceptions
+﻿namespace Common.Exceptions
 {
     public class ServiceException : Exception
     {

@@ -34,9 +34,6 @@ namespace API.Controllers
         {
             try
             {
-                TimeframeContext timeframeContext = new(timeframeOptions);
-                Timeframe timeframe = timeframeContext.GetTimeframe(startDate);
-
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 if (userId == null)
@@ -131,5 +128,6 @@ namespace API.Controllers
                 return StatusCode(500, "An unexpected error occurred.");
             }
         }
+
     }
 }

@@ -32,8 +32,6 @@ namespace MVC.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-            Console.WriteLine(viewModel.SelectedDate);
-            Console.WriteLine(viewModel.SelectedTimeframe);
             if (viewModel.SelectedDate == DateTime.MinValue)
             {
                 viewModel.SelectedDate = new DateTime(2025, 03, 23);

@@ -1,33 +1,34 @@
 ﻿using API.Models.TimeframeStrategy;
+using API.Repositories;
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Common.Enums;
-using Common.Models;
 using Common.Exceptions;
+using Common.Models;
 
 namespace API.Services
 {
-    public class ConsumptionService : IConsumptionService
+    public class PriceInfoService : IPriceInfoService
     {
-        private readonly IConsumptionRepository _consumptionRepository;
+        private readonly IPriceInfoRepository _priceInfoRepository;
         private readonly ILogger<ConsumptionService> _logger;
         private readonly TimeframeContext _timeframeContext;
 
-        public ConsumptionService(IConsumptionRepository consumptionRepository, ILogger<ConsumptionService> logger, TimeframeContext timeframeContext)
+        public PriceInfoService(IPriceInfoRepository priceInfoRepository, ILogger<ConsumptionService> logger, TimeframeContext timeframeContext)
         {
-            _consumptionRepository = consumptionRepository;
+            _priceInfoRepository = priceInfoRepository;
             _logger = logger;
             _timeframeContext = timeframeContext;
         }
 
-        public async Task<IEnumerable<ConsumptionReading>> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, string id)
+        public async Task<IEnumerable<PriceInfo>> GetPriceInfoAsync(DateTime startDate, TimeframeOptions timeframeOptions)
         {
             _timeframeContext.SetStrategy(timeframeOptions);
             Timeframe timeframe = _timeframeContext.GetTimeframe(startDate);
 
             try
             {
-                return await _consumptionRepository.GetConsumptionReadingsAsync(id, timeframe);
+                return await _priceInfoRepository.GetPriceInfoAsync(timeframe);
             }
             catch (Exception ex)
             {
