@@ -5,6 +5,6 @@ namespace MVC.Services.Interfaces
 {
     public interface IUserService
     {
-        public Task<Result<UserDto>> GetUserByEmailAsync(string email);
+        public Task<Result<UserIdDto>> GetUserByEmailAsync(string email);
     }
 }

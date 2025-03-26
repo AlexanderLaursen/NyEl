@@ -36,6 +36,8 @@ builder.Services.AddIdentityApiEndpoints<AppUser>()
 
 
 builder.Services.AddScoped(typeof(ICommonRepository<>), typeof(CommonRepository<>));
+builder.Services.AddScoped<IConsumerRepository, ConsumerRepository>();
+builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
 
 // Build
 var app = builder.Build();

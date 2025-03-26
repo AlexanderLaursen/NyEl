@@ -31,7 +31,12 @@ while (!connectionEstablished)
 }
 
 seeder.RegisterUser("foo@bar.com", "String!1", BASE_URL);
+var user1 = await seeder.GetUserIdByEmailAsync("foo@bar.com");
+var userId1 = user1.UserId;
+
 seeder.RegisterUser("alexander@laursen.com", "String!1", BASE_URL);
+var user2 = await seeder.GetUserIdByEmailAsync("alexander@laursen.com");
+var userId2 = user2.UserId;
 
 seeder.BillingModel();
 
@@ -43,7 +48,9 @@ seeder.ConsumerInvoicePreference();
 
 seeder.SeedPriceInfoFromjson(PRICE_DATA);
 
-seeder.SeedConsumptionReadingsFromFiles(CONSUMPTION_FILE_1, CONSUMPTION_FILE_2);
+
+
+seeder.SeedConsumptionReadingsFromFiles(CONSUMPTION_FILE_1, CONSUMPTION_FILE_2, user1.UserId, user2.UserId);
 
 // TODO seed invoices
 

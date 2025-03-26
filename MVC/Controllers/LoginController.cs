@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using MVC.Models;
 using MVC.Helpers;
 using MVC.Services.Interfaces;
-using Common.Dtos.Consumer;
 using Common.Dtos.User;
 
 namespace MVC.Controllers
@@ -31,28 +30,28 @@ namespace MVC.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return View("Index");
             }
 
             Result<BearerToken> result = await _authService.LoginAsync(loginDto);
 
             if (!result.IsSuccess || result.Value?.AccessToken == null)
             {
-                return View();
+                return View("Index");
             }
 
             HttpContext.Session.SetJson("Bearer", result.Value.AccessToken);
 
-            Result<UserDto> userResult = await _userService.GetUserByEmailAsync(loginDto.Email);
+            Result<UserIdDto> userResult = await _userService.GetUserByEmailAsync(loginDto.Email);
 
             if (userResult.IsSuccess)
             {
                 HttpContext.Session.SetJson("Username", loginDto.Email);
-                HttpContext.Session.SetJson("UserId", userResult.Value?.UserId ?? string.Empty);
+                HttpContext.Session.SetJson("UserId", userResult.Value.UserId);
                 return RedirectToAction("Index", "Home");
             }
 
-            return View();
+            return View("Index", "Home");
         }
 
         [HttpGet("/logout")]

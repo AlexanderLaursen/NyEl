@@ -1,0 +1,39 @@
+﻿@model ConsumptionViewModel
+
+<div>
+	<canvas id="hourlyConsumptionChart"></canvas>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var consumptionData = @Html.Raw(Json.Serialize(Model.ConsumptionReadings));
+        var timestamps = consumptionData.map(reading => reading.timestamp);
+        var consumptionValues = consumptionData.map(reading => reading.consumption);
+
+        var ctx = document.getElementById('hourlyConsumptionChart').getContext('2d');
+        var hourlyConsumptionChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: timestamps,
+                datasets: [{
+                    label: 'Forbrug',
+                    data: consumptionValues,
+                }]
+            },
+                options: {
+        responsive: true,
+        interaction: {
+          intersect: false,
+        },
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true
+          }
+        }
+      }
+        });
+    });
+</script>

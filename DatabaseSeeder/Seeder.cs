@@ -4,6 +4,7 @@ using Common.Models;
 using API.Data;
 using Common.Enums;
 using System.Text.Json.Serialization;
+using Common.Dtos.User;
 
 namespace DatabaseSeeder
 {
@@ -99,10 +100,10 @@ namespace DatabaseSeeder
                 {
                     var consumerInvoicePreferences = new List<ConsumerInvoicePreference>
             {
-                new ConsumerInvoicePreference { ConsumerId = consumer1.Id, InvoiceNotificationPreferenceId = emailPreference.Id },
-                new ConsumerInvoicePreference { ConsumerId = consumer1.Id, InvoiceNotificationPreferenceId = eboksPreference.Id },
-                new ConsumerInvoicePreference { ConsumerId = consumer2.Id, InvoiceNotificationPreferenceId = smsPreference.Id },
-                new ConsumerInvoicePreference { ConsumerId = consumer2.Id, InvoiceNotificationPreferenceId = eboksPreference.Id }
+                new ConsumerInvoicePreference { UserId = consumer1.UserId, InvoiceNotificationPreferenceId = emailPreference.Id },
+                new ConsumerInvoicePreference { UserId = consumer1.UserId, InvoiceNotificationPreferenceId = eboksPreference.Id },
+                new ConsumerInvoicePreference { UserId = consumer2.UserId, InvoiceNotificationPreferenceId = smsPreference.Id },
+                new ConsumerInvoicePreference { UserId = consumer2.UserId, InvoiceNotificationPreferenceId = eboksPreference.Id }
             };
                     dbContext.ConsumerInvoicePreferences.AddRange(consumerInvoicePreferences);
                     dbContext.SaveChanges();
@@ -327,7 +328,7 @@ namespace DatabaseSeeder
             public decimal Price { get; set; }
         }
 
-        public void SeedConsumptionReadingsFromFiles(string file1, string file2)
+        public void SeedConsumptionReadingsFromFiles(string file1, string file2, string userId1, string userId2)
         {
             Console.WriteLine("Checking ConsumptionReadings...");
             if (!dbContext.ConsumptionReadings.Any())
@@ -337,10 +338,10 @@ namespace DatabaseSeeder
                 var allConsumptionReadings = new List<ConsumptionReading>();
 
                 // Read from Consumption_1.json
-                ReadConsumptionFile(file1, allConsumptionReadings);
+                ReadConsumptionFile(file1, allConsumptionReadings, userId1);
 
                 // Read from Consumption_2.json
-                ReadConsumptionFile(file2, allConsumptionReadings);
+                ReadConsumptionFile(file2, allConsumptionReadings, userId2);
 
                 if (allConsumptionReadings.Any())
                 {
@@ -363,7 +364,7 @@ namespace DatabaseSeeder
             }
         }
 
-        static void ReadConsumptionFile(string relativePath, List<ConsumptionReading> consumptionReadingsList)
+        static void ReadConsumptionFile(string relativePath, List<ConsumptionReading> consumptionReadingsList, string userId)
         {
             try
             {
@@ -378,6 +379,10 @@ namespace DatabaseSeeder
                     if (readingsFromFile != null && readingsFromFile.Any())
                     {
                         Console.WriteLine($"Read {readingsFromFile.Count} consumption readings from '{relativePath}'.");
+                        foreach (var reading in readingsFromFile)
+                        {
+                            reading.UserId = userId;
+                        }
                         consumptionReadingsList.AddRange(readingsFromFile);
                     }
                     else
@@ -401,6 +406,43 @@ namespace DatabaseSeeder
             catch (Exception ex)
             {
                 Console.WriteLine($"An unexpected error occurred while reading '{relativePath}': {ex.Message}");
+            }
+        }
+
+        public async Task<UserIdDto> GetUserIdByEmailAsync(string email)
+        {
+            string baseUrl = "https://localhost:7231/api/v1/users";
+            string requestUrl = $"{baseUrl}/{email}";
+
+            using (var httpClient = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage response = await httpClient.GetAsync(requestUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResponse = await response.Content.ReadAsStringAsync();
+                        var userIdDto = JsonSerializer.Deserialize<UserIdDto>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        return userIdDto;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error: HTTP request failed with status code {response.StatusCode}");
+                        return null;
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    Console.WriteLine($"Error: HTTP request exception: {ex.Message}");
+                    return null;
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine($"Error: JSON deserialization exception: {ex.Message}");
+                    return null;
+                }
+
             }
         }
     }
