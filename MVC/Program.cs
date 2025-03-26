@@ -10,7 +10,9 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<CommonApiService>();
+builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 

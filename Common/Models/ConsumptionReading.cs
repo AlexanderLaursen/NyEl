@@ -15,10 +15,10 @@ namespace Common.Models
         [Column(TypeName = "decimal(18, 4)")]
         public decimal Consumption { get; set; }
 
-        [ForeignKey("Consumer")]
+        [ForeignKey("User")]
         [Required]
-        public int ConsumerId { get; set; }
+        public string UserId { get; set; }
 
-        public Consumer Consumer { get; set; }
+        public AppUser User { get; set; }
     }
 }

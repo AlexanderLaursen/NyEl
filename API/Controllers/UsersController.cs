@@ -12,12 +12,13 @@ namespace API.Controllers
     [Route("api/v1/users")]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<UsersController> _logger;
         private readonly ICommonRepository<Consumer> _commonRepository;
+        private readonly UserManager<AppUser> _userManager;
 
 
-        public UsersController(UserManager<AppUser> userManager, ILogger<UsersController> logger, ICommonRepository<Consumer> commonRepository)
+        public UsersController(UserManager<AppUser> userManager, ILogger<UsersController> logger,
+            ICommonRepository<Consumer> commonRepository)
         {
             _commonRepository = commonRepository;
             _userManager = userManager;
@@ -25,7 +26,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{email}")]
-        public async Task<IActionResult> GetUserByEmail(string email)
+        public async Task<IActionResult> GetUserIdByEmail(string email)
         {
             try
             {
@@ -36,7 +37,7 @@ namespace API.Controllers
                     return NotFound();
                 }
 
-                UserDto userDto = new() { UserId = user.Id };
+                UserIdDto userDto = new() { UserId = user.Id };
 
                 return Ok(userDto);
             }

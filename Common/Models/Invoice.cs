@@ -21,15 +21,16 @@ namespace Common.Models
 
         public bool Paid { get; set; }
 
-        [ForeignKey("Consumer")]
+        [ForeignKey("User")]
         [Required]
-        public int ConsumerId { get; set; }
+        public string UserId { get; set; }
 
         [ForeignKey("BillingModel")]
         [Required]
         public int BillingModelId { get; set; }
 
         public BillingModel BillingModel { get; set; }
-        public Consumer Consumer { get; set; }
+
+        public AppUser User { get; set; }
     }
 }

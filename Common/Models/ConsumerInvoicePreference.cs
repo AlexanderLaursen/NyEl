@@ -9,15 +9,16 @@ namespace Common.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("Consumer")]
+        [ForeignKey("User")]
         [Required]
-        public int ConsumerId { get; set; }
+        public string UserId { get; set; }
+
+        public AppUser User { get; set; }
 
         [ForeignKey("InvoiceNotificationPreference")]
         [Required]
         public int InvoiceNotificationPreferenceId { get; set; }
 
-        public Consumer Consumer { get; set; }
         public InvoicePreference InvoiceNotificationPreference { get; set; }
     }
 }
