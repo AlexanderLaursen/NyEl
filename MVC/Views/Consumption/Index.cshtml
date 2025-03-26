@@ -1,39 +1,62 @@
-﻿@model ConsumptionViewModel
+﻿@using Common.Enums
+@model ConsumptionViewModel
+
+<form method="get" asp-action="Index" asp-controller="Consumption">
+	<div>
+		<label for="selectedDate">Dato</label>
+		<input type="date" class="form-control" asp-for="SelectedDate" />
+		<span asp-validation-for="SelectedDate" class="text-danger"></span>
+	</div>
+
+	<div>
+		<label for="selectedTimeframe">Periode</label>
+		<select id="selectedTimeframe" asp-for="SelectedTimeframe" class="form-control">
+			<option value="@((int)TimeframeOptions.Daily)">Dag</option>
+			<option value="@((int)TimeframeOptions.Weekly)">Uge</option>
+			<option value="@((int)TimeframeOptions.Monthly)">Måned</option>
+			<option value="@((int)TimeframeOptions.Quarterly)">Kvartal</option>
+			<option value="@((int)TimeframeOptions.Yearly)">År</option>
+		</select>
+	</div>
+	<div>
+		<button type="submit" class="btn btn-primary">Hent forbrug</button>
+	</div>
+</form>
 
 <div>
 	<canvas id="hourlyConsumptionChart"></canvas>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var consumptionData = @Html.Raw(Json.Serialize(Model.ConsumptionReadings));
-        var timestamps = consumptionData.map(reading => reading.timestamp);
-        var consumptionValues = consumptionData.map(reading => reading.consumption);
+	document.addEventListener('DOMContentLoaded', function() {
+		var consumptionData = @Html.Raw(Json.Serialize(Model.ConsumptionReadings));
+		var timestamps = consumptionData.map(reading => reading.timestamp);
+		var consumptionValues = consumptionData.map(reading => reading.consumption);
 
-        var ctx = document.getElementById('hourlyConsumptionChart').getContext('2d');
-        var hourlyConsumptionChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: timestamps,
-                datasets: [{
-                    label: 'Forbrug',
-                    data: consumptionValues,
-                }]
-            },
-                options: {
-        responsive: true,
-        interaction: {
-          intersect: false,
-        },
-        scales: {
-          x: {
-            stacked: true,
-          },
-          y: {
-            stacked: true
-          }
-        }
-      }
-        });
-    });
+		var ctx = document.getElementById('hourlyConsumptionChart').getContext('2d');
+		var hourlyConsumptionChart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: timestamps,
+				datasets: [{
+					label: 'Forbrug',
+					data: consumptionValues,
+				}]
+			},
+				options: {
+		responsive: true,
+		interaction: {
+		  intersect: false,
+		},
+		scales: {
+		  x: {
+			stacked: true,
+		  },
+		  y: {
+			stacked: true
+		  }
+		}
+	  }
+		});
+	});
 </script>

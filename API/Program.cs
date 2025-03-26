@@ -1,6 +1,8 @@
 using API.Data;
 using API.Repositories;
 using API.Repositories.Interfaces;
+using API.Services;
+using API.Services.Interfaces;
 using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -38,6 +40,8 @@ builder.Services.AddIdentityApiEndpoints<AppUser>()
 builder.Services.AddScoped(typeof(ICommonRepository<>), typeof(CommonRepository<>));
 builder.Services.AddScoped<IConsumerRepository, ConsumerRepository>();
 builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
+
+builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 
 // Build
 var app = builder.Build();

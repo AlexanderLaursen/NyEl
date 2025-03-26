@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using API.Models.TimeframeStrategy;
 using API.Repositories.Interfaces;
+using API.Services.Interfaces;
 using Common.Dtos.ConsumptionReading;
 using Common.Enums;
 using Common.Exceptions;
@@ -17,14 +18,14 @@ namespace API.Controllers
     {
         private readonly ICommonRepository<ConsumptionReading> _commonRepository;
         private readonly ILogger<ConsumptionReadingsController> _logger;
-        private readonly IConsumptionRepository _consumptionRepository;
+        private readonly IConsumptionService _consumptionService;
 
         public ConsumptionReadingsController(ICommonRepository<ConsumptionReading> commonRepository, ILogger<ConsumptionReadingsController> logger,
-            IConsumptionRepository consumptionRepository)
+            IConsumptionService consumptionService)
         {
             _commonRepository = commonRepository;
             _logger = logger;
-            _consumptionRepository = consumptionRepository;
+            _consumptionService = consumptionService;
         }
 
         [Authorize]
@@ -43,7 +44,7 @@ namespace API.Controllers
                     return Unauthorized();
                 }
 
-                var result = await _consumptionRepository.GetConsumptionReadingsAsync(userId, timeframe);
+                var result = await _consumptionService.GetConsumptionReadingsAsync(startDate, timeframeOptions, userId);
 
                 if (result == null)
                 {

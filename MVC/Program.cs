@@ -1,3 +1,4 @@
+using MVC.Models.AggregationStrategy;
 using MVC.Services;
 using MVC.Services.Interfaces;
 
@@ -12,6 +13,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<CommonApiService>();
 builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddTransient<AggregationContext>();
 
 
 var app = builder.Build();
