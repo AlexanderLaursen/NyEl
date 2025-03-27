@@ -1,13 +1,9 @@
-﻿using API.Models.TimeframeStrategy;
-using System.Security.Claims;
-using API.Repositories.Interfaces;
-using Common.Dtos.ConsumptionReading;
+﻿using API.Repositories.Interfaces;
 using Common.Dtos.PriceInfo;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
 using Mapster;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using API.Services.Interfaces;
 
@@ -27,40 +23,6 @@ namespace API.Controllers
             _commonRepository = commonRepository;
             _priceInfoService = priceInfoService;
             _logger = logger;
-        }
-
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            if (id <= 0)
-            {
-                _logger.LogWarning($"Invalid ID provided: {id}");
-                return BadRequest("The ID must be a positive integer.");
-            }
-
-            try
-            {
-                var priceInfo = await _commonRepository.GetByIdAsync(id);
-
-                if (priceInfo == null)
-                {
-                    _logger.LogWarning($"PriceInfo with ID {id} not found.");
-                    return NotFound();
-                }
-
-                PriceInfoDto priceInfoDto = priceInfo.Adapt<PriceInfoDto>();
-                return Ok(priceInfoDto);
-            }
-            catch (RepositoryException ex)
-            {
-                _logger.LogError(ex, $"Error retrieving PriceInfo with ID {id}.");
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Unexpected error retrieving PriceInfo with ID {id}.");
-                return StatusCode(500, "An unexpected error occurred.");
-            }
         }
 
         [HttpPost]

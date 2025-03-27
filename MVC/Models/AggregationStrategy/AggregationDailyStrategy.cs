@@ -1,4 +1,6 @@
-﻿namespace MVC.Models.AggregationStrategy
+﻿using Common.Models;
+
+namespace MVC.Models.AggregationStrategy
 {
     public class AggregationDailyStrategy : IAggregationStrategy
     {
@@ -8,11 +10,13 @@
 
             foreach (var dataPoint in data)
             {
+                string label = dataPoint.Timestamp.ToString("HH:mm");
+
                 List<DataPoint> dataPoints = new List<DataPoint> { dataPoint };
                 decimal aggregatedValue = operation(dataPoints);
 
-                DataPoint aggregatedDataPoint = new DataPoint(dataPoint.Timestamp, aggregatedValue);
-                aggregatedResults.DataPoints.Add(aggregatedDataPoint);
+                GraphDataPoint aggregatedDataPoint = new GraphDataPoint(label, aggregatedValue);
+                aggregatedResults.GraphDataPoints.Add(aggregatedDataPoint);
             }
 
             return aggregatedResults;

@@ -1,4 +1,5 @@
 ﻿using Common.Enums;
+using Common.Models;
 
 namespace MVC.Models.AggregationStrategy
 {
@@ -8,7 +9,7 @@ namespace MVC.Models.AggregationStrategy
 
         public AggregationContext() {}
 
-        public AggregatedData GetAggregatedData(List<DataPoint> data, Func<List<DataPoint>, decimal> operation)
+        public AggregatedData AggregateData(List<DataPoint> data, Func<List<DataPoint>, decimal> operation)
         {
             if (_strategy == null)
             {
@@ -32,7 +33,7 @@ namespace MVC.Models.AggregationStrategy
                     _strategy = new AggregationMonthlyStrategy();
                     break;
                 case TimeframeOptions.Quarterly:
-                    _strategy = new AggregationMonthlyStrategy();
+                    _strategy = new AggregationQuarterlyStrategy();
                     break;
                 case TimeframeOptions.Yearly:
                     _strategy = new AggregationYearlyStrategy();

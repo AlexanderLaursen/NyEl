@@ -40,6 +40,9 @@ builder.Services.AddIdentityApiEndpoints<AppUser>()
 
 builder.Services.AddScoped(typeof(ICommonRepository<>), typeof(CommonRepository<>));
 builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
+builder.Services.AddScoped<IConsumerRepository, ConsumerRepository>();
+builder.Services.AddScoped<IInvoicePreferenceRepository, InvoicePreferenceRepository>();
+builder.Services.AddScoped<IPriceInfoRepository, PriceInfoRepository>();
 
 builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 

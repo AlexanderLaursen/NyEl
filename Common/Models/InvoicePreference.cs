@@ -13,7 +13,7 @@ namespace Common.Models
         public string Name { get; set; }
 
         [Required]
-        public InvoiceNotificationPreference InvoiceNotificationPreference { get; set; }
+        public InvoicePreferenceEnum InvoiceNotificationPreference { get; set; }
 
         public ICollection<ConsumerInvoicePreference> ConsumerPreferences { get; set; }
     }

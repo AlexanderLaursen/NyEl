@@ -1,4 +1,5 @@
-﻿using Common.Enums;
+﻿using System.Reflection;
+using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
 
@@ -36,14 +37,13 @@ namespace API.Models.TimeframeStrategy
                     _strategy = new TimeframeMonthlyStrategy();
                     break;
                 case TimeframeOptions.Quarterly:
-                    _strategy = new TimeframeMonthlyStrategy();
+                    _strategy = new TimeframeQuarterlyStrategy();
                     break;
                 case TimeframeOptions.Yearly:
                     _strategy = new TimeframeYearlyStrategy();
                     break;
                 default:
-                    _strategy = new TimeframeMonthlyStrategy();
-                    break;
+                    throw new InvalidFilterCriteriaException();
             }
         }
     }

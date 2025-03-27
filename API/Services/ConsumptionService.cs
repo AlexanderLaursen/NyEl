@@ -4,6 +4,8 @@ using API.Services.Interfaces;
 using Common.Enums;
 using Common.Models;
 using Common.Exceptions;
+using Common.Dtos.ConsumptionReading;
+using Mapster;
 
 namespace API.Services
 {
@@ -20,14 +22,22 @@ namespace API.Services
             _timeframeContext = timeframeContext;
         }
 
-        public async Task<IEnumerable<ConsumptionReading>> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, string id)
+        public async Task<ConsumptionReadingListDto> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, string id)
         {
             _timeframeContext.SetStrategy(timeframeOptions);
             Timeframe timeframe = _timeframeContext.GetTimeframe(startDate);
 
             try
             {
-                return await _consumptionRepository.GetConsumptionReadingsAsync(id, timeframe);
+                var result = await _consumptionRepository.GetConsumptionReadingsAsync(id, timeframe);
+
+                ConsumptionReadingListDto consumptionReadingListDto = new()
+                {
+                    ConsumptionReadings = result.Adapt<IEnumerable<ConsumptionReadingDto>>(),
+                    Timeframe = timeframe
+                };
+
+                return consumptionReadingListDto;
             }
             catch (Exception ex)
             {

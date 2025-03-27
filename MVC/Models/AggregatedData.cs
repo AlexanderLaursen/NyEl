@@ -1,7 +1,9 @@
-﻿namespace MVC.Models
+﻿using Common.Models;
+
+namespace MVC.Models
 {
     public class AggregatedData
     {
-        public List<DataPoint> DataPoints { get; set; }
+        public List<GraphDataPoint> GraphDataPoints { get; set; } = new List<GraphDataPoint>();
     }
 }

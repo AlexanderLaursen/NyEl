@@ -1,4 +1,4 @@
-﻿using Common.Enums;
+﻿using Common.Models;
 
 namespace MVC.Models.AggregationStrategy
 {

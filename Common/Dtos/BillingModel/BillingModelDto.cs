@@ -2,10 +2,8 @@
 
 namespace Common.Dtos.BillingModel
 {
-    public record struct BillingModelDto
+    public struct BillingModelDto
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
         public BillingModelMethod BillingModelMethod { get; set; }
     }
 }

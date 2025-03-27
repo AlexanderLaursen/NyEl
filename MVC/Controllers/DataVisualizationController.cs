@@ -1,29 +1,28 @@
 ﻿using Common.Dtos.ConsumptionReading;
 using Common.Enums;
 using Common.Models;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using MVC.Helpers;
+using MVC.Models;
 using MVC.Models.AggregationStrategy;
 using MVC.Models.ViewModels;
 using MVC.Services.Interfaces;
-using ConsumptionReading = MVC.Models.ConsumptionReading;
 
 namespace MVC.Controllers
 {
-    public class ConsumptionController : Controller
+    public class DataVisualizationController : Controller
     {
         private readonly IConsumptionService _consumptionService;
         private readonly AggregationContext _aggregationContext;
 
-        public ConsumptionController(IConsumptionService consumptionService, AggregationContext aggregationContext)
+        public DataVisualizationController(IConsumptionService consumptionService, AggregationContext aggregationContext)
         {
             _consumptionService = consumptionService;
             _aggregationContext = aggregationContext;
         }
 
         [HttpGet("/consumption")]
-        public async Task<IActionResult> Index(ConsumptionViewModel viewModel)
+        public async Task<IActionResult> Consumption(DataVisualizationViewModel viewModel)
         {
             string? userId = HttpContext.Session.GetJson<string>("Bearer");
 
@@ -42,22 +41,23 @@ namespace MVC.Controllers
                 viewModel.SelectedTimeframe = TimeframeOptions.Daily;
             }
 
-            Result<ConsumptionReadingListDto> result = await _consumptionService.GetConsumptionReadingsAsync(viewModel.SelectedDate, TimeframeOptions.Daily, userId);
+            Result<ConsumptionReadingListDto> result = await _consumptionService.GetConsumptionReadingsAsync(viewModel.SelectedDate, viewModel.SelectedTimeframe, userId);
 
             if (!result.IsSuccess || result.Value == null)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            ConsumptionViewModel consumptionViewModel = new()
+            List<DataPoint> dataPoints = result.Value.ConsumptionReadings
+                .Select(cr => new DataPoint(cr.Timestamp, cr.Consumption))
+                .ToList();
+
+            _aggregationContext.SetStrategy(viewModel.SelectedTimeframe);
+            AggregatedData aggregatedData = _aggregationContext.AggregateData(dataPoints, AggregationHelper.Sum);
+
+            DataVisualizationViewModel consumptionViewModel = new()
             {
-                ConsumptionReadings = result.Value.ConsumptionReadings
-                    .Select(dto => new ConsumptionReading
-                    {
-                        Timestamp = dto.Timestamp.ToString("HH:mm"),
-                        Consumption = dto.Consumption
-                    })
-                    .ToList(),
+                AggregatedData = aggregatedData,
                 SelectedDate = viewModel.SelectedDate,
                 SelectedTimeframe = viewModel.SelectedTimeframe
             };

@@ -1,7 +1,7 @@
 ﻿@using Common.Enums
-@model ConsumptionViewModel
+@model DataVisualizationViewModel
 
-<form method="get" asp-action="Index" asp-controller="Consumption">
+<form method="get" asp-action="Consumption" asp-controller="DataVisualization">
 	<div>
 		<label for="selectedDate">Dato</label>
 		<input type="date" class="form-control" asp-for="SelectedDate" />
@@ -24,23 +24,23 @@
 </form>
 
 <div>
-	<canvas id="hourlyConsumptionChart"></canvas>
+	<canvas id="chart"></canvas>
 </div>
 
 <script>
 	document.addEventListener('DOMContentLoaded', function() {
-		var consumptionData = @Html.Raw(Json.Serialize(Model.ConsumptionReadings));
-		var timestamps = consumptionData.map(reading => reading.timestamp);
-		var consumptionValues = consumptionData.map(reading => reading.consumption);
+		var aggregatedData = @Html.Raw(Json.Serialize(Model.AggregatedData.GraphDataPoints));
+		var labels = aggregatedData.map(aggregatedData => aggregatedData.label);
+		var data = aggregatedData.map(aggregatedData => aggregatedData.data);
 
-		var ctx = document.getElementById('hourlyConsumptionChart').getContext('2d');
-		var hourlyConsumptionChart = new Chart(ctx, {
+		var ctx = document.getElementById('chart').getContext('2d');
+		var chart = new Chart(ctx, {
 			type: 'bar',
 			data: {
-				labels: timestamps,
+				labels: labels,
 				datasets: [{
 					label: 'Forbrug',
-					data: consumptionValues,
+					data: data,
 				}]
 			},
 				options: {

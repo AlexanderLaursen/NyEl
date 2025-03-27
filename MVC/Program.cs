@@ -13,6 +13,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<CommonApiService>();
 builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
 
 builder.Services.AddTransient<AggregationContext>();
 

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Common.Models;
 
 namespace MVC.Models.AggregationStrategy
 {
@@ -14,13 +15,14 @@ namespace MVC.Models.AggregationStrategy
 
             foreach (var group in groupedData)
             {
-                DateTime timestamp = group.First().Timestamp;
+                string label = calendar.GetWeekOfYear(group.First().Timestamp, CalendarWeekRule.FirstDay, DayOfWeek.Monday).ToString();
+
                 List<DataPoint> dataPoints = group.ToList();
                 decimal aggregatedValue = operation(dataPoints);
 
 
-                DataPoint aggregatedDataPoint = new DataPoint(timestamp, aggregatedValue);
-                aggregatedResults.DataPoints.Add(aggregatedDataPoint);
+                GraphDataPoint aggregatedDataPoint = new GraphDataPoint(label, aggregatedValue);
+                aggregatedResults.GraphDataPoints.Add(aggregatedDataPoint);
             }
 
             return aggregatedResults;

@@ -208,9 +208,9 @@ namespace DatabaseSeeder
                 Console.WriteLine("No data found. Adding dummy InvoicePreferences...");
                 var invoicePreferences = new List<InvoicePreference>
         {
-            new InvoicePreference { Name = "Email", InvoiceNotificationPreference = InvoiceNotificationPreference.Email },
-            new InvoicePreference { Name = "Sms", InvoiceNotificationPreference = InvoiceNotificationPreference.Sms },
-            new InvoicePreference { Name = "Eboks", InvoiceNotificationPreference = InvoiceNotificationPreference.Eboks }
+            new InvoicePreference { Name = "Email", InvoiceNotificationPreference = InvoicePreferenceEnum.Email },
+            new InvoicePreference { Name = "Sms", InvoiceNotificationPreference = InvoicePreferenceEnum.Sms },
+            new InvoicePreference { Name = "Eboks", InvoiceNotificationPreference = InvoicePreferenceEnum.Eboks }
         };
                 dbContext.InvoicePreferences.AddRange(invoicePreferences);
                 dbContext.SaveChanges();

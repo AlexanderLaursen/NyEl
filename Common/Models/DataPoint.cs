@@ -1,4 +1,4 @@
-﻿namespace MVC.Models
+﻿namespace Common.Models
 {
     public struct DataPoint (DateTime timestamp, decimal value)
     {
