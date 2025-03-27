@@ -100,10 +100,10 @@ namespace DatabaseSeeder
                 {
                     var consumerInvoicePreferences = new List<ConsumerInvoicePreference>
             {
-                new ConsumerInvoicePreference { UserId = consumer1.UserId, InvoiceNotificationPreferenceId = emailPreference.Id },
-                new ConsumerInvoicePreference { UserId = consumer1.UserId, InvoiceNotificationPreferenceId = eboksPreference.Id },
-                new ConsumerInvoicePreference { UserId = consumer2.UserId, InvoiceNotificationPreferenceId = smsPreference.Id },
-                new ConsumerInvoicePreference { UserId = consumer2.UserId, InvoiceNotificationPreferenceId = eboksPreference.Id }
+                new ConsumerInvoicePreference { ConsumerId = consumer1.Id, InvoiceNotificationPreferenceId = emailPreference.Id },
+                new ConsumerInvoicePreference { ConsumerId = consumer1.Id, InvoiceNotificationPreferenceId = eboksPreference.Id },
+                new ConsumerInvoicePreference { ConsumerId = consumer2.Id, InvoiceNotificationPreferenceId = smsPreference.Id },
+                new ConsumerInvoicePreference { ConsumerId = consumer2.Id, InvoiceNotificationPreferenceId = eboksPreference.Id }
             };
                     dbContext.ConsumerInvoicePreferences.AddRange(consumerInvoicePreferences);
                     dbContext.SaveChanges();
@@ -185,8 +185,8 @@ namespace DatabaseSeeder
                 Console.WriteLine("No data found. Adding dummy data...");
                 var billingModels = new List<BillingModel>
         {
-            new BillingModel { Name = "FixedPrice", BillingModelMethod = BillingModelMethod.FixedPrice },
-            new BillingModel { Name = "Hourly", BillingModelMethod = BillingModelMethod.Hourly },
+            new BillingModel { Name = "FixedPrice", BillingModelType = BillingModelType.FixedPrice },
+            new BillingModel { Name = "Hourly", BillingModelType = BillingModelType.Hourly },
         };
                 dbContext.BillingModels.AddRange(billingModels);
                 dbContext.SaveChanges();
@@ -208,9 +208,9 @@ namespace DatabaseSeeder
                 Console.WriteLine("No data found. Adding dummy InvoicePreferences...");
                 var invoicePreferences = new List<InvoicePreference>
         {
-            new InvoicePreference { Name = "Email", InvoiceNotificationPreference = InvoiceNotificationPreference.Email },
-            new InvoicePreference { Name = "Sms", InvoiceNotificationPreference = InvoiceNotificationPreference.Sms },
-            new InvoicePreference { Name = "Eboks", InvoiceNotificationPreference = InvoiceNotificationPreference.Eboks }
+            new InvoicePreference { Name = "Email", InvoicePreferenceType = InvoicePreferenceType.Email },
+            new InvoicePreference { Name = "Sms", InvoicePreferenceType = InvoicePreferenceType.Sms },
+            new InvoicePreference { Name = "Eboks", InvoicePreferenceType = InvoicePreferenceType.Eboks }
         };
                 dbContext.InvoicePreferences.AddRange(invoicePreferences);
                 dbContext.SaveChanges();
@@ -328,7 +328,7 @@ namespace DatabaseSeeder
             public decimal Price { get; set; }
         }
 
-        public void SeedConsumptionReadingsFromFiles(string file1, string file2, string userId1, string userId2)
+        public void SeedConsumptionReadingsFromFiles(string file1, string file2)
         {
             Console.WriteLine("Checking ConsumptionReadings...");
             if (!dbContext.ConsumptionReadings.Any())
@@ -337,11 +337,14 @@ namespace DatabaseSeeder
 
                 var allConsumptionReadings = new List<ConsumptionReading>();
 
+                var consumer1 = dbContext.Consumers.FirstOrDefault(c => c.FirstName == "Foo");
+                var consumer2 = dbContext.Consumers.FirstOrDefault(c => c.FirstName == "Alexander");
+
                 // Read from Consumption_1.json
-                ReadConsumptionFile(file1, allConsumptionReadings, userId1);
+                ReadConsumptionFile(file1, allConsumptionReadings, consumer1.Id);
 
                 // Read from Consumption_2.json
-                ReadConsumptionFile(file2, allConsumptionReadings, userId2);
+                ReadConsumptionFile(file2, allConsumptionReadings, consumer2.Id);
 
                 if (allConsumptionReadings.Any())
                 {
@@ -364,7 +367,7 @@ namespace DatabaseSeeder
             }
         }
 
-        static void ReadConsumptionFile(string relativePath, List<ConsumptionReading> consumptionReadingsList, string userId)
+        static void ReadConsumptionFile(string relativePath, List<ConsumptionReading> consumptionReadingsList, int consumerId)
         {
             try
             {
@@ -381,7 +384,7 @@ namespace DatabaseSeeder
                         Console.WriteLine($"Read {readingsFromFile.Count} consumption readings from '{relativePath}'.");
                         foreach (var reading in readingsFromFile)
                         {
-                            reading.UserId = userId;
+                            reading.ConsumerId = consumerId;
                         }
                         consumptionReadingsList.AddRange(readingsFromFile);
                     }

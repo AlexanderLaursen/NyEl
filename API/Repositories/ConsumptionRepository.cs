@@ -17,14 +17,14 @@ namespace API.Repositories
             _logger = logger;
         }
 
-        public async Task<IEnumerable<ConsumptionReading>> GetConsumptionReadingsAsync(string id, Timeframe timeframe)
+        public async Task<IEnumerable<ConsumptionReading>> GetConsumptionReadingsAsync(int consumerId, Timeframe timeframe)
         {
             try
             {
                 return await _context.ConsumptionReadings
                     .Where(cr => cr.Timestamp >= timeframe.Start
                     && cr.Timestamp <= timeframe.End
-                    && cr.UserId == id)
+                    && cr.ConsumerId == consumerId)
                     .ToListAsync();
             }
             catch (Exception ex)

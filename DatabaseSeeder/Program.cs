@@ -1,9 +1,6 @@
 ﻿using API.Data;
-using Common.Enums;
-using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using DatabaseSeeder;
-using System.Text.Json;
 
 Console.WriteLine("Starting database seeding...");
 
@@ -31,12 +28,7 @@ while (!connectionEstablished)
 }
 
 seeder.RegisterUser("foo@bar.com", "String!1", BASE_URL);
-var user1 = await seeder.GetUserIdByEmailAsync("foo@bar.com");
-var userId1 = user1.UserId;
-
 seeder.RegisterUser("alexander@laursen.com", "String!1", BASE_URL);
-var user2 = await seeder.GetUserIdByEmailAsync("alexander@laursen.com");
-var userId2 = user2.UserId;
 
 seeder.BillingModel();
 
@@ -48,12 +40,9 @@ seeder.ConsumerInvoicePreference();
 
 seeder.SeedPriceInfoFromjson(PRICE_DATA);
 
-
-
-seeder.SeedConsumptionReadingsFromFiles(CONSUMPTION_FILE_1, CONSUMPTION_FILE_2, user1.UserId, user2.UserId);
+seeder.SeedConsumptionReadingsFromFiles(CONSUMPTION_FILE_1, CONSUMPTION_FILE_2);
 
 // TODO seed invoices
-
 
 Console.WriteLine("Database seeding complete. Press any key to exit.");
 Console.ReadKey();

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitiCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,7 +57,7 @@ namespace API.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    BillingModelMethod = table.Column<int>(type: "int", nullable: false)
+                    BillingModelType = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,7 +71,8 @@ namespace API.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    InvoiceNotificationPreference = table.Column<int>(type: "int", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    InvoicePreferenceType = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -235,24 +236,18 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    InvoiceNotificationPreferenceId = table.Column<int>(type: "int", nullable: false),
-                    ConsumerId = table.Column<int>(type: "int", nullable: true)
+                    ConsumerId = table.Column<int>(type: "int", nullable: false),
+                    InvoiceNotificationPreferenceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ConsumerInvoicePreferences", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ConsumerInvoicePreferences_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_ConsumerInvoicePreferences_Consumers_ConsumerId",
                         column: x => x.ConsumerId,
                         principalTable: "Consumers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ConsumerInvoicePreferences_InvoicePreferences_InvoiceNotificationPreferenceId",
                         column: x => x.InvoiceNotificationPreferenceId,
@@ -269,23 +264,17 @@ namespace API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Consumption = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ConsumerId = table.Column<int>(type: "int", nullable: true)
+                    ConsumerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ConsumptionReadings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ConsumptionReadings_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_ConsumptionReadings_Consumers_ConsumerId",
                         column: x => x.ConsumerId,
                         principalTable: "Consumers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -298,25 +287,17 @@ namespace API.Migrations
                     InvoicePeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Paid = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    BillingModelId = table.Column<int>(type: "int", nullable: false),
-                    ConsumerId = table.Column<int>(type: "int", nullable: true)
+                    ConsumerId = table.Column<int>(type: "int", nullable: false),
+                    BillingModelId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Invoices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Invoices_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Invoices_BillingModels_BillingModelId",
                         column: x => x.BillingModelId,
                         principalTable: "BillingModels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Invoices_Consumers_ConsumerId",
                         column: x => x.ConsumerId,
@@ -364,6 +345,12 @@ namespace API.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BillingModels_BillingModelType",
+                table: "BillingModels",
+                column: "BillingModelType",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ConsumerInvoicePreferences_ConsumerId",
                 table: "ConsumerInvoicePreferences",
                 column: "ConsumerId");
@@ -372,11 +359,6 @@ namespace API.Migrations
                 name: "IX_ConsumerInvoicePreferences_InvoiceNotificationPreferenceId",
                 table: "ConsumerInvoicePreferences",
                 column: "InvoiceNotificationPreferenceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ConsumerInvoicePreferences_UserId",
-                table: "ConsumerInvoicePreferences",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Consumers_BillingModelId",
@@ -395,9 +377,10 @@ namespace API.Migrations
                 column: "ConsumerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ConsumptionReadings_UserId",
-                table: "ConsumptionReadings",
-                column: "UserId");
+                name: "IX_InvoicePreferences_InvoicePreferenceType",
+                table: "InvoicePreferences",
+                column: "InvoicePreferenceType",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invoices_BillingModelId",
@@ -408,11 +391,6 @@ namespace API.Migrations
                 name: "IX_Invoices_ConsumerId",
                 table: "Invoices",
                 column: "ConsumerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Invoices_UserId",
-                table: "Invoices",
-                column: "UserId");
         }
 
         /// <inheritdoc />

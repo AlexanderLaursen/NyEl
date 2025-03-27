@@ -13,6 +13,6 @@ namespace Common.Models
         public string Name { get; set; }
 
         [Required]
-        public BillingModelMethod BillingModelMethod { get; set; }
+        public BillingModelType BillingModelType { get; set; }
     }
 }

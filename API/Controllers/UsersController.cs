@@ -25,29 +25,6 @@ namespace API.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{email}")]
-        public async Task<IActionResult> GetUserIdByEmail(string email)
-        {
-            try
-            {
-                var user = await _userManager.FindByEmailAsync(email);
-
-                if (user == null)
-                {
-                    return NotFound();
-                }
-
-                UserIdDto userDto = new() { UserId = user.Id };
-
-                return Ok(userDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while getting the user.");
-                return StatusCode(500);
-            }
-        }
-
         [HttpPost("/api/v1/register-full")]
         public async Task<IActionResult> RegisterUserFull(RegisterFullDto registerFullDto)
         {

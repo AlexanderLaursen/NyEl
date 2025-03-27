@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
-using API.Models.TimeframeStrategy;
 using API.Repositories.Interfaces;
+using API.Services;
+using API.Services.Interfaces;
 using Common.Dtos.ConsumptionReading;
 using Common.Enums;
 using Common.Exceptions;
@@ -17,14 +18,16 @@ namespace API.Controllers
     {
         private readonly ICommonRepository<ConsumptionReading> _commonRepository;
         private readonly ILogger<ConsumptionReadingsController> _logger;
-        private readonly IConsumptionRepository _consumptionRepository;
+        private readonly IConsumptionService _consumptionService;
+        private readonly IConsumerService _consumerService;
 
         public ConsumptionReadingsController(ICommonRepository<ConsumptionReading> commonRepository, ILogger<ConsumptionReadingsController> logger,
-            IConsumptionRepository consumptionRepository)
+            IConsumptionService consumptionService, IConsumerService consumerService)
         {
             _commonRepository = commonRepository;
             _logger = logger;
-            _consumptionRepository = consumptionRepository;
+            _consumptionService = consumptionService;
+            _consumerService = consumerService;
         }
 
         [Authorize]
@@ -33,30 +36,23 @@ namespace API.Controllers
         {
             try
             {
-                TimeframeContext timeframeContext = new(timeframeOptions);
-                Timeframe timeframe = timeframeContext.GetTimeframe(startDate);
-
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int consumerId = await _consumerService.GetConsumerId(userId);
 
-                if (userId == null)
-                {
-                    return Unauthorized();
-                }
-
-                var result = await _consumptionRepository.GetConsumptionReadingsAsync(userId, timeframe);
+                ConsumptionReadingListDto result = await _consumptionService.GetConsumptionReadingsAsync(startDate, timeframeOptions, consumerId);
 
                 if (result == null)
                 {
-                    _logger.LogWarning($"No consumption readings found for user {userId} in the specified timeframe.");
+                    _logger.LogWarning($"No consumption readings found for user {consumerId} in the specified timeframe.");
                     return NotFound();
                 }
 
-                ConsumptionReadingListDto consumptionReadingListDto = new()
-                {
-                    ConsumptionReadings = result.Adapt<IEnumerable<ConsumptionReadingDto>>()
-                };
-
-                return Ok(consumptionReadingListDto);
+                return Ok(result);
+            }
+            catch (UnkownUserException ex)
+            {
+                _logger.LogWarning(ex, $"User not found.");
+                return Unauthorized();
             }
             catch (RepositoryException ex)
             {
@@ -67,40 +63,6 @@ namespace API.Controllers
             {
                 _logger.LogError(ex, "Error occurred while retrieving consumption readings.");
                 return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
-
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            if (id <= 0)
-            {
-                _logger.LogWarning($"Invalid ID provided: {id}");
-                return BadRequest("The ID must be a positive integer.");
-            }
-
-            try
-            {
-                var consumptionReading = await _commonRepository.GetByIdAsync(id);
-
-                if (consumptionReading == null)
-                {
-                    _logger.LogWarning($"ConsumptionReading with ID {id} not found.");
-                    return NotFound();
-                }
-
-                ConsumptionReadingDto consumptionReadingDto = consumptionReading.Adapt<ConsumptionReadingDto>();
-                return Ok(consumptionReadingDto);
-            }
-            catch (RepositoryException ex)
-            {
-                _logger.LogError(ex, $"Error retrieving ConsumptionReading with ID {id}.");
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Unexpected error retrieving ConsumptionReading with ID {id}.");
-                return StatusCode(500, "An unexpected error occurred.");
             }
         }
 
@@ -115,7 +77,7 @@ namespace API.Controllers
 
             try
             {
-                var consumptionReading = createConsumptionReadingDto.Adapt<ConsumptionReading>();
+                ConsumptionReading consumptionReading = createConsumptionReadingDto.Adapt<ConsumptionReading>();
                 await _commonRepository.AddAsync(consumptionReading);
                 return CreatedAtAction(nameof(Post), consumptionReading.Adapt<ConsumptionReadingDto>());
             }
@@ -130,5 +92,6 @@ namespace API.Controllers
                 return StatusCode(500, "An unexpected error occurred.");
             }
         }
+
     }
 }

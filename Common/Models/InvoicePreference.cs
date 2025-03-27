@@ -12,8 +12,11 @@ namespace Common.Models
         [MaxLength(255)]
         public string Name { get; set; }
 
+        [MaxLength(255)]
+        public string? Description { get; set; }
+
         [Required]
-        public InvoiceNotificationPreference InvoiceNotificationPreference { get; set; }
+        public InvoicePreferenceType InvoicePreferenceType { get; set; }
 
         public ICollection<ConsumerInvoicePreference> ConsumerPreferences { get; set; }
     }

@@ -22,17 +22,25 @@ namespace API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.Entity<Invoice>()
-            //    .HasOne(i => i.Consumer)
-            //    .WithMany(c => c.Invoices)
-            //    .HasForeignKey(i => i.ConsumerId)
-            //    .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Invoice>()
+                .HasOne(i => i.Consumer)
+                .WithMany(c => c.Invoices)
+                .HasForeignKey(i => i.ConsumerId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            //modelBuilder.Entity<Consumer>()
-            //    .HasOne(c => c.BillingModel)
-            //    .WithMany()
-            //    .HasForeignKey(c => c.BillingModelId)
-            //    .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Invoice>()
+                .HasOne(i => i.BillingModel)
+                .WithMany()
+                .HasForeignKey(i => i.BillingModelId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<BillingModel>()
+                .HasIndex(b => b.BillingModelType)
+                .IsUnique();
+
+            modelBuilder.Entity<InvoicePreference>()
+                .HasIndex(ip => ip.InvoicePreferenceType)
+                .IsUnique();
         }
     }
 }

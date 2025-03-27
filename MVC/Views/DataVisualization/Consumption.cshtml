@@ -1,0 +1,62 @@
+﻿@using Common.Enums
+@model DataVisualizationViewModel
+
+<form method="get" asp-action="Consumption" asp-controller="DataVisualization">
+	<div>
+		<label for="selectedDate">Dato</label>
+		<input type="date" class="form-control" asp-for="SelectedDate" />
+		<span asp-validation-for="SelectedDate" class="text-danger"></span>
+	</div>
+
+	<div>
+		<label for="selectedTimeframe">Periode</label>
+		<select id="selectedTimeframe" asp-for="SelectedTimeframe" class="form-control">
+			<option value="@((int)TimeframeOptions.Daily)">Dag</option>
+			<option value="@((int)TimeframeOptions.Weekly)">Uge</option>
+			<option value="@((int)TimeframeOptions.Monthly)">Måned</option>
+			<option value="@((int)TimeframeOptions.Quarterly)">Kvartal</option>
+			<option value="@((int)TimeframeOptions.Yearly)">År</option>
+		</select>
+	</div>
+	<div>
+		<button type="submit" class="btn btn-primary">Hent forbrug</button>
+	</div>
+</form>
+
+<div>
+	<canvas id="chart"></canvas>
+</div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var aggregatedData = @Html.Raw(Json.Serialize(Model.AggregatedData.GraphDataPoints));
+		var labels = aggregatedData.map(aggregatedData => aggregatedData.label);
+		var data = aggregatedData.map(aggregatedData => aggregatedData.data);
+
+		var ctx = document.getElementById('chart').getContext('2d');
+		var chart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: labels,
+				datasets: [{
+					label: 'Forbrug',
+					data: data,
+				}]
+			},
+				options: {
+		responsive: true,
+		interaction: {
+		  intersect: false,
+		},
+		scales: {
+		  x: {
+			stacked: true,
+		  },
+		  y: {
+			stacked: true
+		  }
+		}
+	  }
+		});
+	});
+</script>
