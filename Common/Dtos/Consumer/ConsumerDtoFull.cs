@@ -2,7 +2,7 @@
 
 namespace Common.Dtos.Consumer
 {
-    public struct ConsumerDto
+    public struct ConsumerDtoFull
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -11,5 +11,6 @@ namespace Common.Dtos.Consumer
         public int CPR { get; set; }
         public string UserId { get; set; }
         public BillingModelMethod BillingModel { get; set; }
+        public List<InvoicePreferenceEnum> InvoicePreferences { get; set; }
     }
 }

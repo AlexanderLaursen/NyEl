@@ -13,6 +13,6 @@ namespace Common.Dtos.ConsumptionReading
         public decimal Consumption { get; set; }
 
         [Required]
-        public int ConsumerId { get; set; }
+        public string UserId { get; set; }
     }
 }

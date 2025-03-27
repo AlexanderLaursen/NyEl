@@ -1,6 +1,9 @@
 using API.Data;
+using API.Models.TimeframeStrategy;
 using API.Repositories;
 using API.Repositories.Interfaces;
+using API.Services;
+using API.Services.Interfaces;
 using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -36,8 +39,14 @@ builder.Services.AddIdentityApiEndpoints<AppUser>()
 
 
 builder.Services.AddScoped(typeof(ICommonRepository<>), typeof(CommonRepository<>));
-builder.Services.AddScoped<IConsumerRepository, ConsumerRepository>();
 builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
+builder.Services.AddScoped<IConsumerRepository, ConsumerRepository>();
+builder.Services.AddScoped<IInvoicePreferenceRepository, InvoicePreferenceRepository>();
+builder.Services.AddScoped<IPriceInfoRepository, PriceInfoRepository>();
+
+builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
+
+builder.Services.AddTransient<TimeframeContext>();
 
 // Build
 var app = builder.Build();

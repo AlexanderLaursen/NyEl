@@ -1,4 +1,6 @@
-﻿using Common.Enums;
+﻿using System.Reflection;
+using Common.Enums;
+using Common.Exceptions;
 using Common.Models;
 
 namespace API.Models.TimeframeStrategy
@@ -7,13 +9,17 @@ namespace API.Models.TimeframeStrategy
     {
         private ITimeframeStrategy _strategy;
 
-        public TimeframeContext(TimeframeOptions timeframeOptions)
+        public TimeframeContext()
         {
-            SetStrategy(timeframeOptions);
         }
 
         public Timeframe GetTimeframe(DateTime startDateTime)
         {
+            if (_strategy == null)
+            {
+                throw new NoStrategyException("No strategy selected.");
+            }
+
             return _strategy.GetTimeframe(startDateTime);
         }
 
@@ -31,14 +37,13 @@ namespace API.Models.TimeframeStrategy
                     _strategy = new TimeframeMonthlyStrategy();
                     break;
                 case TimeframeOptions.Quarterly:
-                    _strategy = new TimeframeMonthlyStrategy();
+                    _strategy = new TimeframeQuarterlyStrategy();
                     break;
                 case TimeframeOptions.Yearly:
                     _strategy = new TimeframeYearlyStrategy();
                     break;
                 default:
-                    _strategy = new TimeframeMonthlyStrategy();
-                    break;
+                    throw new InvalidFilterCriteriaException();
             }
         }
     }

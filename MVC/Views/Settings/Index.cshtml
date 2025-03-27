@@ -1,0 +1,81 @@
+﻿@model SettingsViewModel
+@using Common.Enums;
+
+<h1>Indstillinger</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body mt-3 mx-2">
+                <h5 class="card-title">Konto oplysninger</h5>
+                <div class="form-group">
+                    <label class="font-weight-bold">Fornavn</label>
+                    <input asp-for="FirstName" class="form-control bg-light text-muted" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="font-weight-bold">Efternavn</label>
+                    <input asp-for="LastName" class="form-control bg-light text-muted" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="font-weight-bold">Telefonnummer</label>
+                    <input asp-for="PhoneNumber" class="form-control bg-light text-muted" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="font-weight-bold">Email</label>
+                    <input asp-for="Email" class="form-control bg-light text-muted" readonly />
+                </div>
+
+                <div class="form-group mb-5">
+                    <label class="font-weight-bold">CPR</label>
+                    <input asp-for="CPR" class="form-control bg-light text-muted" readonly />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body mt-3 mx-3">
+                <h5 class="card-title">Abonnement</h5>
+                <form asp-action="UpdateSettings">
+                    <div class="form-group w-100">
+                        <label>Betalingsmodel</label>
+                        <select asp-for="BillingModel" class="form-control">
+                            <option value="FixedPrice">Fast pris</option>
+                            <option value="MarketPrice">Variabel pris</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <h6>Faktura Præferencer</h6>
+                        <div>
+                            <label class="font-weight-bold">
+                                <input type="checkbox" name="InvoicePreferences" value="@InvoicePreferenceEnum.Email" @(Model.InvoicePreferences.Contains(InvoicePreferenceEnum.Email) ? "checked" : "") />
+                                E-mail
+                            </label>
+                        </div>
+                        <div>
+                            <label class="font-weight-bold">
+                                <input type="checkbox" name="InvoicePreferences" value="@InvoicePreferenceEnum.Sms" @(Model.InvoicePreferences.Contains(InvoicePreferenceEnum.Sms) ? "checked" : "") />
+                                SMS
+                            </label>
+                        </div>
+                        <div>
+                            <label class="font-weight-bold">
+                                <input type="checkbox" name="InvoicePreferences" value="@InvoicePreferenceEnum.Eboks" @(Model.InvoicePreferences.Contains(InvoicePreferenceEnum.Eboks) ? "checked" : "") />
+                                E-Boks
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3 mb-4">
+                        <input type="submit" value="Gem" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
