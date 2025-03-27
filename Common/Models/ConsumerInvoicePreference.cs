@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using Common.Enums;
 
 namespace Common.Models
 {
@@ -9,11 +8,11 @@ namespace Common.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("User")]
+        [ForeignKey("Consumer")]
         [Required]
-        public string UserId { get; set; }
+        public int ConsumerId { get; set; }
 
-        public AppUser User { get; set; }
+        public Consumer Consumer { get; set; }
 
         [ForeignKey("InvoiceNotificationPreference")]
         [Required]

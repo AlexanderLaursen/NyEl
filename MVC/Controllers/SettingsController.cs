@@ -1,7 +1,8 @@
-﻿using Common.Dtos.Consumer;
+﻿using Common.Dtos.BillingModel;
+using Common.Dtos.Consumer;
+using Common.Dtos.InvoicePreference;
 using Common.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 using MVC.Helpers;
 using MVC.Models.ViewModels;
 using MVC.Services.Interfaces;
@@ -48,9 +49,8 @@ namespace MVC.Controllers
             return View(settingsViewModel);
         }
 
-        // TODO Implement
         [HttpPost("/settings/update")]
-        public IActionResult UpdateSettings(SettingsViewModel viewModel)
+        public async Task<IActionResult> UpdateSettings(SettingsViewModel viewModel)
         {
             string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
 
@@ -59,7 +59,19 @@ namespace MVC.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-            return View();
+            InvoicePreferenceListDto invoicePreferenceListDto = new()
+            {
+                InvoicePreferences = viewModel.InvoicePreferences
+            };
+
+            BillingModelDto billingModelDto = new()
+            {
+                BillingModelType = viewModel.BillingModel
+            };
+
+            Result<bool> result = await _settingsService.UpdateSettingsAsync(invoicePreferenceListDto, billingModelDto, bearerToken);
+
+            return RedirectToAction("Index");
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Common.Exceptions;
 using Common.Models;
-using MVC.Services.Interfaces;
 
 namespace MVC.Services
 {

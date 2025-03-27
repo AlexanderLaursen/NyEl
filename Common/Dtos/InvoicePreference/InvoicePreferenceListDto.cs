@@ -4,6 +4,6 @@ namespace Common.Dtos.InvoicePreference
 {
     public struct InvoicePreferenceListDto
     {
-        public List<InvoicePreferenceEnum> InvoicePreferences { get; set; }
+        public List<InvoicePreferenceType> InvoicePreferences { get; set; }
     }
 }

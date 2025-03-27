@@ -24,9 +24,9 @@ namespace MVC.Controllers
         [HttpGet("/consumption")]
         public async Task<IActionResult> Consumption(DataVisualizationViewModel viewModel)
         {
-            string? userId = HttpContext.Session.GetJson<string>("Bearer");
+            string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
 
-            if (userId == null)
+            if (bearerToken == null)
             {
                 return RedirectToAction("Index", "Login");
             }
@@ -41,7 +41,7 @@ namespace MVC.Controllers
                 viewModel.SelectedTimeframe = TimeframeOptions.Daily;
             }
 
-            Result<ConsumptionReadingListDto> result = await _consumptionService.GetConsumptionReadingsAsync(viewModel.SelectedDate, viewModel.SelectedTimeframe, userId);
+            Result<ConsumptionReadingListDto> result = await _consumptionService.GetConsumptionReadingsAsync(viewModel.SelectedDate, viewModel.SelectedTimeframe, bearerToken);
 
             if (!result.IsSuccess || result.Value == null)
             {

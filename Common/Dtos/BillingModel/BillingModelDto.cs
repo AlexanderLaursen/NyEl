@@ -4,6 +4,6 @@ namespace Common.Dtos.BillingModel
 {
     public struct BillingModelDto
     {
-        public BillingModelMethod BillingModelMethod { get; set; }
+        public BillingModelType BillingModelType { get; set; }
     }
 }

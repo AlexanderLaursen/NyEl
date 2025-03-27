@@ -44,6 +44,8 @@ builder.Services.AddScoped<IConsumerRepository, ConsumerRepository>();
 builder.Services.AddScoped<IInvoicePreferenceRepository, InvoicePreferenceRepository>();
 builder.Services.AddScoped<IPriceInfoRepository, PriceInfoRepository>();
 
+builder.Services.AddScoped<IPriceInfoService, PriceInfoService>();
+builder.Services.AddScoped<IConsumerService, ConsumerService>();
 builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 
 builder.Services.AddTransient<TimeframeContext>();

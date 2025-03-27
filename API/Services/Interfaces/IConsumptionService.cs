@@ -5,6 +5,6 @@ namespace API.Services.Interfaces
 {
     public interface IConsumptionService
     {
-        public Task<ConsumptionReadingListDto> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframe, string id);
+        public Task<ConsumptionReadingListDto> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframe, int consumerId);
     }
 }

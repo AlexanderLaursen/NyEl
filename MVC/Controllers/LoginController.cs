@@ -41,17 +41,8 @@ namespace MVC.Controllers
             }
 
             HttpContext.Session.SetJson("Bearer", result.Value.AccessToken);
-
-            Result<UserIdDto> userResult = await _userService.GetUserByEmailAsync(loginDto.Email);
-
-            if (userResult.IsSuccess)
-            {
-                HttpContext.Session.SetJson("Username", loginDto.Email);
-                HttpContext.Session.SetJson("UserId", userResult.Value.UserId);
-                return RedirectToAction("Index", "Home");
-            }
-
-            return View("Index", "Home");
+            HttpContext.Session.SetJson("Username", loginDto.Email);
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet("/logout")]
@@ -59,7 +50,6 @@ namespace MVC.Controllers
         {
             HttpContext.Session.Remove("Bearer");
             HttpContext.Session.Remove("Username");
-            HttpContext.Session.Remove("UserId");
             return RedirectToAction("Index", "Home");
         }
     }

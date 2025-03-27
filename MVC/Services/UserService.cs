@@ -12,11 +12,5 @@ namespace MVC.Services
         {
         }
 
-        public async Task<Result<UserIdDto>> GetUserByEmailAsync(string email)
-        {
-            string url = USERS + $"/{email}";
-
-            return await GetAsync<UserIdDto>(url);
-        }
     }
 }

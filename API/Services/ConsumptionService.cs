@@ -22,14 +22,14 @@ namespace API.Services
             _timeframeContext = timeframeContext;
         }
 
-        public async Task<ConsumptionReadingListDto> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, string id)
+        public async Task<ConsumptionReadingListDto> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, int userId)
         {
             _timeframeContext.SetStrategy(timeframeOptions);
             Timeframe timeframe = _timeframeContext.GetTimeframe(startDate);
 
             try
             {
-                var result = await _consumptionRepository.GetConsumptionReadingsAsync(id, timeframe);
+                var result = await _consumptionRepository.GetConsumptionReadingsAsync(userId, timeframe);
 
                 ConsumptionReadingListDto consumptionReadingListDto = new()
                 {
