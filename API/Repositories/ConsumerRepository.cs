@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.Repositories.Interfaces;
 using Common.Dtos.BillingModel;
+using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,33 @@ namespace API.Repositories
             _logger = logger;
         }
 
-        public async Task<Consumer> GetByUserIdAsync(string userId)
+        public async Task<int> GetConsumerIdAsync(string userId)
+        {
+            if (userId == null)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            try
+            {
+                return await _context.Consumers
+                    .Where(c => c.UserId == userId)
+                    .Select(c => c.Id)
+                    .FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving data from the database.");
+                throw new RepositoryException("Error occurred while retrieving data from the database.", ex);
+            }
+        }
+
+        public async Task<Consumer> GetConsumerByUserIdAsync(int consumerId)
         {
             try
             {
                 return await _context.Consumers.Include(c => c.BillingModel)
-                    .FirstOrDefaultAsync(c => c.UserId == userId);
+                    .FirstOrDefaultAsync(c => c.Id == consumerId);
             }
             catch (Exception ex)
             {
@@ -47,16 +69,24 @@ namespace API.Repositories
             }
         }
 
-        public async Task<int> UpdateBillingModelAsync(BillingModelDto billingModelDto, string userId)
+        public async Task<int> UpdateBillingModelAsync(BillingModelType billingModelMethod, int consumerId)
         {
             try 
             {
-                var consumer = _context.Consumers.FirstOrDefault(c => c.UserId == userId);
-                if (consumer == null)
+                Consumer? consumer = _context.Consumers.FirstOrDefault(c => c.Id == consumerId);
+                if (consumer == null )
                 {
                     throw new RepositoryException("Consumer not found.");
                 }
-                consumer.BillingModel.BillingModelMethod = billingModelDto.BillingModelMethod;
+
+                BillingModel? billingModel = _context.BillingModels.FirstOrDefault(b => b.BillingModelType == billingModelMethod);
+                if (billingModel == null )
+                {
+                    throw new RepositoryException("Billing model not found.");
+                }
+
+                consumer.BillingModel = billingModel;
+
                 _context.Consumers.Update(consumer);
                 return await _context.SaveChangesAsync();
             }

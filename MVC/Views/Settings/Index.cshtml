@@ -45,7 +45,7 @@
                         <label>Betalingsmodel</label>
                         <select asp-for="BillingModel" class="form-control">
                             <option value="FixedPrice">Fast pris</option>
-                            <option value="MarketPrice">Variabel pris</option>
+                            <option value="Hourly">Variabel pris</option>
                         </select>
                     </div>
 
@@ -53,19 +53,19 @@
                         <h6>Faktura Præferencer</h6>
                         <div>
                             <label class="font-weight-bold">
-                                <input type="checkbox" name="InvoicePreferences" value="@InvoicePreferenceEnum.Email" @(Model.InvoicePreferences.Contains(InvoicePreferenceEnum.Email) ? "checked" : "") />
+                                <input type="checkbox" name="InvoicePreferences" value="@InvoicePreferenceType.Email" @(Model.InvoicePreferences.Contains(InvoicePreferenceType.Email) ? "checked" : "") />
                                 E-mail
                             </label>
                         </div>
                         <div>
                             <label class="font-weight-bold">
-                                <input type="checkbox" name="InvoicePreferences" value="@InvoicePreferenceEnum.Sms" @(Model.InvoicePreferences.Contains(InvoicePreferenceEnum.Sms) ? "checked" : "") />
+                                <input type="checkbox" name="InvoicePreferences" value="@InvoicePreferenceType.Sms" @(Model.InvoicePreferences.Contains(InvoicePreferenceType.Sms) ? "checked" : "") />
                                 SMS
                             </label>
                         </div>
                         <div>
                             <label class="font-weight-bold">
-                                <input type="checkbox" name="InvoicePreferences" value="@InvoicePreferenceEnum.Eboks" @(Model.InvoicePreferences.Contains(InvoicePreferenceEnum.Eboks) ? "checked" : "") />
+                                <input type="checkbox" name="InvoicePreferences" value="@InvoicePreferenceType.Eboks" @(Model.InvoicePreferences.Contains(InvoicePreferenceType.Eboks) ? "checked" : "") />
                                 E-Boks
                             </label>
                         </div>

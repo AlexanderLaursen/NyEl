@@ -9,7 +9,7 @@ namespace MVC.Models.ViewModels
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public int CPR { get; set; }
-        public BillingModelMethod BillingModel { get; set; }
-        public List<InvoicePreferenceEnum> InvoicePreferences { get; set; } = new List<InvoicePreferenceEnum>();
+        public BillingModelType BillingModel { get; set; }
+        public List<InvoicePreferenceType> InvoicePreferences { get; set; } = new List<InvoicePreferenceType>();
     }
 }

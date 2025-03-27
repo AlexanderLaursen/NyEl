@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250325201715_InitiCreate")]
-    partial class InitiCreate
+    [Migration("20250327115623_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -98,7 +98,7 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BillingModelMethod")
+                    b.Property<int>("BillingModelType")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -107,6 +107,9 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BillingModelType")
+                        .IsUnique();
 
                     b.ToTable("BillingModels");
                 });
@@ -167,23 +170,17 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ConsumerId")
+                    b.Property<int>("ConsumerId")
                         .HasColumnType("int");
 
                     b.Property<int>("InvoiceNotificationPreferenceId")
                         .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ConsumerId");
 
                     b.HasIndex("InvoiceNotificationPreferenceId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("ConsumerInvoicePreferences");
                 });
@@ -196,7 +193,7 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ConsumerId")
+                    b.Property<int>("ConsumerId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Consumption")
@@ -205,15 +202,9 @@ namespace API.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ConsumerId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("ConsumptionReadings");
                 });
@@ -229,7 +220,7 @@ namespace API.Migrations
                     b.Property<int>("BillingModelId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ConsumerId")
+                    b.Property<int>("ConsumerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("InvoicePeriodEnd")
@@ -244,17 +235,11 @@ namespace API.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BillingModelId");
 
                     b.HasIndex("ConsumerId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Invoices");
                 });
@@ -267,7 +252,11 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("InvoiceNotificationPreference")
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("InvoicePreferenceType")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -276,6 +265,9 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InvoicePreferenceType")
+                        .IsUnique();
 
                     b.ToTable("InvoicePreferences");
                 });
@@ -453,9 +445,11 @@ namespace API.Migrations
 
             modelBuilder.Entity("Common.Models.ConsumerInvoicePreference", b =>
                 {
-                    b.HasOne("Common.Models.Consumer", null)
+                    b.HasOne("Common.Models.Consumer", "Consumer")
                         .WithMany("InvoicePreferences")
-                        .HasForeignKey("ConsumerId");
+                        .HasForeignKey("ConsumerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Common.Models.InvoicePreference", "InvoiceNotificationPreference")
                         .WithMany("ConsumerPreferences")
@@ -463,30 +457,20 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Common.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Consumer");
 
                     b.Navigation("InvoiceNotificationPreference");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Common.Models.ConsumptionReading", b =>
                 {
-                    b.HasOne("Common.Models.Consumer", null)
+                    b.HasOne("Common.Models.Consumer", "Consumer")
                         .WithMany("ConsumptionReadings")
-                        .HasForeignKey("ConsumerId");
-
-                    b.HasOne("Common.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ConsumerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Consumer");
                 });
 
             modelBuilder.Entity("Common.Models.Invoice", b =>
@@ -494,22 +478,18 @@ namespace API.Migrations
                     b.HasOne("Common.Models.BillingModel", "BillingModel")
                         .WithMany()
                         .HasForeignKey("BillingModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Common.Models.Consumer", null)
+                    b.HasOne("Common.Models.Consumer", "Consumer")
                         .WithMany("Invoices")
-                        .HasForeignKey("ConsumerId");
-
-                    b.HasOne("Common.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ConsumerId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("BillingModel");
 
-                    b.Navigation("User");
+                    b.Navigation("Consumer");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

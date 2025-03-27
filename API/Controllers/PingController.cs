@@ -18,9 +18,7 @@ namespace API.Controllers
         [HttpGet("/secure")]
         public IActionResult SecurePing()
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            return Ok(userId);
+            return Ok();
         }
     }
 }

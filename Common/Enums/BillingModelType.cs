@@ -1,6 +1,6 @@
 ﻿namespace Common.Enums
 {
-    public enum BillingModelMethod
+    public enum BillingModelType
     {
         FixedPrice,
         Hourly
