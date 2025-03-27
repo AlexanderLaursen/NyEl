@@ -5,6 +5,7 @@ using API.Repositories.Interfaces;
 using API.Services;
 using API.Services.Interfaces;
 using Common.Models;
+using Common.Models.TemplateGenerator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -49,6 +50,7 @@ builder.Services.AddScoped<IConsumerService, ConsumerService>();
 builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 
 builder.Services.AddTransient<TimeframeContext>();
+builder.Services.AddTransient<TemplateFactory>();
 
 // Build
 var app = builder.Build();
