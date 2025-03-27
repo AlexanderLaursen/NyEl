@@ -65,6 +65,20 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FixedPriceInfos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FixedPrice = table.Column<decimal>(type: "decimal(18,4)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FixedPriceInfos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "InvoicePreferences",
                 columns: table => new
                 {
@@ -283,8 +297,8 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InvoicePeriodStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    InvoicePeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BillingPeriodStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BillingPeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Paid = table.Column<bool>(type: "bit", nullable: false),
                     ConsumerId = table.Column<int>(type: "int", nullable: false),
@@ -416,6 +430,9 @@ namespace API.Migrations
 
             migrationBuilder.DropTable(
                 name: "ConsumptionReadings");
+
+            migrationBuilder.DropTable(
+                name: "FixedPriceInfos");
 
             migrationBuilder.DropTable(
                 name: "Invoices");

@@ -3,6 +3,6 @@
     public enum BillingModelType
     {
         FixedPrice,
-        Hourly
+        MarkedPrice
     }
 }

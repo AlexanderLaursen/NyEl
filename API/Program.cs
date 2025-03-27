@@ -5,6 +5,7 @@ using API.Repositories.Interfaces;
 using API.Services;
 using API.Services.Interfaces;
 using Common.Models;
+using Common.Models.CalculationStrategy;
 using Common.Models.TemplateGenerator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -44,13 +45,16 @@ builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
 builder.Services.AddScoped<IConsumerRepository, ConsumerRepository>();
 builder.Services.AddScoped<IInvoicePreferenceRepository, InvoicePreferenceRepository>();
 builder.Services.AddScoped<IPriceInfoRepository, PriceInfoRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
 builder.Services.AddScoped<IPriceInfoService, PriceInfoService>();
 builder.Services.AddScoped<IConsumerService, ConsumerService>();
 builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 builder.Services.AddTransient<TimeframeContext>();
 builder.Services.AddTransient<TemplateFactory>();
+builder.Services.AddTransient<CalculationStrategyContext>();
 
 // Build
 var app = builder.Build();

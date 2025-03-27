@@ -29,7 +29,7 @@ namespace API.Services
 
             try
             {
-                var result = await _consumptionRepository.GetConsumptionReadingsAsync(userId, timeframe);
+                var result = await _consumptionRepository.GetConsumptionAsync(userId, timeframe);
 
                 ConsumptionReadingListDto consumptionReadingListDto = new()
                 {

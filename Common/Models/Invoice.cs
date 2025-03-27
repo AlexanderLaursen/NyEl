@@ -9,10 +9,10 @@ namespace Common.Models
         public int Id { get; set; }
 
         [Required]
-        public DateTime InvoicePeriodStart { get; set; }
+        public DateTime BillingPeriodStart { get; set; }
 
         [Required]
-        public DateTime InvoicePeriodEnd { get; set; }
+        public DateTime BillingPeriodEnd { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18, 2)")]

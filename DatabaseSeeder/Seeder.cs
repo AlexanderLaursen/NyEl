@@ -186,7 +186,7 @@ namespace DatabaseSeeder
                 var billingModels = new List<BillingModel>
         {
             new BillingModel { Name = "FixedPrice", BillingModelType = BillingModelType.FixedPrice },
-            new BillingModel { Name = "Hourly", BillingModelType = BillingModelType.Hourly },
+            new BillingModel { Name = "Hourly", BillingModelType = BillingModelType.MarkedPrice },
         };
                 dbContext.BillingModels.AddRange(billingModels);
                 dbContext.SaveChanges();
@@ -220,6 +220,27 @@ namespace DatabaseSeeder
             else
             {
                 Console.WriteLine("Database already contains InvoicePreferences!");
+                Console.WriteLine("");
+            }
+        }
+
+        public void SeedFixedPrice()
+        {
+            Console.WriteLine("Checking FixedPriceInfo...");
+            if (!dbContext.FixedPriceInfos.Any())
+            {
+                Console.WriteLine("No data found in FixedPriceInfo. Adding dummy data...");
+                DateTime date = DateTime.Parse("2025-01-01T00:00:00.000Z");
+                var fixedPriceInfo = new FixedPriceInfo { Timestamp = date, FixedPrice = 3m };
+
+                dbContext.FixedPriceInfos.Add(fixedPriceInfo);
+                dbContext.SaveChanges();
+                Console.WriteLine("FixedPriceInfo data added successfully!");
+                Console.WriteLine("");
+            }
+            else
+            {
+                Console.WriteLine("Database already contains FixedPriceInfo!");
                 Console.WriteLine("");
             }
         }

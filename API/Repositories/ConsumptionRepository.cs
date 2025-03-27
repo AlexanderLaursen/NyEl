@@ -17,7 +17,7 @@ namespace API.Repositories
             _logger = logger;
         }
 
-        public async Task<IEnumerable<ConsumptionReading>> GetConsumptionReadingsAsync(int consumerId, Timeframe timeframe)
+        public async Task<List<ConsumptionReading>> GetConsumptionAsync(int consumerId, Timeframe timeframe)
         {
             try
             {

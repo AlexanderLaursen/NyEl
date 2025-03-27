@@ -38,7 +38,7 @@ namespace API.Controllers
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 int consumerId = await _consumerService.GetConsumerId(userId);
 
-                Consumer consumer = await _consumerRepository.GetConsumerByUserIdAsync(consumerId);
+                Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
 
                 if (consumer == null)
                 {
@@ -85,7 +85,7 @@ namespace API.Controllers
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 int consumerId = await _consumerService.GetConsumerId(userId);
 
-                Consumer consumer = await _consumerRepository.GetConsumerByUserIdAsync(consumerId);
+                Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
                 List<InvoicePreference> invoicePreferences = await _invoicePreferenceRepository.GetByConsumerIdAsync(consumerId);
 
                 if (consumer == null)

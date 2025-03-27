@@ -40,7 +40,7 @@ namespace API.Repositories
             }
         }
 
-        public async Task<Consumer> GetConsumerByUserIdAsync(int consumerId)
+        public async Task<Consumer> GetConsumerByConsumerIdAsync(int consumerId)
         {
             try
             {

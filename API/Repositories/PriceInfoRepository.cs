@@ -17,7 +17,20 @@ namespace API.Repositories
             _logger = logger;
         }
 
-        public async Task<IEnumerable<PriceInfo>> GetPriceInfoAsync(Timeframe timeframe)
+        public Task<FixedPriceInfo> GetFixedPriceAsync()
+        {
+            try
+            {
+                return _context.FixedPriceInfos.FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving fixed price info from the database.");
+                throw new RepositoryException("Error occurred while retrieving fixed price info from the database.", ex);
+            }
+        }
+
+        public async Task<List<PriceInfo>> GetPriceInfoAsync(Timeframe timeframe)
         {
             try
             {

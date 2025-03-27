@@ -206,6 +206,25 @@ namespace API.Migrations
                     b.ToTable("ConsumptionReadings");
                 });
 
+            modelBuilder.Entity("Common.Models.FixedPriceInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("FixedPrice")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FixedPriceInfos");
+                });
+
             modelBuilder.Entity("Common.Models.Invoice", b =>
                 {
                     b.Property<int>("Id")
@@ -217,14 +236,14 @@ namespace API.Migrations
                     b.Property<int>("BillingModelId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("BillingPeriodEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BillingPeriodStart")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("ConsumerId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("InvoicePeriodEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("InvoicePeriodStart")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Paid")
                         .HasColumnType("bit");
