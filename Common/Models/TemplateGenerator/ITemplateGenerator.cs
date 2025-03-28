@@ -2,6 +2,6 @@
 {
     public interface ITemplateGenerator
     {
-        string GenerateTemplate();
+        string GenerateTemplate(Invoice invoice, Consumer consumer);
     }
 }

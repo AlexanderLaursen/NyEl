@@ -1,11 +1,11 @@
 using API.Data;
+using API.Models.InvoiceStrategy;
 using API.Models.TimeframeStrategy;
 using API.Repositories;
 using API.Repositories.Interfaces;
 using API.Services;
 using API.Services.Interfaces;
 using Common.Models;
-using Common.Models.CalculationStrategy;
 using Common.Models.TemplateGenerator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -54,7 +54,10 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 builder.Services.AddTransient<TimeframeContext>();
 builder.Services.AddTransient<TemplateFactory>();
-builder.Services.AddTransient<CalculationStrategyContext>();
+
+builder.Services.AddTransient<FixedPriceInvoiceStrategy>();
+builder.Services.AddTransient<MarketPriceInvoiceStrategy>();
+builder.Services.AddTransient<InvoiceStrategyContext>();
 
 // Build
 var app = builder.Build();

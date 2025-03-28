@@ -7,14 +7,12 @@ namespace MVC.Models.AggregationStrategy
     {
         public AggregatedData Aggregate(List<DataPoint> data, Func<List<DataPoint>, decimal> operation)
         {
-            CultureInfo danishCulture = new CultureInfo("da-DK");
-
             var groupedData = data.GroupBy(dataPoint => dataPoint.Timestamp.Date);
             var aggregatedResults = new AggregatedData();
 
             foreach (var group in groupedData)
             {
-                string label = group.First().Timestamp.ToString("dd/MM", danishCulture);
+                string label = group.First().Timestamp.ToString("dd/MM");
 
                 List<DataPoint> dataPoints = group.ToList();
                 decimal aggregatedValue = operation(dataPoints);

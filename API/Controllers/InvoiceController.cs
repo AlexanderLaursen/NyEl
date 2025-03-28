@@ -1,5 +1,5 @@
 ﻿using API.Services.Interfaces;
-using Common.Enums;
+using Common.Dtos.Invoice;
 using Common.Exceptions;
 using Common.Models;
 using Common.Models.TemplateGenerator;
@@ -26,9 +26,9 @@ public class InvoiceController : ControllerBase
     {
         try
         {
-            Invoice invoice = await _invoiceService.GenerateInvoice(timeframe, consumerId);
+            InvoiceDto invoiceDto = await _invoiceService.GenerateInvoice(timeframe, consumerId);
 
-            return Ok(invoice);
+            return Ok(invoiceDto);
         }
         catch (UnkownUserException ex)
         {
@@ -63,10 +63,9 @@ public class InvoiceController : ControllerBase
     }
 
     [HttpGet("download")]
-    public IActionResult DownloadInvoicePdf()
+    public async Task<IActionResult> DownloadInvoicePdf(int invoiceId, int consumerId)
     {
-        var templateGenerator = _templateFactory.CreateTemplateGenerator(TemplateType.Invoice);
-        string htmlContent = templateGenerator.GenerateTemplate();
+        string htmlContent = await _invoiceService.CreatePdf(invoiceId, consumerId);
 
         byte[] pdfBytes;
         using (var memoryStream = new MemoryStream())

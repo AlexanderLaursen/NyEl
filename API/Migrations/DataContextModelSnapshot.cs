@@ -119,35 +119,42 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<int>("BillingModelId")
                         .HasColumnType("int");
 
                     b.Property<int>("CPR")
                         .HasColumnType("int");
 
+                    b.Property<string>("City")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ZipCode")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -251,6 +258,9 @@ namespace API.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18, 2)");
 
+                    b.Property<decimal>("TotalConsumption")
+                        .HasColumnType("decimal(18, 2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BillingModelId");
@@ -258,6 +268,36 @@ namespace API.Migrations
                     b.HasIndex("ConsumerId");
 
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("Common.Models.InvoicePeriodData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Consumption")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PeriodEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PeriodStart")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("InvoicePeriodDatas");
                 });
 
             modelBuilder.Entity("Common.Models.InvoicePreference", b =>
@@ -508,6 +548,17 @@ namespace API.Migrations
                     b.Navigation("Consumer");
                 });
 
+            modelBuilder.Entity("Common.Models.InvoicePeriodData", b =>
+                {
+                    b.HasOne("Common.Models.Invoice", "Invoice")
+                        .WithMany("InvoicePeriodData")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -572,6 +623,11 @@ namespace API.Migrations
                     b.Navigation("InvoicePreferences");
 
                     b.Navigation("Invoices");
+                });
+
+            modelBuilder.Entity("Common.Models.Invoice", b =>
+                {
+                    b.Navigation("InvoicePeriodData");
                 });
 
             modelBuilder.Entity("Common.Models.InvoicePreference", b =>

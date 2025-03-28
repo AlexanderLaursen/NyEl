@@ -33,7 +33,7 @@ namespace API.Services
 
                 ConsumptionReadingListDto consumptionReadingListDto = new()
                 {
-                    ConsumptionReadings = result.Adapt<IEnumerable<ConsumptionReadingDto>>(),
+                    ConsumptionReadings = result.Adapt<List<ConsumptionReadingDto>>(),
                     Timeframe = timeframe
                 };
 

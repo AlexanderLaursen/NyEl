@@ -1,8 +1,12 @@
-﻿using API.Repositories.Interfaces;
+﻿using API.Models.InvoiceStrategy;
+using API.Repositories.Interfaces;
 using API.Services.Interfaces;
+using Common.Dtos.Invoice;
+using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
-using Common.Models.CalculationStrategy;
+using Common.Models.TemplateGenerator;
+using iText.Forms.Fields.Merging;
 using Mapster;
 
 namespace API.Services
@@ -11,32 +15,31 @@ namespace API.Services
     {
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IConsumerRepository _consumerRepository;
-        private readonly IPriceInfoRepository _priceRepository;
-        private readonly IConsumptionRepository _consumptionRepository;
-        private readonly CalculationStrategyContext _calculationStrategyContext;
         private readonly ILogger<InvoiceService> _logger;
+        private readonly InvoiceStrategyContext _invoiceStrategy;
+        private readonly TemplateFactory _templateFactory;
 
         public InvoiceService(IInvoiceRepository invoiceRepository, IConsumerRepository consumerRepository,
-            IPriceInfoRepository priceRepository, IConsumptionRepository consumptionRepository, ILogger<InvoiceService> logger,
-            CalculationStrategyContext calculationStrategyContext)
+            InvoiceStrategyContext invoiceStrategy, TemplateFactory templateFactory, ILogger<InvoiceService> logger)
         {
             _invoiceRepository = invoiceRepository;
             _consumerRepository = consumerRepository;
-            _priceRepository = priceRepository;
-            _consumptionRepository = consumptionRepository;
-            _calculationStrategyContext = calculationStrategyContext;
+            _invoiceStrategy = invoiceStrategy;
+            _templateFactory = templateFactory;
             _logger = logger;
         }
 
-        public async Task<Invoice> GenerateInvoice(Timeframe timeframe, int consumerId)
+        public async Task<InvoiceDto> GenerateInvoice(Timeframe fullTimeframe, int consumerId)
         {
             try
             {
+                Timeframe timeframe = new Timeframe(fullTimeframe.Start, fullTimeframe.End.AddSeconds(-1));
+
                 bool alreadyExists = await _invoiceRepository.InvoiceExistsAsync(timeframe, consumerId);
                 if (alreadyExists)
                 {
                     _logger.LogInformation("Invoice already exists for the specified timeframe and consumer.");
-                    return default;
+                    throw new ServiceException("Invoice already exists for the specified timeframe and consumer.");
                 }
 
                 Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
@@ -46,54 +49,18 @@ namespace API.Services
                     throw new UnkownUserException("Consumer not found.");
                 }
 
-                List<PriceInfo> priceInfo = await _priceRepository.GetPriceInfoAsync(timeframe);
-                if (priceInfo == null || priceInfo.Count == 0)
+                _invoiceStrategy.SetInvoiceStrategy(consumer.BillingModel.BillingModelType);
+                Invoice invoice = await _invoiceStrategy.GenerateInvoice(timeframe, consumer);
+
+                int succesfulWrites = await _invoiceRepository.CreateInvoiceAsync(invoice, consumerId);
+
+                if (succesfulWrites == 0)
                 {
-                    _logger.LogWarning("Price info not found for the specified timeframe.");
-                    throw new ServiceException("Price info not found for the specified timeframe.");
+                    throw new ServiceException();
                 }
 
-                List<ConsumptionReading> consumptionReadings = await _consumptionRepository.GetConsumptionAsync(consumerId, timeframe);
-                if (consumptionReadings == null || consumptionReadings.Count == 0)
-                {
-                    _logger.LogWarning("Consumption readings not found for the specified timeframe.");
-                    throw new ServiceException("Consumption readings not found for the specified timeframe.");
-                }
-
-                FixedPriceInfo fixedPriceInfo = await _priceRepository.GetFixedPriceAsync();
-                if (fixedPriceInfo == null)
-                {
-                    _logger.LogWarning("Fixed price info not found.");
-                    throw new ServiceException("Fixed price info not found.");
-                }
-
-                List<DataPoint> priceDataPoints = priceInfo.Select(s => new DataPoint(s.Timestamp, s.PricePerKwh)).ToList();
-                List<DataPoint> consumptionDataPoints = consumptionReadings.Select(s => new DataPoint(s.Timestamp, s.Consumption)).ToList();
-
-                _calculationStrategyContext.SetStrategy(consumer.BillingModel.BillingModelType);
-
-                CalculationParameters calculationParameters = new()
-                {
-                    PriceDataPoints = priceDataPoints,
-                    ConsumptionDataPoints = consumptionDataPoints,
-                    FixedPrice = fixedPriceInfo.FixedPrice
-                };
-
-                decimal totalCost = _calculationStrategyContext.Calculate(calculationParameters);
-
-                Invoice invoice = new()
-                {
-                    BillingPeriodStart = timeframe.Start,
-                    BillingPeriodEnd = timeframe.End,
-                    TotalAmount = totalCost,
-                    Paid = false,
-                    BillingModelId = consumer.BillingModelId,
-                    ConsumerId = consumerId,
-                };
-
-                await _invoiceRepository.CreateInvoiceAsync(invoice, consumerId);
-
-                return invoice;
+                InvoiceDto invoiceDto = invoice.Adapt<InvoiceDto>();
+                return invoiceDto;
             }
             catch (Exception ex)
             {
@@ -115,6 +82,25 @@ namespace API.Services
         public async Task<bool> DeleteInvoice(int invoiceId)
         {
             return await _invoiceRepository.DeleteInvoiceAsync(invoiceId);
+        }
+
+        public async Task<string> CreatePdf(int invoiceId, int consumerId)
+        {
+            try
+            {
+                Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
+                Invoice invoice = await _invoiceRepository.GetInvoiceAsync(invoiceId);
+
+                var templateGenerator = _templateFactory.CreateTemplateGenerator(TemplateType.Invoice);
+                string htmlContent = templateGenerator.GenerateTemplate(invoice, consumer);
+
+                return htmlContent;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while generating PDF.");
+                throw new ServiceException("Error occurred while generating PDF.", ex);
+            }
         }
     }
 }

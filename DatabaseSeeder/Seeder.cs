@@ -146,7 +146,10 @@ namespace DatabaseSeeder
                     Email = "foo@bar.com",
                     CPR = 0101901111,
                     BillingModelId = fixedPriceBillingModel.Id,
-                    UserId = user1.Id
+                    UserId = user1.Id,
+                    Address = "Foo Street 1",
+                    City = "Bar City",
+                    ZipCode = 1234
                 },
                 new Consumer
                 {
@@ -156,7 +159,10 @@ namespace DatabaseSeeder
                     Email = "alexander@laursen.com",
                     CPR = 2007955555,
                     BillingModelId = hourlyBillingModel.Id,
-                    UserId = user2.Id
+                    UserId = user2.Id,
+                    Address = "Anders And Vej 28",
+                    City = "København",
+                    ZipCode = 2450
                 }
             };
                     dbContext.Consumers.AddRange(consumers);

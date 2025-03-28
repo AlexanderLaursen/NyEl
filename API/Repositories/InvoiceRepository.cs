@@ -23,6 +23,7 @@ namespace API.Repositories
             {
                 return await _context.Invoices
                     .Where(i => i.Id == invoiceId)
+                    .Include(i => i.InvoicePeriodData)
                     .FirstOrDefaultAsync();
             }
             catch (Exception ex)
