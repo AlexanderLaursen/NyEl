@@ -37,7 +37,7 @@ namespace MVC.Controllers
 
                 Result<List<Invoice>> result = await _invoiceService.GetInvoicesAsync(bearerToken);
 
-                if (result == null)
+                if (result == null || result.IsSuccess == false)
                 {
                     return View(new List<Invoice>());
                 }
@@ -98,6 +98,33 @@ namespace MVC.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while fetching invoice details.");
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> Download(int id)
+        {
+            try
+            {
+                string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
+                if (bearerToken == null)
+                {
+                    return RedirectToAction("Index", "Login");
+                }
+
+                Result<byte[]> result = await _invoiceService.GetPdfAsync(id, bearerToken);
+
+                if (!result.IsSuccess || result == null || result.Value == null)
+                {
+                    return RedirectToAction("Detailed", new { id });
+                }
+
+                return File(result.Value, "application/pdf", $"invoice_{id}.pdf");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while downloading invoice.");
                 return RedirectToAction("Index");
             }
         }

@@ -132,10 +132,14 @@ public class InvoicesController : ControllerBase
         }
     }
 
-    [HttpGet("download")]
-    public async Task<IActionResult> DownloadInvoicePdf(int invoiceId, int consumerId)
+    [Authorize]
+    [HttpGet("download/{id}")]
+    public async Task<IActionResult> DownloadInvoicePdf(int id)
     {
-        string htmlContent = await _invoiceService.CreatePdf(invoiceId, consumerId);
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        int consumerId = await _consumerService.GetConsumerId(userId);
+
+        string htmlContent = await _invoiceService.CreatePdf(id, consumerId);
 
         byte[] pdfBytes;
         using (var memoryStream = new MemoryStream())

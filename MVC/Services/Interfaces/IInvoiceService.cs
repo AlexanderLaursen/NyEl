@@ -7,5 +7,6 @@ namespace MVC.Services.Interfaces
     {
         public Task<Result<List<Invoice>>> GetInvoicesAsync(string bearerToken);
         public Task<Result<InvoiceDto>> GetInvoiceByIdAsync(int id, string bearerToken);
+        public Task<Result<byte[]>> GetPdfAsync(int id, string bearerToken);
     }
 }
