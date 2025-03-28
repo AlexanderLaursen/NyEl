@@ -1,0 +1,96 @@
+﻿@model DetailedInvoiceViewModel
+
+@{
+    ViewData["Title"] = $"Faktura #{Model.InvoiceId}";
+}
+
+<div class="container mt-5">
+    <div class="bg-light p-4 border rounded">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <h1>Faktura</h1>
+                <p class="lead">Faktura #@Model.InvoiceId</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h2 class="h4 mb-3">Kundeinformation</h2>
+                <div class="mb-2">
+                    <span class="font-weight-bold">Navn:</span> @Model.FirstName @Model.LastName
+                </div>
+                <div class="mb-2">
+                    <span class="font-weight-bold">Adresse:</span> @Model.Address
+                </div>
+                <div class="mb-2">
+                    <span class="font-weight-bold">By:</span> @Model.City, @Model.ZipCode
+                </div>
+                <div class="mb-2">
+                    <span class="font-weight-bold">Telefonnummer:</span> @Model.PhoneNumber
+                </div>
+                <div class="mb-2">
+                    <span class="font-weight-bold">E-mail:</span> @Model.Email
+                </div>
+                <div class="mb-2">
+                    <span class="font-weight-bold">CPR-nummer:</span> @Model.CPR
+                </div>
+                <div class="mb-2">
+                    <span class="font-weight-bold">Kundenummer:</span> @Model.ConsumerId
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h2 class="h4 mb-3">Fakturaoplysninger</h2>
+                <div class="mb-2">
+                    <span class="font-weight-bold">Faktureringsperiode:</span> @Model.BillingPeriodStart.ToString("dd/MM-yyyy") - @Model.BillingPeriodEnd.ToString("dd/MM-yyyy")
+                </div>
+                <div class="mb-2">
+                    <span class="font-weight-bold">Total forbrug:</span> @Model.TotalConsumption kWh
+                </div>
+                <div class="mb-2">
+                    <span class="font-weight-bold">Betalt:</span> <span class="@(Model.PaidStatus == "Ja" ? "text-success" : "text-danger")">@Model.PaidStatus</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h2 class="h4 mb-3">Periodedata</h2>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Periode Start</th>
+                        <th>Periode Slut</th>
+                        <th>Forbrug</th>
+                        <th>Beløb (DKK)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PeriodData != null && Model.PeriodData.Any())
+                    {
+                        @foreach (var period in Model.PeriodData)
+                        {
+                            <tr>
+                                <td>@period.PeriodStart.ToString("dd/MM-yyyy")</td>
+                                <td>@period.PeriodEnd.ToString("dd/MM-yyyy")</td>
+                                <td>@period.Consumption</td>
+                                <td>@period.Cost</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="4" class="text-center">Ingen periodedata fundet.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-right mt-3">
+            <h4 class="font-weight-bold">Total Beløb (DKK): @Model.TotalAmount</h4>
+        </div>
+
+        <div class="mt-4 text-muted small">
+            <p>Prisdata er hentet fra <a href="https://stromligning.dk/api/" target="_blank">https://stromligning.dk/api/</a>. Forbrugsdata er autogenereret.</p>
+        </div>
+    </div>
+</div>

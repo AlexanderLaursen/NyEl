@@ -46,15 +46,18 @@ namespace API.Controllers
                     return NotFound();
                 }
 
-                ConsumerDto consumerDto = new()
+                ConsumerDtoFull consumerDto = new()
                 {
                     FirstName = consumer.FirstName,
                     LastName = consumer.LastName,
                     PhoneNumber = consumer.PhoneNumber,
                     Email = consumer.Email,
+                    Address = consumer.Address,
+                    City = consumer.City,
+                    ZipCode = consumer.ZipCode,
                     CPR = consumer.CPR,
-                    UserId = consumer.UserId,
-                    BillingModel = consumer.BillingModel.BillingModelType
+                    Id = consumer.Id,
+                    BillingModel = consumer.BillingModel.BillingModelType,
                 };
 
                 return Ok(consumerDto);

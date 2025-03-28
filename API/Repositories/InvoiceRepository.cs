@@ -104,5 +104,10 @@ namespace API.Repositories
                 throw new RepositoryException("Error occurred while deleting invoice from the database.", ex);
             }
         }
+
+        public async Task<List<Invoice>> GetInvoicesByIdAsync(int consumerId)
+        {
+            return await _context.Invoices.Where(i => i.ConsumerId == consumerId).ToListAsync();
+        }
     }
 }

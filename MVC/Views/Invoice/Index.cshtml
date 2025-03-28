@@ -1,0 +1,52 @@
+﻿@using Common.Models
+@model List<Invoice>
+
+@{
+    ViewData["Title"] = "Fakturaoversigt";
+}
+
+
+
+<div class="container mt-5">
+    <h1>@ViewData["Title"]</h1>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Startdato</th>
+                <th>Slutdato</th>
+                <th>Beløb (DKK)</th>
+                <th>Forbrug</th>
+                <th>Betalt</th>
+                <th>Betalingsmodel</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invoice in Model)
+            {
+                <tr style="cursor: pointer;" onclick="window.location='@Url.Action("Details", "Invoice", new { id = invoice.Id })'">
+                    <td>@invoice.BillingPeriodStart.ToShortDateString()</td>
+                    <td>@invoice.BillingPeriodEnd.ToShortDateString()</td>
+                    <td>@invoice.TotalAmount.ToString("N2")</td>
+                    <td>@invoice.TotalConsumption.ToString("N2")</td>
+                    <td>@(invoice.Paid ? "Ja" : "Nej")</td>
+                    <td>@invoice.BillingModel?.Name</td>
+                    <td><a href="@Url.Action("Details", "Invoice", new { id = invoice.Id })" class="btn btn-sm btn-outline-primary">Detaljer</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@* @section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('tbody tr').click(function(event) {
+                if ($(event.target).is('a') || $(event.target).is('button')) {
+                    event.stopPropagation();
+                }
+            });
+        });
+    </script>
+} *@

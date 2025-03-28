@@ -6,7 +6,6 @@ using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
 using Common.Models.TemplateGenerator;
-using iText.Forms.Fields.Merging;
 using Mapster;
 
 namespace API.Services
@@ -101,6 +100,11 @@ namespace API.Services
                 _logger.LogError(ex, "Error occurred while generating PDF.");
                 throw new ServiceException("Error occurred while generating PDF.", ex);
             }
+        }
+
+        public Task<List<Invoice>> GetInvoicesByIdAsync(int consumerId)
+        {
+            return _invoiceRepository.GetInvoicesByIdAsync(consumerId);
         }
     }
 }
