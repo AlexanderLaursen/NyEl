@@ -1,6 +1,9 @@
 using Api.Models;
 using API.Data;
+using API.HostedServices;
+using API.Models;
 using API.Models.InvoiceStrategy;
+using API.Models.NotificationStrategy;
 using API.Models.TimeframeStrategy;
 using API.Repositories;
 using API.Repositories.Interfaces;
@@ -52,7 +55,6 @@ builder.Services.AddScoped<IPriceInfoService, PriceInfoService>();
 builder.Services.AddScoped<IConsumerService, ConsumerService>();
 builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddTransient<TimeframeContext>();
 builder.Services.AddTransient<TemplateFactory>();
@@ -61,9 +63,19 @@ builder.Services.AddTransient<FixedPriceInvoiceStrategy>();
 builder.Services.AddTransient<MarketPriceInvoiceStrategy>();
 builder.Services.AddTransient<InvoiceStrategyContext>();
 
+builder.Services.AddTransient<EmailNotificationStrategy>();
+builder.Services.AddTransient<SmsNotificationStrategy>();
+builder.Services.AddTransient<EboksNotificationStrategy>();
+builder.Services.AddTransient<PostalNotificationStrategy>();
+
+builder.Services.AddScoped<INotificationStrategyFactory, NotificationStrategyFactory>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
 builder.Services.AddSingleton<IPdfGenerationQueue, PdfGenerationQueue>();
 builder.Services.AddSingleton<IPdfGeneratedNotifier, PdfGeneratedNotifier>();
+
 builder.Services.AddHostedService<PdfGenerationService>();
+builder.Services.AddHostedService<EventSubscriptionService>();
 
 // Build
 var app = builder.Build();

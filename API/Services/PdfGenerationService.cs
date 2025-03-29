@@ -41,9 +41,12 @@ namespace API.Services
                 {
                     try
                     {
-                        
+                        string htmlContent = CreateInvoiceHtml(job.Invoice, job.Consumer);
+                        Pdf pdf = GeneratePdf(htmlContent);
 
+                        PdfGeneratedEventArgs eventArgs = new PdfGeneratedEventArgs(job.Invoice.Id, job.Consumer, pdf);
 
+                        _pdfGeneratedNotifier.OnPdfGenerated(this, eventArgs);
                     }
                     catch (OperationCanceledException)
                     {
@@ -58,14 +61,6 @@ namespace API.Services
                 }
                 else
                 {
-                    byte[] bytes = new byte[1];
-                    Consumer consumer = new();
-                    Pdf pdf = new(bytes);
-
-                    PdfGeneratedEventArgs eventArgs = new(0, consumer, pdf);
-
-                    _logger.LogInformation("reached?");
-                    _pdfGeneratedNotifier?.OnPdfGenerated(this, eventArgs);
                     await Task.Delay(delay, stoppingToken);
                 }
 

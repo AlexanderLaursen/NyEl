@@ -22,7 +22,7 @@ namespace API.Services
 
         public InvoiceService(IInvoiceRepository invoiceRepository, IConsumerRepository consumerRepository,
             InvoiceStrategyContext invoiceStrategy, IPdfGenerationQueue pdfGenerationQueue,
-            TemplateFactory templateFactory, IPdfGeneratedNotifier pdfReadyNotifier,
+            TemplateFactory templateFactory,
             ILogger<InvoiceService> logger)
         {
             _invoiceRepository = invoiceRepository;
@@ -31,9 +31,6 @@ namespace API.Services
             _templateFactory = templateFactory;
             _logger = logger;
             _pdfGenerationQueue = pdfGenerationQueue;
-
-            pdfReadyNotifier.PdfGenerated += HandlePdfGenerated;
-            _logger.LogInformation("Subscribed");
         }
 
         public async Task<Invoice> GenerateInvoice(Timeframe fullTimeframe, int consumerId)
@@ -133,11 +130,11 @@ namespace API.Services
             await _invoiceRepository.UploadInvoicePdf(invoicePdf);
         }
 
-        public void HandlePdfGenerated(object? sender, PdfGeneratedEventArgs e)
+        public async Task HandlePdfGenerated(object? sender, PdfGeneratedEventArgs e)
         {
-            _logger.LogInformation("test");
+            _logger.LogInformation("Hej fra invoice");
 
-            //UploadInvoicePdf(e.InvoiceId, e.Pdf);
+            //await UploadInvoicePdf(e.InvoiceId, e.Pdf);
         }
     }
 }

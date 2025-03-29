@@ -4,9 +4,18 @@ namespace API.Models.NotificationStrategy
 {
     public class EmailNotificationStrategy : INotificationStrategy
     {
-        public void SendNotification(Consumer consumer, Pdf pdf)
+        private readonly ILogger<EmailNotificationStrategy> _logger;
+
+        public EmailNotificationStrategy(ILogger<EmailNotificationStrategy> logger)
         {
-            throw new NotImplementedException();
+            _logger = logger;
+        }
+
+        public async Task SendNotification(Consumer consumer, Pdf pdf)
+        {
+            _logger.LogInformation($"Simulate email notification sent to consumer with id: {consumer.Id}. Included pdf");
+
+            await Task.CompletedTask;
         }
     }
 }

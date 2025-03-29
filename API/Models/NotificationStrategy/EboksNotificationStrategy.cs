@@ -4,9 +4,18 @@ namespace API.Models.NotificationStrategy
 {
     public class EboksNotificationStrategy : INotificationStrategy
     {
-        public void SendNotification(Consumer consumer, Pdf pdf)
+        private readonly ILogger<EboksNotificationStrategy> _logger;
+
+        public EboksNotificationStrategy(ILogger<EboksNotificationStrategy> logger)
         {
-            throw new NotImplementedException();
+            _logger = logger;
+        }
+
+        public async Task SendNotification(Consumer consumer, Pdf pdf)
+        {
+            _logger.LogInformation($"Simulate e-boks notification sent to consumer with id: {consumer.Id}. Included pdf");
+
+            await Task.CompletedTask;
         }
     }
 }
