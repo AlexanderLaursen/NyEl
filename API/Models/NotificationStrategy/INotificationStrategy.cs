@@ -4,6 +4,6 @@ namespace API.Models.NotificationStrategy
 {
     public interface INotificationStrategy
     {
-        public void SendNotification(Consumer consumer, Pdf pdf);
+        public Task SendNotification(Consumer consumer, Pdf? pdf);
     }
 }

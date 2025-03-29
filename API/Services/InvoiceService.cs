@@ -22,7 +22,7 @@ namespace API.Services
 
         public InvoiceService(IInvoiceRepository invoiceRepository, IConsumerRepository consumerRepository,
             InvoiceStrategyContext invoiceStrategy, IPdfGenerationQueue pdfGenerationQueue,
-            TemplateFactory templateFactory, IPdfGeneratedNotifier pdfReadyNotifier,
+            TemplateFactory templateFactory,
             ILogger<InvoiceService> logger)
         {
             _invoiceRepository = invoiceRepository;
@@ -31,9 +31,6 @@ namespace API.Services
             _templateFactory = templateFactory;
             _logger = logger;
             _pdfGenerationQueue = pdfGenerationQueue;
-
-            pdfReadyNotifier.PdfGenerated += HandlePdfGenerated;
-            _logger.LogInformation("Subscribed");
         }
 
         public async Task<Invoice> GenerateInvoice(Timeframe fullTimeframe, int consumerId)
@@ -122,22 +119,41 @@ namespace API.Services
             }
         }
 
+        public async Task<Pdf> GetPdfAsync(int consumerId, int invoiceId)
+        {
+            Invoice invoice = await _invoiceRepository.GetInvoiceAsync(invoiceId);
+
+            if (invoice == null)
+            {
+                throw new ArgumentException("Invoice not found.");
+            }
+
+            if (invoice.ConsumerId != consumerId)
+            {
+                throw new UnauthorizedAccessException("User is not authorized to view this pdf");
+            }
+
+            InvoicePdf invoicePdf = await _invoiceRepository.GetPdfAsync(invoiceId);
+
+            Pdf pdf = new Pdf(invoicePdf.Content);
+
+            return pdf;
+        }
+
         public async Task UploadInvoicePdf(int invoiceId, Pdf pdf)
         {
             InvoicePdf invoicePdf = new InvoicePdf
             {
-                Id = invoiceId,
+                InvoiceId = invoiceId,
                 Content = pdf.File,
             };
 
             await _invoiceRepository.UploadInvoicePdf(invoicePdf);
         }
 
-        public void HandlePdfGenerated(object? sender, PdfGeneratedEventArgs e)
+        public async Task HandlePdfGenerated(object? sender, PdfGeneratedEventArgs e)
         {
-            _logger.LogInformation("test");
-
-            //UploadInvoicePdf(e.InvoiceId, e.Pdf);
+            await UploadInvoicePdf(e.InvoiceId, e.Pdf);
         }
     }
 }
