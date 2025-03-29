@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class IntialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -62,6 +62,20 @@ namespace API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BillingModels", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FixedPriceInfos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FixedPrice = table.Column<decimal>(type: "decimal(18,4)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FixedPriceInfos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -205,10 +219,13 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    City = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    ZipCode = table.Column<int>(type: "int", nullable: false),
                     CPR = table.Column<int>(type: "int", nullable: false),
                     BillingModelId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
@@ -283,9 +300,10 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InvoicePeriodStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    InvoicePeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BillingPeriodStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BillingPeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalConsumption = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Paid = table.Column<bool>(type: "bit", nullable: false),
                     ConsumerId = table.Column<int>(type: "int", nullable: false),
                     BillingModelId = table.Column<int>(type: "int", nullable: false)
@@ -303,6 +321,29 @@ namespace API.Migrations
                         column: x => x.ConsumerId,
                         principalTable: "Consumers",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InvoicePeriodDatas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Consumption = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PeriodStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    InvoiceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoicePeriodDatas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InvoicePeriodDatas_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -377,6 +418,11 @@ namespace API.Migrations
                 column: "ConsumerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InvoicePeriodDatas_InvoiceId",
+                table: "InvoicePeriodDatas",
+                column: "InvoiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InvoicePreferences_InvoicePreferenceType",
                 table: "InvoicePreferences",
                 column: "InvoicePreferenceType",
@@ -418,7 +464,10 @@ namespace API.Migrations
                 name: "ConsumptionReadings");
 
             migrationBuilder.DropTable(
-                name: "Invoices");
+                name: "FixedPriceInfos");
+
+            migrationBuilder.DropTable(
+                name: "InvoicePeriodDatas");
 
             migrationBuilder.DropTable(
                 name: "PriceInfos");
@@ -428,6 +477,9 @@ namespace API.Migrations
 
             migrationBuilder.DropTable(
                 name: "InvoicePreferences");
+
+            migrationBuilder.DropTable(
+                name: "Invoices");
 
             migrationBuilder.DropTable(
                 name: "Consumers");

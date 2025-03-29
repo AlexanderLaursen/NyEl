@@ -8,23 +8,29 @@ namespace Common.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
         [MaxLength(255)]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
-        [Required]
         [MaxLength(255)]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         [MaxLength(8)]
         [DataType(DataType.PhoneNumber)]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [MaxLength(255)]
         [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
-        [Required]
+        [MaxLength(255)]
+        public string? Address { get; set; }
+
+        [MaxLength(255)]
+        public string? City { get; set; }
+
+        [Range(1000, 9999)]
+        public int ZipCode { get; set; }
+
         [Range(0100000000, 9999999999)]
         public int CPR { get; set; }
 

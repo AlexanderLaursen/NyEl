@@ -40,12 +40,20 @@ namespace API.Repositories
             }
         }
 
-        public async Task<Consumer> GetConsumerByUserIdAsync(int consumerId)
+        public async Task<Consumer> GetConsumerByConsumerIdAsync(int consumerId)
         {
             try
             {
-                return await _context.Consumers.Include(c => c.BillingModel)
+                var consumer = await _context.Consumers.Include(c => c.BillingModel)
+                    .Include(c => c.InvoicePreferences).ThenInclude(cip => cip.InvoiceNotificationPreference)
                     .FirstOrDefaultAsync(c => c.Id == consumerId);
+
+                if (consumer == null)
+                {
+                    throw new Exception("Not found.");
+                }
+
+                return consumer;
             }
             catch (Exception ex)
             {

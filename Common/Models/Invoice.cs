@@ -9,14 +9,18 @@ namespace Common.Models
         public int Id { get; set; }
 
         [Required]
-        public DateTime InvoicePeriodStart { get; set; }
+        public DateTime BillingPeriodStart { get; set; }
 
         [Required]
-        public DateTime InvoicePeriodEnd { get; set; }
+        public DateTime BillingPeriodEnd { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalAmount { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal TotalConsumption { get; set; }
 
         public bool Paid { get; set; }
 
@@ -31,5 +35,7 @@ namespace Common.Models
         public BillingModel BillingModel { get; set; }
 
         public Consumer Consumer { get; set; }
+
+        public List<InvoicePeriodData> InvoicePeriodData { get; set; }
     }
 }

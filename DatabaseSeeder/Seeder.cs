@@ -146,7 +146,10 @@ namespace DatabaseSeeder
                     Email = "foo@bar.com",
                     CPR = 0101901111,
                     BillingModelId = fixedPriceBillingModel.Id,
-                    UserId = user1.Id
+                    UserId = user1.Id,
+                    Address = "Foo Street 1",
+                    City = "Bar City",
+                    ZipCode = 1234
                 },
                 new Consumer
                 {
@@ -156,7 +159,10 @@ namespace DatabaseSeeder
                     Email = "alexander@laursen.com",
                     CPR = 2007955555,
                     BillingModelId = hourlyBillingModel.Id,
-                    UserId = user2.Id
+                    UserId = user2.Id,
+                    Address = "Anders And Vej 28",
+                    City = "København",
+                    ZipCode = 2450
                 }
             };
                     dbContext.Consumers.AddRange(consumers);
@@ -186,7 +192,7 @@ namespace DatabaseSeeder
                 var billingModels = new List<BillingModel>
         {
             new BillingModel { Name = "FixedPrice", BillingModelType = BillingModelType.FixedPrice },
-            new BillingModel { Name = "Hourly", BillingModelType = BillingModelType.Hourly },
+            new BillingModel { Name = "MarkedPrice", BillingModelType = BillingModelType.MarkedPrice },
         };
                 dbContext.BillingModels.AddRange(billingModels);
                 dbContext.SaveChanges();
@@ -220,6 +226,27 @@ namespace DatabaseSeeder
             else
             {
                 Console.WriteLine("Database already contains InvoicePreferences!");
+                Console.WriteLine("");
+            }
+        }
+
+        public void SeedFixedPrice()
+        {
+            Console.WriteLine("Checking FixedPriceInfo...");
+            if (!dbContext.FixedPriceInfos.Any())
+            {
+                Console.WriteLine("No data found in FixedPriceInfo. Adding dummy data...");
+                DateTime date = DateTime.Parse("2025-01-01T00:00:00.000Z");
+                var fixedPriceInfo = new FixedPriceInfo { Timestamp = date, FixedPrice = 3m };
+
+                dbContext.FixedPriceInfos.Add(fixedPriceInfo);
+                dbContext.SaveChanges();
+                Console.WriteLine("FixedPriceInfo data added successfully!");
+                Console.WriteLine("");
+            }
+            else
+            {
+                Console.WriteLine("Database already contains FixedPriceInfo!");
                 Console.WriteLine("");
             }
         }

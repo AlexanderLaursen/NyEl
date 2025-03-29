@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/MVC.styles.css" asp-append-version="true" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
@@ -39,7 +40,7 @@
 							   asp-action="Index">Abbonement</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Home"
+							<a class="nav-link text-dark" asp-area="" asp-controller="Invoice"
 							   asp-action="Index">Faktura</a>
 						</li>
 					</ul>
@@ -64,10 +65,16 @@
 			@RenderBody()
 		</main>
 	</div>
-
 	<footer class="border-top footer text-muted">
-		<div class="container">
-			&copy; 2025 - MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+		<div class="container d-flex justify-content-center">
+			<div class="text-muted small">
+				<p>
+					&copy; Alexander Laursen  - 
+					Prisdata er hentet fra
+					<a href="https://stromligning.dk/api/docs/" target="_blank">https://stromligning.dk/api/docs/</a> - 
+					Forbrugsdata er autogenereret
+				</p>
+			</div>
 		</div>
 	</footer>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -245,6 +245,39 @@ namespace MVC.Services
             }
         }
 
+        public async Task<Result<byte[]>> GetPdfAsync(string url, string? bearerToken = default)
+        {
+            string fullUrl = $"{_apiBaseUrl}{url}";
+            try
+            {
+                if (!string.IsNullOrEmpty(bearerToken))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+                }
+
+                HttpResponseMessage response = await _httpClient.GetAsync(fullUrl);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApiResponseException($"Failed to retrieve the requested data from the API with status code {response.StatusCode}", response.StatusCode);
+                }
+
+                byte[] result = await response.Content.ReadAsByteArrayAsync();
+
+                return Result<byte[]>.Success(result);
+            }
+            catch (ApiResponseException ex)
+            {
+                _logger.LogError(ex.Message);
+                return HandleError<byte[]>(ex.StatusCode);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unkown error occured while fetching from API.");
+                return Result<byte[]>.Failure();
+            }
+        }
+
         public Result<T> HandleError<T>(HttpStatusCode statusCode)
         {
             switch (statusCode)

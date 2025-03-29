@@ -4,6 +4,6 @@ namespace API.Repositories.Interfaces
 {
     public interface IConsumptionRepository
     {
-        Task<IEnumerable<ConsumptionReading>> GetConsumptionReadingsAsync(int userId, Timeframe timeframe);
+        Task<List<ConsumptionReading>> GetConsumptionAsync(int consumerId, Timeframe timeframe);
     }
 }

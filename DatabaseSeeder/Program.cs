@@ -31,15 +31,11 @@ seeder.RegisterUser("foo@bar.com", "String!1", BASE_URL);
 seeder.RegisterUser("alexander@laursen.com", "String!1", BASE_URL);
 
 seeder.BillingModel();
-
 seeder.InvoicePreference();
-
 seeder.Consumer();
-
 seeder.ConsumerInvoicePreference();
-
+seeder.SeedFixedPrice();
 seeder.SeedPriceInfoFromjson(PRICE_DATA);
-
 seeder.SeedConsumptionReadingsFromFiles(CONSUMPTION_FILE_1, CONSUMPTION_FILE_2);
 
 // TODO seed invoices

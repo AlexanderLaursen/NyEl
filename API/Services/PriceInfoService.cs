@@ -20,6 +20,11 @@ namespace API.Services
             _timeframeContext = timeframeContext;
         }
 
+        public Task<FixedPriceInfo> GetFixedPriceAsync()
+        {
+            return _priceInfoRepository.GetFixedPriceAsync();
+        }
+
         public async Task<IEnumerable<PriceInfo>> GetPriceInfoAsync(DateTime startDate, TimeframeOptions timeframeOptions)
         {
             _timeframeContext.SetStrategy(timeframeOptions);

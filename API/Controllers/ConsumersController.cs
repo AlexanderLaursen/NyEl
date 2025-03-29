@@ -38,7 +38,7 @@ namespace API.Controllers
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 int consumerId = await _consumerService.GetConsumerId(userId);
 
-                Consumer consumer = await _consumerRepository.GetConsumerByUserIdAsync(consumerId);
+                Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
 
                 if (consumer == null)
                 {
@@ -46,15 +46,18 @@ namespace API.Controllers
                     return NotFound();
                 }
 
-                ConsumerDto consumerDto = new()
+                ConsumerDtoFull consumerDto = new()
                 {
                     FirstName = consumer.FirstName,
                     LastName = consumer.LastName,
                     PhoneNumber = consumer.PhoneNumber,
                     Email = consumer.Email,
+                    Address = consumer.Address,
+                    City = consumer.City,
+                    ZipCode = consumer.ZipCode,
                     CPR = consumer.CPR,
-                    UserId = consumer.UserId,
-                    BillingModel = consumer.BillingModel.BillingModelType
+                    Id = consumer.Id,
+                    BillingModel = consumer.BillingModel.BillingModelType,
                 };
 
                 return Ok(consumerDto);
@@ -85,7 +88,7 @@ namespace API.Controllers
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 int consumerId = await _consumerService.GetConsumerId(userId);
 
-                Consumer consumer = await _consumerRepository.GetConsumerByUserIdAsync(consumerId);
+                Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
                 List<InvoicePreference> invoicePreferences = await _invoicePreferenceRepository.GetByConsumerIdAsync(consumerId);
 
                 if (consumer == null)

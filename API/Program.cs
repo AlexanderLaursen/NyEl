@@ -1,10 +1,13 @@
+using Api.Models;
 using API.Data;
+using API.Models.InvoiceStrategy;
 using API.Models.TimeframeStrategy;
 using API.Repositories;
 using API.Repositories.Interfaces;
 using API.Services;
 using API.Services.Interfaces;
 using Common.Models;
+using Common.Models.TemplateGenerator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -43,12 +46,24 @@ builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
 builder.Services.AddScoped<IConsumerRepository, ConsumerRepository>();
 builder.Services.AddScoped<IInvoicePreferenceRepository, InvoicePreferenceRepository>();
 builder.Services.AddScoped<IPriceInfoRepository, PriceInfoRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
 builder.Services.AddScoped<IPriceInfoService, PriceInfoService>();
 builder.Services.AddScoped<IConsumerService, ConsumerService>();
 builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddTransient<TimeframeContext>();
+builder.Services.AddTransient<TemplateFactory>();
+
+builder.Services.AddTransient<FixedPriceInvoiceStrategy>();
+builder.Services.AddTransient<MarketPriceInvoiceStrategy>();
+builder.Services.AddTransient<InvoiceStrategyContext>();
+
+builder.Services.AddSingleton<IPdfGenerationQueue, PdfGenerationQueue>();
+builder.Services.AddSingleton<IPdfGeneratedNotifier, PdfGeneratedNotifier>();
+builder.Services.AddHostedService<PdfGenerationService>();
 
 // Build
 var app = builder.Build();

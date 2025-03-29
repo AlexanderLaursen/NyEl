@@ -4,6 +4,7 @@
     {
         Sms,
         Email,
-        Eboks
+        Eboks,
+        Postal
     }
 }
