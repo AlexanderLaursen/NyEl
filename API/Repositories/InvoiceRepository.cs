@@ -139,5 +139,18 @@ namespace API.Repositories
                 throw new RepositoryException("Error occurred while uploading invoice PDF to the database.", ex);
             }
         }
+
+        public async Task<InvoicePdf> GetPdfAsync(int invoiceId)
+        {
+            try
+            {
+                return await _context.InvoicePdfs.FirstOrDefaultAsync(pdf => pdf.InvoiceId == invoiceId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving pdf from the database.");
+                throw new RepositoryException("Error occurred while retrieving pdf from the database.", ex);
+            }
+        }
     }
 }

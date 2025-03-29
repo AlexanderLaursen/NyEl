@@ -119,11 +119,32 @@ namespace API.Services
             }
         }
 
+        public async Task<Pdf> GetPdfAsync(int consumerId, int invoiceId)
+        {
+            Invoice invoice = await _invoiceRepository.GetInvoiceAsync(invoiceId);
+
+            if (invoice == null)
+            {
+                throw new ArgumentException("Invoice not found.");
+            }
+
+            if (invoice.ConsumerId != consumerId)
+            {
+                throw new UnauthorizedAccessException("User is not authorized to view this pdf");
+            }
+
+            InvoicePdf invoicePdf = await _invoiceRepository.GetPdfAsync(invoiceId);
+
+            Pdf pdf = new Pdf(invoicePdf.Content);
+
+            return pdf;
+        }
+
         public async Task UploadInvoicePdf(int invoiceId, Pdf pdf)
         {
             InvoicePdf invoicePdf = new InvoicePdf
             {
-                Id = invoiceId,
+                InvoiceId = invoiceId,
                 Content = pdf.File,
             };
 
@@ -132,9 +153,7 @@ namespace API.Services
 
         public async Task HandlePdfGenerated(object? sender, PdfGeneratedEventArgs e)
         {
-            _logger.LogInformation("Hej fra invoice");
-
-            //await UploadInvoicePdf(e.InvoiceId, e.Pdf);
+            await UploadInvoicePdf(e.InvoiceId, e.Pdf);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace API.Repositories.Interfaces
         public Task<bool> InvoiceExistsAsync(Timeframe timeframe, int consumerId);
         public Task<Invoice> CreateInvoiceAsync(Invoice invoice, int consumerId);
         public Task<bool> DeleteInvoiceAsync(int invoiceId);
-
+        public Task<InvoicePdf> GetPdfAsync(int invoiceId);
         public Task<int> UploadInvoicePdf(InvoicePdf pdf);
     }
 }

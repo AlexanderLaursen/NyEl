@@ -18,8 +18,8 @@ namespace Common.Models.TemplateGenerator
                 <tr>
                     <td>{period.PeriodStart.ToString("dd/MM-yyyy")}</td>
                     <td>{period.PeriodEnd.ToString("dd/MM-yyyy")}</td>
-                    <td>{period.Consumption}</td>
-                    <td>kr {period.Cost}</td>
+                    <td>{period.Consumption.ToString("N2")}</td>
+                    <td>kr {period.Cost.ToString("N2")}</td>
                 </tr>";
                 }
             }
@@ -120,7 +120,7 @@ namespace Common.Models.TemplateGenerator
                 <label>Faktureringsperiode: {invoice.BillingPeriodStart.ToString("dd/MM-yyyy")} - {invoice.BillingPeriodEnd.ToString("dd/MM-yyyy")}</label> 
             </div>
             <div class=""info-line"">
-                <label>Total forbrug:</label> {invoice.TotalConsumption} kWh
+                <label>Total forbrug:</label> {invoice.TotalConsumption.ToString("N2")} kWh
             </div>
             <div class=""info-line"">
                 <label>Betalingsmodel:</label> {billingMethodDisplay}
@@ -148,7 +148,7 @@ namespace Common.Models.TemplateGenerator
         </div>
 
         <div class=""total-amount"">
-            <label>Total Beløb:</label> kr {invoice.TotalAmount}
+            <label>Total Beløb:</label> kr {invoice.TotalAmount.ToString("N2")}
         </div>
 
         <div style=""margin-top: 20px; font-size: small;"">

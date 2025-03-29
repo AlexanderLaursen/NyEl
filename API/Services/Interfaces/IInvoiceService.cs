@@ -14,5 +14,6 @@ namespace API.Services.Interfaces
         public Task<string> CreateInvoiceHtml(int invoiceId, int consumerId);
         public Task UploadInvoicePdf(int invoiceId, Pdf pdf);
         public Task HandlePdfGenerated(object? sender, PdfGeneratedEventArgs e);
+        public Task<Pdf> GetPdfAsync(int consumerId, int invoiceId);
     }
 }

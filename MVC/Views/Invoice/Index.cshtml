@@ -35,7 +35,6 @@
 					<td>@(invoice.BillingModel?.BillingModelType == BillingModelType.FixedPrice ? "Fast pris" : "Variabel pris")</td>
 					<td>
 						<div class="d-flex justify-content-end">
-							<a href="@Url.Action("Payment", "Invoice", new { id = invoice.Id })" class="btn btn-sm btn-success me-2">Betal</a>
 							<form asp-controller="Invoice" asp-action="Download" method="post" class="me-2">
 								<input type="hidden" name="id" value="@invoice.Id" />
 								<button type="submit" class="btn btn-primary btn-sm">

@@ -140,16 +140,18 @@ public class InvoicesController : ControllerBase
         string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         int consumerId = await _consumerService.GetConsumerId(userId);
 
-        string htmlContent = await _invoiceService.CreateInvoiceHtml(id, consumerId);
+        Pdf pdf = await _invoiceService.GetPdfAsync(consumerId, id);
 
-        byte[] pdfBytes;
-        using (var memoryStream = new MemoryStream())
-        {
-            HtmlConverter.ConvertToPdf(htmlContent, memoryStream);
-            pdfBytes = memoryStream.ToArray();
-        }
+        //string htmlContent = await _invoiceService.CreateInvoiceHtml(id, consumerId);
 
-        return File(pdfBytes, "application/pdf", "invoice.pdf");
+        //byte[] pdfBytes;
+        //using (var memoryStream = new MemoryStream())
+        //{
+        //    HtmlConverter.ConvertToPdf(htmlContent, memoryStream);
+        //    pdfBytes = memoryStream.ToArray();
+        //}
+
+        return File(pdf.File, "application/pdf", "faktura.pdf");
     }
 
     [HttpDelete("{id:int}")]
