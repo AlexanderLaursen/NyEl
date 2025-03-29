@@ -1,4 +1,5 @@
-﻿using Common.Models;
+﻿using Common.Enums;
+using Common.Models;
 
 namespace MVC.Models.ViewModels
 {
@@ -21,5 +22,6 @@ namespace MVC.Models.ViewModels
         public string Email { get; set; }
         public string CPR { get; set; }
         public string PaidStatus { get; set; }
+        public BillingModelType BillingModelType { get; set; }
     }
 }

@@ -15,6 +15,7 @@ namespace API.Data
         public DbSet<PriceInfo> PriceInfos { get; set; }
         public DbSet<FixedPriceInfo> FixedPriceInfos { get; set; }
         public DbSet<InvoicePeriodData> InvoicePeriodDatas { get; set; }
+        public DbSet<InvoicePdf> InvoicePdfs { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

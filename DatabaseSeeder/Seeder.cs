@@ -192,7 +192,7 @@ namespace DatabaseSeeder
                 var billingModels = new List<BillingModel>
         {
             new BillingModel { Name = "FixedPrice", BillingModelType = BillingModelType.FixedPrice },
-            new BillingModel { Name = "Hourly", BillingModelType = BillingModelType.MarkedPrice },
+            new BillingModel { Name = "MarkedPrice", BillingModelType = BillingModelType.MarkedPrice },
         };
                 dbContext.BillingModels.AddRange(billingModels);
                 dbContext.SaveChanges();

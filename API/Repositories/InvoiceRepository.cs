@@ -24,6 +24,7 @@ namespace API.Repositories
                 return await _context.Invoices
                     .Where(i => i.Id == invoiceId)
                     .Include(i => i.InvoicePeriodData)
+                    .Include(i => i.BillingModel)
                     .FirstOrDefaultAsync();
             }
             catch (Exception ex)
@@ -67,12 +68,19 @@ namespace API.Repositories
             }
         }
 
-        public async Task<int> CreateInvoiceAsync(Invoice invoice, int consumerId)
+        public async Task<Invoice> CreateInvoiceAsync(Invoice invoice, int consumerId)
         {
             try
             {
                 _context.Invoices.Add(invoice);
-                return await _context.SaveChangesAsync();
+                int changes = await _context.SaveChangesAsync();
+
+                if (changes == 0)
+                {
+                    return null;
+                }
+
+                return invoice;
             }
             catch (Exception ex)
             {
@@ -107,7 +115,29 @@ namespace API.Repositories
 
         public async Task<List<Invoice>> GetInvoicesByIdAsync(int consumerId)
         {
-            return await _context.Invoices.Where(i => i.ConsumerId == consumerId).ToListAsync();
+            return await _context.Invoices.Where(i => i.ConsumerId == consumerId).Include(i => i.BillingModel).ToListAsync();
+        }
+
+        public async Task<int> UploadInvoicePdf(InvoicePdf pdf)
+        {
+            try
+            {
+                _context.InvoicePdfs.Add(pdf);
+
+                int changes = await _context.SaveChangesAsync();
+
+                if (changes == 0)
+                {
+                    _logger.LogWarning($"Pdf did not upload succesful. InvoiceId: {pdf.InvoiceId}");
+                }
+
+                return changes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while uploading invoice PDF to the database.");
+                throw new RepositoryException("Error occurred while uploading invoice PDF to the database.", ex);
+            }
         }
     }
 }

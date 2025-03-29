@@ -8,9 +8,16 @@ namespace API.Controllers
     [Route("/ping")]
     public class PingController : ControllerBase
     {
+        private readonly ILogger<PingController> _logger;
+        public PingController(ILogger<PingController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet]
         public IActionResult Index()
         {
+            _logger.LogInformation("Ping...");
             return Ok();
         }
 
@@ -18,6 +25,7 @@ namespace API.Controllers
         [HttpGet("/secure")]
         public IActionResult SecurePing()
         {
+            _logger.LogInformation("Secure ping...");
             return Ok();
         }
     }

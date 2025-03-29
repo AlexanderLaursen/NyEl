@@ -1,5 +1,6 @@
 ﻿using Common.Dtos.Consumer;
 using Common.Dtos.Invoice;
+using Common.Enums;
 using Common.Models;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
@@ -91,6 +92,7 @@ namespace MVC.Controllers
                     Email = consumer.Email,
                     CPR = consumer.CPR.ToString(),
                     PaidStatus = invoiceDto.Paid ? "Ja" : "Nej",
+                    BillingModelType = invoiceDto.BillingModel == null ? BillingModelType.FixedPrice : invoiceDto.BillingModel.BillingModelType
                 };
 
                 return View(viewModel);

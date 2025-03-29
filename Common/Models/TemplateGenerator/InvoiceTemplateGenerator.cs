@@ -1,4 +1,6 @@
-﻿namespace Common.Models.TemplateGenerator
+﻿using Common.Enums;
+
+namespace Common.Models.TemplateGenerator
 {
     public class InvoiceTemplateGenerator : ITemplateGenerator
     {
@@ -17,10 +19,12 @@
                     <td>{period.PeriodStart.ToString("dd/MM-yyyy")}</td>
                     <td>{period.PeriodEnd.ToString("dd/MM-yyyy")}</td>
                     <td>{period.Consumption}</td>
-                    <td>{period.Cost}</td>
+                    <td>kr {period.Cost}</td>
                 </tr>";
                 }
             }
+
+            string billingMethodDisplay = invoice.BillingModel?.BillingModelType == BillingModelType.FixedPrice ? "Fast pris" : "Variabel pris";
 
             return $@"
         <!DOCTYPE html>
@@ -119,6 +123,9 @@
                 <label>Total forbrug:</label> {invoice.TotalConsumption} kWh
             </div>
             <div class=""info-line"">
+                <label>Betalingsmodel:</label> {billingMethodDisplay}
+            </div>
+            <div class=""info-line"">
                 <label>Betalt:</label> {Paid}
             </div>
         </div>
@@ -131,7 +138,7 @@
                         <th>Periode Start</th>
                         <th>Periode Slut</th>
                         <th>Forbrug</th>
-                        <th>Beløb (DKK)</th>
+                        <th>Beløb</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -141,11 +148,11 @@
         </div>
 
         <div class=""total-amount"">
-            <label>Total Beløb (DKK):</label> {invoice.TotalAmount}
+            <label>Total Beløb:</label> kr {invoice.TotalAmount}
         </div>
 
         <div style=""margin-top: 20px; font-size: small;"">
-            <p>Prisdata er hentet fra https://stromligning.dk/api/. Forbrugsdata er autogeneret.</p>
+            <p>Prisdata er hentet fra https://stromligning.dk/api/docs/. Forbrugsdata er autogeneret.</p>
         </div>
     </div>
 </div>

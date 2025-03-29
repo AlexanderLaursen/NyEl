@@ -6,12 +6,13 @@ namespace API.Services.Interfaces
 {
     public interface IInvoiceService
     {
-        public Task<InvoiceDto> GenerateInvoice(Timeframe timeframe, int consumerId);
+        public Task<Invoice> GenerateInvoice(Timeframe timeframe, int consumerId);
         public Task<Invoice> GetInvoiceAsync(int invoiceId);
         public Task<List<Invoice>> GetInvoicesByIdAsync(int consumerId);
         public Task<List<Invoice>> GetInvoiceListAsync(Timeframe timeframe, int consumerId);
         public Task<bool> DeleteInvoice (int invoiceId);
-
-        public Task<string> CreatePdf(int invoiceId, int consumerId);
+        public Task<string> CreateInvoiceHtml(int invoiceId, int consumerId);
+        public Task UploadInvoicePdf(int invoiceId, Pdf pdf);
+        public void HandlePdfGenerated(object sender, PdfGeneratedEventArgs e);
     }
 }

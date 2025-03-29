@@ -1,8 +1,6 @@
 ﻿using API.Repositories.Interfaces;
 using Common.Dtos.Login;
-using Common.Dtos.User;
 using Common.Models;
-using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

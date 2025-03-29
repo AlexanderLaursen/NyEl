@@ -1,4 +1,5 @@
-﻿using API.Models.InvoiceStrategy;
+﻿using Api.Models;
+using API.Models.InvoiceStrategy;
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Common.Dtos.Invoice;
@@ -17,18 +18,25 @@ namespace API.Services
         private readonly ILogger<InvoiceService> _logger;
         private readonly InvoiceStrategyContext _invoiceStrategy;
         private readonly TemplateFactory _templateFactory;
+        private readonly IPdfGenerationQueue _pdfGenerationQueue;
 
         public InvoiceService(IInvoiceRepository invoiceRepository, IConsumerRepository consumerRepository,
-            InvoiceStrategyContext invoiceStrategy, TemplateFactory templateFactory, ILogger<InvoiceService> logger)
+            InvoiceStrategyContext invoiceStrategy, IPdfGenerationQueue pdfGenerationQueue,
+            TemplateFactory templateFactory, IPdfGeneratedNotifier pdfReadyNotifier,
+            ILogger<InvoiceService> logger)
         {
             _invoiceRepository = invoiceRepository;
             _consumerRepository = consumerRepository;
             _invoiceStrategy = invoiceStrategy;
             _templateFactory = templateFactory;
             _logger = logger;
+            _pdfGenerationQueue = pdfGenerationQueue;
+
+            pdfReadyNotifier.PdfGenerated += HandlePdfGenerated;
+            _logger.LogInformation("Subscribed");
         }
 
-        public async Task<InvoiceDto> GenerateInvoice(Timeframe fullTimeframe, int consumerId)
+        public async Task<Invoice> GenerateInvoice(Timeframe fullTimeframe, int consumerId)
         {
             try
             {
@@ -49,17 +57,24 @@ namespace API.Services
                 }
 
                 _invoiceStrategy.SetInvoiceStrategy(consumer.BillingModel.BillingModelType);
-                Invoice invoice = await _invoiceStrategy.GenerateInvoice(timeframe, consumer);
+                Invoice generatedInvoice = await _invoiceStrategy.GenerateInvoice(timeframe, consumer);
 
-                int succesfulWrites = await _invoiceRepository.CreateInvoiceAsync(invoice, consumerId);
+                Invoice invoice = await _invoiceRepository.CreateInvoiceAsync(generatedInvoice, consumerId);
 
-                if (succesfulWrites == 0)
+                if (invoice == null)
                 {
                     throw new ServiceException();
                 }
 
-                InvoiceDto invoiceDto = invoice.Adapt<InvoiceDto>();
-                return invoiceDto;
+                PdfGenerationJob job = new PdfGenerationJob
+                {
+                    Invoice = invoice,
+                    Consumer = consumer
+                };
+
+                _pdfGenerationQueue.AddJob(job);
+
+                return invoice;
             }
             catch (Exception ex)
             {
@@ -83,14 +98,19 @@ namespace API.Services
             return await _invoiceRepository.DeleteInvoiceAsync(invoiceId);
         }
 
-        public async Task<string> CreatePdf(int invoiceId, int consumerId)
+        public Task<List<Invoice>> GetInvoicesByIdAsync(int consumerId)
+        {
+            return _invoiceRepository.GetInvoicesByIdAsync(consumerId);
+        }
+
+        public async Task<string> CreateInvoiceHtml(int invoiceId, int consumerId)
         {
             try
             {
                 Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
                 Invoice invoice = await _invoiceRepository.GetInvoiceAsync(invoiceId);
 
-                var templateGenerator = _templateFactory.CreateTemplateGenerator(TemplateType.Invoice);
+                ITemplateGenerator templateGenerator = _templateFactory.CreateTemplateGenerator(TemplateType.Invoice);
                 string htmlContent = templateGenerator.GenerateTemplate(invoice, consumer);
 
                 return htmlContent;
@@ -102,9 +122,22 @@ namespace API.Services
             }
         }
 
-        public Task<List<Invoice>> GetInvoicesByIdAsync(int consumerId)
+        public async Task UploadInvoicePdf(int invoiceId, Pdf pdf)
         {
-            return _invoiceRepository.GetInvoicesByIdAsync(consumerId);
+            InvoicePdf invoicePdf = new InvoicePdf
+            {
+                Id = invoiceId,
+                Content = pdf.File,
+            };
+
+            await _invoiceRepository.UploadInvoicePdf(invoicePdf);
+        }
+
+        public void HandlePdfGenerated(object? sender, PdfGeneratedEventArgs e)
+        {
+            _logger.LogInformation("test");
+
+            //UploadInvoicePdf(e.InvoiceId, e.Pdf);
         }
     }
 }

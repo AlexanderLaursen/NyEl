@@ -1,10 +1,12 @@
 ﻿using System.Security.Claims;
+using API.Services;
 using API.Services.Interfaces;
 using Common.Dtos.Invoice;
 using Common.Exceptions;
 using Common.Models;
 using Common.Models.TemplateGenerator;
 using iText.Html2pdf;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,15 +14,13 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/v1/invoices")]
 public class InvoicesController : ControllerBase
 {
-    private readonly TemplateFactory _templateFactory;
     private readonly ILogger<InvoicesController> _logger;
     private readonly IInvoiceService _invoiceService;
     private readonly IConsumerService _consumerService;
 
-    public InvoicesController(TemplateFactory templateFactory, ILogger<InvoicesController> logger, IInvoiceService invoiceService,
+    public InvoicesController(ILogger<InvoicesController> logger, IInvoiceService invoiceService,
         IConsumerService consumerService)
     {
-        _templateFactory = templateFactory;
         _logger = logger;
         _invoiceService = invoiceService;
         _consumerService = consumerService;
@@ -96,7 +96,8 @@ public class InvoicesController : ControllerBase
     {
         try
         {
-            InvoiceDto invoiceDto = await _invoiceService.GenerateInvoice(timeframe, consumerId);
+            Invoice invoice = await _invoiceService.GenerateInvoice(timeframe, consumerId);
+            InvoiceDto invoiceDto = invoice.Adapt<InvoiceDto>();
 
             return Ok(invoiceDto);
         }
@@ -139,7 +140,7 @@ public class InvoicesController : ControllerBase
         string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         int consumerId = await _consumerService.GetConsumerId(userId);
 
-        string htmlContent = await _invoiceService.CreatePdf(id, consumerId);
+        string htmlContent = await _invoiceService.CreateInvoiceHtml(id, consumerId);
 
         byte[] pdfBytes;
         using (var memoryStream = new MemoryStream())
