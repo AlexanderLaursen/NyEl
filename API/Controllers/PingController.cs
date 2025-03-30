@@ -28,5 +28,13 @@ namespace API.Controllers
             _logger.LogInformation("Secure ping...");
             return Ok();
         }
+
+        [Authorize(Roles="Admins")]
+        [HttpGet("/admin")]
+        public IActionResult AdminPing()
+        {
+            _logger.LogInformation("Admin ping...");
+            return Ok();
+        }
     }
 }

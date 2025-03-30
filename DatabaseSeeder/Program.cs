@@ -29,6 +29,7 @@ while (!connectionEstablished)
 
 seeder.RegisterUser("foo@bar.com", "String!1", BASE_URL);
 seeder.RegisterUser("alexander@laursen.com", "String!1", BASE_URL);
+seeder.RegisterUser("admin@admin.com", "String!1", BASE_URL);
 seeder.SeedAdminRoleAndUserAsync();
 
 seeder.BillingModel();

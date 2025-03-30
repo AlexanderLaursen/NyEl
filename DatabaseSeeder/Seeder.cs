@@ -58,7 +58,6 @@ namespace DatabaseSeeder
 
             var adminRoleName = "Admins";
             var adminEmail = "admin@admin.com";
-            var adminPassword = "String!1";
 
             // Create the "Admins" role if it doesn't exist
             var adminRole = dbContext.Roles.FirstOrDefault(r => r.Name == adminRoleName);
@@ -70,19 +69,10 @@ namespace DatabaseSeeder
                 Console.WriteLine("Admin role created successfully!");
             }
 
-            // Check if the admin user exists
+            // Find the admin user
             var adminUser = dbContext.Users.FirstOrDefault(u => u.Email == adminEmail);
-            if (adminUser == null)
-            {
-                adminUser = new AppUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
-                PasswordHasher<AppUser> passwordHasher = new PasswordHasher<AppUser>();
-                adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, adminPassword);
-                dbContext.Users.Add(adminUser);
-                dbContext.SaveChanges();
-                Console.WriteLine($"Admin user '{adminEmail}' created successfully!");
-            }
 
-            // Assign the admin user to the "Admins" role if not already assigned
+            // Assign the admin user to the "Admins" role if the user exists and is not already assigned
             if (adminUser != null && adminRole != null)
             {
                 var userRole = dbContext.UserRoles
@@ -98,6 +88,10 @@ namespace DatabaseSeeder
                 {
                     Console.WriteLine($"Admin user '{adminEmail}' is already in the '{adminRoleName}' role.");
                 }
+            }
+            else if (adminUser == null)
+            {
+                Console.WriteLine($"Admin user with email '{adminEmail}' not found. Ensure the user is created before calling this method.");
             }
 
             Console.WriteLine("Admin Role and User seeding completed.");

@@ -15,6 +15,7 @@ builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IConsumerService, ConsumerService>();
+builder.Services.AddScoped<IPriceInfoService, PriceInfoService>();
 
 builder.Services.AddTransient<AggregationContext>();
 

@@ -37,7 +37,7 @@ namespace API.Services
 
             while (!stoppingToken.IsCancellationRequested)
             {
-               if (_queue.TryTakeJob(out PdfGenerationJob job))
+                if (_queue.TryTakeJob(out PdfGenerationJob job))
                 {
                     try
                     {

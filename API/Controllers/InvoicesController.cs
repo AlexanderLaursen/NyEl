@@ -19,7 +19,6 @@ namespace API.Controllers
     {
         private readonly ILogger<InvoicesController> _logger;
         private readonly IInvoiceService _invoiceService;
-        private readonly IConsumerService _consumerService;
 
         public InvoicesController(
             ILogger<InvoicesController> logger,
@@ -29,7 +28,6 @@ namespace API.Controllers
         {
             _logger = logger;
             _invoiceService = invoiceService;
-            _consumerService = consumerService;
         }
 
         [Authorize]
@@ -43,6 +41,10 @@ namespace API.Controllers
                 List<Invoice> invoices = await _invoiceService.GetInvoicesByIdAsync(consumerId);
 
                 return Ok(invoices);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
             catch (Exception ex)
             {
@@ -88,51 +90,13 @@ namespace API.Controllers
 
                 return Ok(invoiceDto);
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while fetching invoice.");
-                return StatusCode(500);
-            }
-        }
-
-        [HttpPost("generate")]
-        public async Task<IActionResult> GenerateInvoice(Timeframe timeframe, int consumerId)
-        {
-            try
-            {
-                Invoice invoice = await _invoiceService.GenerateInvoice(timeframe, consumerId);
-                InvoiceDto invoiceDto = invoice.Adapt<InvoiceDto>();
-
-                return Ok(invoiceDto);
-            }
-            catch (UnkownUserException ex)
-            {
-                _logger.LogWarning(ex, $"User not found.");
-                return Unauthorized();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while generating invoice PDF.");
-                return StatusCode(500);
-            }
-        }
-
-        [HttpPost("generate/all")]
-        public async Task<IActionResult> GenerateAllInvoices()
-        {
-            try
-            {
-
-                return Ok();
-            }
-            catch (UnkownUserException ex)
-            {
-                _logger.LogWarning(ex, $"User not found.");
-                return Unauthorized();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while generating invoice PDF.");
                 return StatusCode(500);
             }
         }
@@ -141,27 +105,17 @@ namespace API.Controllers
         [HttpGet("download/{id}")]
         public async Task<IActionResult> DownloadInvoicePdf(int id)
         {
-            int consumerId = await GetConsumerId();
-
-            Pdf pdf = await _invoiceService.GetPdfAsync(consumerId, id);
-
-            return File(pdf.File, "application/pdf", "faktura.pdf");
-        }
-
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteInvoice(int id)
-        {
             try
             {
-                bool isDeleted = await _invoiceService.DeleteInvoice(id);
-                if (isDeleted)
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return NotFound();
-                }
+                int consumerId = await GetConsumerId();
+
+                Pdf pdf = await _invoiceService.GetPdfAsync(consumerId, id);
+
+                return File(pdf.File, "application/pdf", "faktura.pdf");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
             catch (Exception ex)
             {
@@ -169,5 +123,6 @@ namespace API.Controllers
                 return StatusCode(500);
             }
         }
+
     }
 }
