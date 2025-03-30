@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using API.Controllers;
 using API.Services;
 using API.Services.Interfaces;
 using Common.Dtos.Invoice;
@@ -10,169 +11,163 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("api/v1/invoices")]
-public class InvoicesController : ControllerBase
+namespace API.Controllers
 {
-    private readonly ILogger<InvoicesController> _logger;
-    private readonly IInvoiceService _invoiceService;
-    private readonly IConsumerService _consumerService;
-
-    public InvoicesController(ILogger<InvoicesController> logger, IInvoiceService invoiceService,
-        IConsumerService consumerService)
+    [ApiController]
+    [Route("api/v1/invoices")]
+    public class InvoicesController : BaseController
     {
-        _logger = logger;
-        _invoiceService = invoiceService;
-        _consumerService = consumerService;
-    }
+        private readonly ILogger<InvoicesController> _logger;
+        private readonly IInvoiceService _invoiceService;
+        private readonly IConsumerService _consumerService;
 
-    [Authorize]
-    [HttpGet()]
-    public async Task<IActionResult> GetInvoices()
-    {
-        try
+        public InvoicesController(
+            ILogger<InvoicesController> logger,
+            IInvoiceService invoiceService,
+            IConsumerService consumerService)
+            : base(consumerService)
         {
-            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int consumerId = await _consumerService.GetConsumerId(userId);
-
-            List<Invoice> invoices = await _invoiceService.GetInvoicesByIdAsync(consumerId);
-
-            return Ok(invoices);
+            _logger = logger;
+            _invoiceService = invoiceService;
+            _consumerService = consumerService;
         }
-        catch (Exception ex)
+
+        [Authorize]
+        [HttpGet()]
+        public async Task<IActionResult> GetInvoices()
         {
-            _logger.LogError(ex, "An error occurred while fetching invoices.");
-            return StatusCode(500);
-        }
-    }
-
-    [Authorize]
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetInvoice(int id)
-    {
-        try
-        {
-            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int consumerId = await _consumerService.GetConsumerId(userId);
-
-            Invoice invoice = await _invoiceService.GetInvoiceAsync(id);
-
-            if (invoice.ConsumerId != consumerId)
+            try
             {
+                int consumerId = await GetConsumerId();
+
+                List<Invoice> invoices = await _invoiceService.GetInvoicesByIdAsync(consumerId);
+
+                return Ok(invoices);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching invoices.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetInvoice(int id)
+        {
+            try
+            {
+                int consumerId = await GetConsumerId();
+
+                Invoice invoice = await _invoiceService.GetInvoiceAsync(id);
+
+                if (invoice.ConsumerId != consumerId)
+                {
+                    return Unauthorized();
+                }
+
+                InvoiceDto invoiceDto = new()
+                {
+                    Id = invoice.Id,
+                    BillingPeriodStart = invoice.BillingPeriodStart,
+                    BillingPeriodEnd = invoice.BillingPeriodEnd,
+                    TotalAmount = invoice.TotalAmount,
+                    TotalConsumption = invoice.TotalConsumption,
+                    Paid = invoice.Paid,
+                    ConsumerId = invoice.ConsumerId,
+                    BillingModel = invoice.BillingModel,
+                    InvoicePeriodData = invoice.InvoicePeriodData.Select(pd => new InvoicePeriodDto
+                    {
+                        Consumption = pd.Consumption,
+                        Cost = pd.Cost,
+                        PeriodStart = pd.PeriodStart,
+                        PeriodEnd = pd.PeriodEnd,
+                        InvoiceId = pd.InvoiceId
+                    }).ToList()
+                };
+
+                return Ok(invoiceDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching invoice.");
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost("generate")]
+        public async Task<IActionResult> GenerateInvoice(Timeframe timeframe, int consumerId)
+        {
+            try
+            {
+                Invoice invoice = await _invoiceService.GenerateInvoice(timeframe, consumerId);
+                InvoiceDto invoiceDto = invoice.Adapt<InvoiceDto>();
+
+                return Ok(invoiceDto);
+            }
+            catch (UnkownUserException ex)
+            {
+                _logger.LogWarning(ex, $"User not found.");
                 return Unauthorized();
             }
-
-            InvoiceDto invoiceDto = new()
+            catch (Exception ex)
             {
-                Id = invoice.Id,
-                BillingPeriodStart = invoice.BillingPeriodStart,
-                BillingPeriodEnd = invoice.BillingPeriodEnd,
-                TotalAmount = invoice.TotalAmount,
-                TotalConsumption = invoice.TotalConsumption,
-                Paid = invoice.Paid,
-                ConsumerId = invoice.ConsumerId,
-                BillingModel = invoice.BillingModel,
-                InvoicePeriodData = invoice.InvoicePeriodData.Select(pd => new InvoicePeriodDto
-                {
-                    Consumption = pd.Consumption,
-                    Cost = pd.Cost,
-                    PeriodStart = pd.PeriodStart,
-                    PeriodEnd = pd.PeriodEnd,
-                    InvoiceId = pd.InvoiceId
-                }).ToList()
-            };
-
-            return Ok(invoiceDto);
+                _logger.LogError(ex, "An error occurred while generating invoice PDF.");
+                return StatusCode(500);
+            }
         }
-        catch (Exception ex)
+
+        [HttpPost("generate/all")]
+        public async Task<IActionResult> GenerateAllInvoices()
         {
-            _logger.LogError(ex, "An error occurred while fetching invoice.");
-            return StatusCode(500);
-        }
-    }
-
-    [HttpPost("generate")]
-    public async Task<IActionResult> GenerateInvoice(Timeframe timeframe, int consumerId)
-    {
-        try
-        {
-            Invoice invoice = await _invoiceService.GenerateInvoice(timeframe, consumerId);
-            InvoiceDto invoiceDto = invoice.Adapt<InvoiceDto>();
-
-            return Ok(invoiceDto);
-        }
-        catch (UnkownUserException ex)
-        {
-            _logger.LogWarning(ex, $"User not found.");
-            return Unauthorized();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while generating invoice PDF.");
-            return StatusCode(500);
-        }
-    }
-
-    [HttpPost("generate/all")]
-    public async Task<IActionResult> GenerateAllInvoices()
-    {
-        try
-        {
-
-            return Ok();
-        }
-        catch (UnkownUserException ex)
-        {
-            _logger.LogWarning(ex, $"User not found.");
-            return Unauthorized();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while generating invoice PDF.");
-            return StatusCode(500);
-        }
-    }
-
-    [Authorize]
-    [HttpGet("download/{id}")]
-    public async Task<IActionResult> DownloadInvoicePdf(int id)
-    {
-        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        int consumerId = await _consumerService.GetConsumerId(userId);
-
-        Pdf pdf = await _invoiceService.GetPdfAsync(consumerId, id);
-
-        //string htmlContent = await _invoiceService.CreateInvoiceHtml(id, consumerId);
-
-        //byte[] pdfBytes;
-        //using (var memoryStream = new MemoryStream())
-        //{
-        //    HtmlConverter.ConvertToPdf(htmlContent, memoryStream);
-        //    pdfBytes = memoryStream.ToArray();
-        //}
-
-        return File(pdf.File, "application/pdf", "faktura.pdf");
-    }
-
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteInvoice(int id)
-    {
-        try
-        {
-            bool isDeleted = await _invoiceService.DeleteInvoice(id);
-            if (isDeleted)
+            try
             {
+
                 return Ok();
             }
-            else
+            catch (UnkownUserException ex)
             {
-                return NotFound();
+                _logger.LogWarning(ex, $"User not found.");
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while generating invoice PDF.");
+                return StatusCode(500);
             }
         }
-        catch (Exception ex)
+
+        [Authorize]
+        [HttpGet("download/{id}")]
+        public async Task<IActionResult> DownloadInvoicePdf(int id)
         {
-            _logger.LogError(ex, "An error occurred while deleting invoice.");
-            return StatusCode(500);
+            int consumerId = await GetConsumerId();
+
+            Pdf pdf = await _invoiceService.GetPdfAsync(consumerId, id);
+
+            return File(pdf.File, "application/pdf", "faktura.pdf");
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteInvoice(int id)
+        {
+            try
+            {
+                bool isDeleted = await _invoiceService.DeleteInvoice(id);
+                if (isDeleted)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting invoice.");
+                return StatusCode(500);
+            }
         }
     }
 }

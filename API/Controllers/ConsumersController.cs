@@ -13,54 +13,63 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/v1/consumers")]
-    public class ConsumersController : ControllerBase
+    public class ConsumersController : BaseController
     {
-        private readonly IConsumerRepository _consumerRepository;
         private readonly IConsumerService _consumerService;
+        private readonly IConsumerRepository _consumerRepository;
         private readonly IInvoicePreferenceRepository _invoicePreferenceRepository;
         private readonly ILogger<ConsumersController> _logger;
 
-        public ConsumersController(IConsumerRepository consumerRepository, ILogger<ConsumersController> logger,
-            IInvoicePreferenceRepository invoicePreferenceRepository, IConsumerService consumerService)
+        public ConsumersController(
+            IConsumerService consumerService,
+            IConsumerRepository consumerRepository,
+            IInvoicePreferenceRepository invoicePreferenceRepository,
+            ILogger<ConsumersController> logger)
+            : base(consumerService)
         {
-            _consumerRepository = consumerRepository;
-            _logger = logger;
-            _invoicePreferenceRepository = invoicePreferenceRepository;
             _consumerService = consumerService;
+            _consumerRepository = consumerRepository;
+            _invoicePreferenceRepository = invoicePreferenceRepository;
+            _logger = logger;
         }
 
         [Authorize]
         [HttpGet()]
-        public async Task<IActionResult> GetByUserClaims()
+        public async Task<IActionResult> GetConsumerByClaims()
         {
             try
             {
-                string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                int consumerId = await _consumerService.GetConsumerId(userId);
+                int consumerId = await GetConsumerId();
 
                 Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
+                List<InvoicePreference> invoicePreferences = await _invoicePreferenceRepository.GetByConsumerIdAsync(consumerId);
 
                 if (consumer == null)
                 {
-                    _logger.LogWarning($"Consumer with ID {userId} not found.");
+                    _logger.LogWarning($"Consumer with ID {consumerId} not found.");
                     return NotFound();
                 }
 
                 ConsumerDtoFull consumerDto = new()
                 {
-                    FirstName = consumer.FirstName,
-                    LastName = consumer.LastName,
-                    PhoneNumber = consumer.PhoneNumber,
-                    Email = consumer.Email,
-                    Address = consumer.Address,
-                    City = consumer.City,
+                    FirstName = consumer.FirstName ?? "",
+                    LastName = consumer.LastName ?? "",
+                    PhoneNumber = consumer.PhoneNumber ?? "",
+                    Email = consumer.Email ?? "",
+                    Address = consumer.Address ?? "",
+                    City = consumer.City ?? "",
                     ZipCode = consumer.ZipCode,
                     CPR = consumer.CPR,
                     Id = consumer.Id,
                     BillingModel = consumer.BillingModel.BillingModelType,
+                    InvoicePreferences = invoicePreferences.Select(ip => ip.InvoicePreferenceType).ToList()
                 };
 
                 return Ok(consumerDto);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
             catch (UnkownUserException ex)
             {
@@ -75,55 +84,6 @@ namespace API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Unexpected error retrieving Consumer.");
-                return StatusCode(500, "An unexpected error occurred.");
-            }
-        }
-
-        [Authorize]
-        [HttpGet("full")]
-        public async Task<IActionResult> GetByUserClaimsFull()
-        {
-            try
-            {
-                string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                int consumerId = await _consumerService.GetConsumerId(userId);
-
-                Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
-                List<InvoicePreference> invoicePreferences = await _invoicePreferenceRepository.GetByConsumerIdAsync(consumerId);
-
-                if (consumer == null)
-                {
-                    _logger.LogWarning($"Consumer with ID {userId} not found.");
-                    return NotFound();
-                }
-
-                ConsumerDtoFull consumerDto = new()
-                {
-                    Id = consumer.Id,
-                    FirstName = consumer.FirstName,
-                    LastName = consumer.LastName,
-                    PhoneNumber = consumer.PhoneNumber,
-                    Email = consumer.Email,
-                    CPR = consumer.CPR,
-                    BillingModel = consumer.BillingModel.BillingModelType,
-                    InvoicePreferences = invoicePreferences.Select(ip => ip.InvoicePreferenceType).ToList()
-                };
-
-                return Ok(consumerDto);
-            }
-            catch (UnkownUserException ex)
-            {
-                _logger.LogWarning(ex, $"User not found.");
-                return Unauthorized();
-            }
-            catch (RepositoryException ex)
-            {
-                _logger.LogError(ex, $"Error retrieving Consumer with");
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Unexpected error retrieving Consumer with");
                 return StatusCode(500, "An unexpected error occurred.");
             }
         }
@@ -166,9 +126,7 @@ namespace API.Controllers
         {
             try
             {
-                string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                int consumerId = await _consumerService.GetConsumerId(userId);
-
+                int consumerId = await GetConsumerId();
                 int result = await _consumerRepository.UpdateBillingModelAsync(billingModelDto.BillingModelType, consumerId);
 
                 if (result == 0)
@@ -179,7 +137,11 @@ namespace API.Controllers
 
                 return NoContent();
             }
-            catch(UnkownUserException ex)
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (UnkownUserException ex)
             {
                 _logger.LogWarning(ex, $"User not found.");
                 return Unauthorized();

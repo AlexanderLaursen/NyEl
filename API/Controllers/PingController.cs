@@ -6,7 +6,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("/ping")]
-    public class PingController : ControllerBase
+    public class PingController : Controller
     {
         private readonly ILogger<PingController> _logger;
         public PingController(ILogger<PingController> logger)

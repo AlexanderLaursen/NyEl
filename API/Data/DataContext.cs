@@ -1,4 +1,5 @@
 ﻿using Common.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,27 +22,27 @@ namespace API.Data
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<Invoice>()
+            builder.Entity<Invoice>()
                 .HasOne(i => i.Consumer)
                 .WithMany(c => c.Invoices)
                 .HasForeignKey(i => i.ConsumerId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Invoice>()
+            builder.Entity<Invoice>()
                 .HasOne(i => i.BillingModel)
                 .WithMany()
                 .HasForeignKey(i => i.BillingModelId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<BillingModel>()
+            builder.Entity<BillingModel>()
                 .HasIndex(b => b.BillingModelType)
                 .IsUnique();
 
-            modelBuilder.Entity<InvoicePreference>()
+            builder.Entity<InvoicePreference>()
                 .HasIndex(ip => ip.InvoicePreferenceType)
                 .IsUnique();
         }

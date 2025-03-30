@@ -33,5 +33,37 @@ namespace API.Repositories
                 throw new RepositoryException("Error occurred while retrieving consumption readings from the database.", ex);
             }
         }
+
+        public async Task<int> AddAsync(ConsumptionReading consumptionReading)
+        {
+            try
+            {
+                _context.ConsumptionReadings.Add(consumptionReading);
+                int changes = await _context.SaveChangesAsync();
+
+                return changes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding consumption readings to the database.");
+                throw new RepositoryException("Error occurred while adding consumption readings to the database.", ex);
+            }
+        }
+
+        public async Task<int> AddRangeAsync(List<ConsumptionReading> consumptionReading)
+        {
+            try
+            {
+                _context.ConsumptionReadings.AddRange(consumptionReading);
+                int changes = await _context.SaveChangesAsync();
+
+                return changes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding consumption readings to the database.");
+                throw new RepositoryException("Error occurred while adding consumption readings to the database.", ex);
+            }
+        }
     }
 }

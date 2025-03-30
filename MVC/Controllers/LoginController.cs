@@ -11,12 +11,10 @@ namespace MVC.Controllers
     public class LoginController : Controller
     {
         private readonly IAuthService _authService;
-        private readonly IUserService _userService;
 
-        public LoginController(IAuthService authService, IUserService userService)
+        public LoginController(IAuthService authService)
         {
             _authService = authService;
-            _userService = userService;
         }
 
         [HttpGet()]

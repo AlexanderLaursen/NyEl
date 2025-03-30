@@ -11,7 +11,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/v1/price-info")]
-    public class PriceInfoController : ControllerBase
+    public class PriceInfoController : Controller
     {
         private readonly ICommonRepository<PriceInfo> _commonRepository;
         private readonly IPriceInfoService _priceInfoService;

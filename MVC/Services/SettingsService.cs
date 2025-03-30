@@ -9,7 +9,7 @@ namespace MVC.Services
 {
     public class SettingsService : CommonApiService, ISettingsService
     {
-        const string CONSUMER_FULL = "/consumers/full";
+        const string CONSUMER = "/consumers";
         const string CONSUMER_BILLING = "/consumers/update-billing";
         const string INVOICE_PREFERENCES = "/invoice-preferences";
 
@@ -19,7 +19,7 @@ namespace MVC.Services
 
         public async Task<Result<ConsumerDtoFull>> GetSettingsAsync(string bearerToken)
         {
-            return await GetAsync<ConsumerDtoFull>(CONSUMER_FULL, bearerToken);
+            return await GetAsync<ConsumerDtoFull>(CONSUMER, bearerToken);
         }
 
         public async Task<Result<bool>> UpdateSettingsAsync(InvoicePreferenceListDto invoicePreferenceListDto, BillingModelDto billingMethod, string bearerToken)

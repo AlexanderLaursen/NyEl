@@ -5,6 +5,8 @@ using API.Data;
 using Common.Enums;
 using System.Text.Json.Serialization;
 using Common.Dtos.User;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace DatabaseSeeder
 {
@@ -48,6 +50,58 @@ namespace DatabaseSeeder
                     return false;
                 }
             }
+        }
+
+        public void SeedAdminRoleAndUserAsync()
+        {
+            Console.WriteLine("Seeding Admin Role and User...");
+
+            var adminRoleName = "Admins";
+            var adminEmail = "admin@admin.com";
+            var adminPassword = "String!1";
+
+            // Create the "Admins" role if it doesn't exist
+            var adminRole = dbContext.Roles.FirstOrDefault(r => r.Name == adminRoleName);
+            if (adminRole == null)
+            {
+                adminRole = new IdentityRole { Name = adminRoleName, NormalizedName = adminRoleName.ToUpper() };
+                dbContext.Roles.Add(adminRole);
+                dbContext.SaveChanges();
+                Console.WriteLine("Admin role created successfully!");
+            }
+
+            // Check if the admin user exists
+            var adminUser = dbContext.Users.FirstOrDefault(u => u.Email == adminEmail);
+            if (adminUser == null)
+            {
+                adminUser = new AppUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+                PasswordHasher<AppUser> passwordHasher = new PasswordHasher<AppUser>();
+                adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, adminPassword);
+                dbContext.Users.Add(adminUser);
+                dbContext.SaveChanges();
+                Console.WriteLine($"Admin user '{adminEmail}' created successfully!");
+            }
+
+            // Assign the admin user to the "Admins" role if not already assigned
+            if (adminUser != null && adminRole != null)
+            {
+                var userRole = dbContext.UserRoles
+                    .FirstOrDefault(ur => ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id);
+
+                if (userRole == null)
+                {
+                    dbContext.UserRoles.Add(new IdentityUserRole<string> { UserId = adminUser.Id, RoleId = adminRole.Id });
+                    dbContext.SaveChanges();
+                    Console.WriteLine($"Admin user '{adminEmail}' added to the '{adminRoleName}' role.");
+                }
+                else
+                {
+                    Console.WriteLine($"Admin user '{adminEmail}' is already in the '{adminRoleName}' role.");
+                }
+            }
+
+            Console.WriteLine("Admin Role and User seeding completed.");
+            Console.WriteLine("");
         }
 
         public void RegisterUser(string email, string password, string url)
@@ -130,7 +184,7 @@ namespace DatabaseSeeder
             {
                 Console.WriteLine("No data found. Adding dummy Consumers...");
                 var fixedPriceBillingModel = dbContext.BillingModels.FirstOrDefault(b => b.Name == "FixedPrice");
-                var hourlyBillingModel = dbContext.BillingModels.FirstOrDefault(b => b.Name == "Hourly");
+                var hourlyBillingModel = dbContext.BillingModels.FirstOrDefault(b => b.Name == "MarkedPrice");
                 var user1 = dbContext.Users.FirstOrDefault(u => u.UserName == "foo@bar.com");
                 var user2 = dbContext.Users.FirstOrDefault(u => u.UserName == "alexander@laursen.com");
 

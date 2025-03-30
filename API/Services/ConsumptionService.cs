@@ -45,5 +45,29 @@ namespace API.Services
                 throw new ServiceException("Error occurred while retrieving consumption readings from the database.", ex);
             }
         }
+
+        public async Task AddAsync(ConsumptionReading consumptionReading)
+        {
+            int changes = await _consumptionRepository.AddAsync(consumptionReading);
+
+            if (changes == 0)
+            {
+                throw new ServiceException("Error occured while adding to the database");
+            }
+
+            await Task.CompletedTask;
+        }
+
+        public async Task AddRangeAsync(List<ConsumptionReading> consumptionReadings)
+        {
+            int changes = await _consumptionRepository.AddRangeAsync(consumptionReadings);
+
+            if (changes == 0)
+            {
+                throw new ServiceException("Error occured while adding to the database");
+            }
+
+            await Task.CompletedTask;
+        }
     }
 }

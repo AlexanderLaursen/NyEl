@@ -11,6 +11,7 @@ using API.Services;
 using API.Services.Interfaces;
 using Common.Models;
 using Common.Models.TemplateGenerator;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -41,6 +42,7 @@ builder.Services.AddSwaggerGen(options =>
 // Auth
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<AppUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>();
 
 
@@ -91,6 +93,7 @@ app.MapIdentityApi<AppUser>();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
