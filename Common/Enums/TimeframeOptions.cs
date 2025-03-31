@@ -8,6 +8,6 @@ namespace Common.Enums
         Weekly,
         Monthly,
         Quarterly,
-        Yearly
+        Yearly,
     }
 }

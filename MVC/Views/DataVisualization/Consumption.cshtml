@@ -1,6 +1,25 @@
 ﻿@using Common.Enums
 @model DataVisualizationViewModel
 
+@{
+	Dictionary<RequestedDataType, string> colorDict = new()
+	{
+		{RequestedDataType.Consumption, "colorBlue"},
+		{RequestedDataType.Price, ""},
+		{RequestedDataType.Cost, "colorGreen"}
+	};
+
+	Dictionary<TimeframeOptions, string> scale = new()
+	{
+		{TimeframeOptions.Daily, "Klokkeslæt"},
+		{TimeframeOptions.Weekly, "Dag"},
+		{TimeframeOptions.Monthly, "Dato"},
+		{TimeframeOptions.Quarterly, "Uge nummer"},
+		{TimeframeOptions.Yearly, "Måned"}
+	};
+
+}
+
 <div class="container w-75 p-5">
 	<div class="d-flex justify-content-between align-items-start mb-3">
 		<div>
@@ -9,19 +28,36 @@
 		<div class="w-50 card p-4 mb-5">
 			<form method="get" asp-action="Consumption" asp-controller="DataVisualization">
 				<div>
-					<label for="selectedDate">Dato</label>
+					<label>Dato</label>
 					<input type="date" class="form-control" asp-for="SelectedDate" />
 					<span asp-validation-for="SelectedDate" class="text-danger"></span>
 				</div>
 
 				<div>
-					<label for="selectedTimeframe">Periode</label>
-					<select id="selectedTimeframe" asp-for="SelectedTimeframe" class="form-control">
+					<label>Periode</label>
+					<select asp-for="SelectedTimeframe" class="form-control">
 						<option value="@((int)TimeframeOptions.Daily)">Dag</option>
 						<option value="@((int)TimeframeOptions.Weekly)">Uge</option>
 						<option value="@((int)TimeframeOptions.Monthly)">Måned</option>
 						<option value="@((int)TimeframeOptions.Quarterly)">Kvartal</option>
-						<option value="@((int)TimeframeOptions.Yearly)">År</option>
+						<option value="@((int)TimeframeOptions.Yearly)">Årlig</option>
+					</select>
+				</div>
+				<div>
+					<label>Data type</label>
+					<select asp-for="RequestedDataType" class="form-control">
+						<option value="@((int)RequestedDataType.Consumption)">Forbrug</option>
+						<option value="@((int)RequestedDataType.Price)">Pris</option>
+						<option value="@((int)RequestedDataType.Cost)">Omkostninger</option>
+					</select>
+				</div>
+				<div>
+					<label>Udregnings metode</label>
+					<select asp-for="SortingType" class="form-control">
+						<option value="@((int)SortingType.Sum)">Sum</option>
+						<option value="@((int)SortingType.Max)">Dagligt maximum</option>
+						<option value="@((int)SortingType.Min)">Dagligt minimum</option>
+						<option value="@((int)SortingType.Avg)">Dagligt gennemsnit</option>
 					</select>
 				</div>
 				<div>
@@ -30,25 +66,31 @@
 			</form>
 		</div>
 	</div>
-
+	<div class="text-muted">@(Model.RequestedDataType == RequestedDataType.Consumption ? "kWh" : "Kr")</div>
 	<div>
 		<canvas id="chart" class="w-100"></canvas>
 	</div>
+	<div class="text-muted text-center mt-2">@scale[Model.SelectedTimeframe]</div>
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
-			var aggregatedData = @Html.Raw(Json.Serialize(Model.AggregatedData.GraphDataPoints));
-			var labels = aggregatedData.map(aggregatedData => aggregatedData.label);
-			var data = aggregatedData.map(aggregatedData => aggregatedData.data);
+		var aggregatedData = @Html.Raw(Json.Serialize(Model.AggregatedData.GraphDataPoints));
+		var labels = aggregatedData.map(aggregatedData => aggregatedData.label);
+		var data = aggregatedData.map(aggregatedData => aggregatedData.data);
 
-			var ctx = document.getElementById('chart').getContext('2d');
-			var chart = new Chart(ctx, {
-				type: 'bar',
+		var colorBlue = "rgb(13, 110, 251)";
+		var colorGreen = "rgb(75, 192, 192)";
+
+
+		var ctx = document.getElementById('chart').getContext('2d');
+		var chart = new Chart(ctx, {
+		type: '@(Model.RequestedDataType == RequestedDataType.Price ? "line" : "bar")',
 				data: {
 					labels: labels,
 					datasets: [{
 						label: 'Forbrug',
 						data: data,
+						@(Model.RequestedDataType == RequestedDataType.Price ? "" : $"backgroundColor: {colorDict[Model.RequestedDataType]},")
 					}]
 				},
 					options: {
