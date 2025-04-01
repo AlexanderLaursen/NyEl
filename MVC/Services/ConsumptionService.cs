@@ -14,7 +14,7 @@ namespace MVC.Services
         {
         }
 
-        public async Task<Result<ConsumptionReadingListDto>> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, string bearerToken)
+        public async Task<Result<ConsumptionReadingListDto>> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, BearerToken? bearerToken)
         {
             string dateString = startDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
 

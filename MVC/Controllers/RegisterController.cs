@@ -22,6 +22,7 @@ namespace MVC.Controllers
             return View();
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost("/register")]
         public async Task<IActionResult> Register(RegisterDataViewModel registerData)
         {
@@ -52,6 +53,7 @@ namespace MVC.Controllers
             return View("FullRegisterPage", viewModel);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpGet("/register-full")]
         public IActionResult FullRegisterPage(RegisterViewModel viewModel)
         {
@@ -63,12 +65,13 @@ namespace MVC.Controllers
             return View(viewModel);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost("/register-full")]
         public async Task<IActionResult> RegisterFull(RegisterViewModel registerViewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return View("FullRegisterPage");
             }
 
             RegisterFullDto registerDto = registerViewModel.Adapt<RegisterFullDto>();

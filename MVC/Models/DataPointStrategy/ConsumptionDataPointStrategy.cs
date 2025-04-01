@@ -17,12 +17,12 @@ namespace MVC.Controllers
             }
 
             public override async Task<List<DataPoint>> GetDataPoints(DateTime dateTime,
-            TimeframeOptions timeframeOptions, string? bearerToken = default)
+            TimeframeOptions timeframeOptions, BearerToken? bearerToken)
             {
                 IConsumptionService consumptionService = _serviceProvider.GetRequiredService<IConsumptionService>();
 
                 Result<ConsumptionReadingListDto> result = await consumptionService.GetConsumptionReadingsAsync(
-                        dateTime, timeframeOptions, bearerToken!);
+                        dateTime, timeframeOptions, bearerToken);
 
                 if (!result.IsSuccess || result.Value == null)
                 {

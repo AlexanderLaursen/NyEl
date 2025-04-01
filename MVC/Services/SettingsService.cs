@@ -17,12 +17,12 @@ namespace MVC.Services
         {
         }
 
-        public async Task<Result<ConsumerDtoFull>> GetSettingsAsync(string bearerToken)
+        public async Task<Result<ConsumerDtoFull>> GetSettingsAsync(BearerToken? bearerToken)
         {
             return await GetAsync<ConsumerDtoFull>(CONSUMER, bearerToken);
         }
 
-        public async Task<Result<bool>> UpdateSettingsAsync(InvoicePreferenceListDto invoicePreferenceListDto, BillingModelDto billingMethod, string bearerToken)
+        public async Task<Result<bool>> UpdateSettingsAsync(InvoicePreferenceListDto invoicePreferenceListDto, BillingModelDto billingMethod, BearerToken? bearerToken)
         {
             Result<bool> resultInvoice = await PostAsync<bool>(INVOICE_PREFERENCES, invoicePreferenceListDto, bearerToken);
             Result<bool> resultBilling = await PostAsync<bool>(CONSUMER_BILLING, billingMethod, bearerToken);

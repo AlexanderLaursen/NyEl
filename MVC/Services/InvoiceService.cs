@@ -13,17 +13,17 @@ namespace MVC.Services
         {
         }
 
-        public async Task<Result<InvoiceDto>> GetInvoiceByIdAsync(int id, string bearerToken)
+        public async Task<Result<InvoiceDto>> GetInvoiceByIdAsync(int id, BearerToken? bearerToken)
         {
             return await GetAsync<InvoiceDto>($"{INVOICES_URL}/{id}", bearerToken);
         }
 
-        public async Task<Result<List<Invoice>>> GetInvoicesAsync(string bearerToken)
+        public async Task<Result<List<Invoice>>> GetInvoicesAsync(BearerToken? bearerToken)
         {
             return await GetAsync<List<Invoice>>(INVOICES_URL, bearerToken);
         }
 
-        public async Task<Result<byte[]>> GetPdfAsync(int id, string bearerToken)
+        public async Task<Result<byte[]>> GetPdfAsync(int id, BearerToken? bearerToken)
         {
             return await GetPdfAsync($"{INVOICE_DOWNLOAD_URL}/{id}", bearerToken);
         }

@@ -23,6 +23,7 @@ namespace MVC.Controllers
             return View();
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost("/login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
@@ -38,7 +39,7 @@ namespace MVC.Controllers
                 return View("Index");
             }
 
-            HttpContext.Session.SetJson("Bearer", result.Value.AccessToken);
+            HttpContext.Session.SetJson("BearerToken", result.Value);
             HttpContext.Session.SetJson("Username", loginDto.Email);
             return RedirectToAction("Index", "Home");
         }
@@ -46,7 +47,7 @@ namespace MVC.Controllers
         [HttpGet("/logout")]
         public IActionResult Logout()
         {
-            HttpContext.Session.Remove("Bearer");
+            HttpContext.Session.Remove("BearerToken");
             HttpContext.Session.Remove("Username");
             return RedirectToAction("Index", "Home");
         }

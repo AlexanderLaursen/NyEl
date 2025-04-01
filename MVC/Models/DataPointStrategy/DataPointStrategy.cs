@@ -8,7 +8,7 @@ namespace MVC.Controllers
         public abstract class DataPointStrategy
         {
             public abstract Task<List<DataPoint>> GetDataPoints(DateTime dateTime,
-                TimeframeOptions timeframeOptions, string? bearerToken = default);
+                TimeframeOptions timeframeOptions, BearerToken? bearerToken);
 
             protected virtual List<DataPoint> SortList(List<DataPoint> dataPoints)
             {

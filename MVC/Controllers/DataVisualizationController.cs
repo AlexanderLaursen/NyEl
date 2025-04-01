@@ -34,7 +34,7 @@ namespace MVC.Controllers
         {
             try
             {
-                string bearerToken = GetBearerToken();
+                BearerToken? bearerToken = GetBearerToken();
 
                 DataPointStrategyFactory factory = new DataPointStrategyFactory(_serviceProvider);
                 DataPointStrategy strategy = factory.Create(viewModel.RequestedDataType);

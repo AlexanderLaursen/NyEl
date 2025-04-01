@@ -1,8 +1,8 @@
 ﻿using Common.Models;
 
-namespace API.Services.Interfaces
+namespace API.Models
 {
-    public interface INotificationService
+    public interface IHandlePdfGenerated
     {
         public Task HandlePdfGenerated(object? sender, PdfInvoiceEventArgs eventArgs);
     }

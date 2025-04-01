@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common.Models;
+using Microsoft.AspNetCore.Mvc;
 using MVC.Helpers;
 
 namespace MVC.Controllers
 {
     public class BaseController : Controller
     {
-        protected virtual string GetBearerToken()
+        protected virtual BearerToken GetBearerToken()
         {
-            string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
+            BearerToken? bearerToken = HttpContext.Session.GetJson<BearerToken>("BearerToken");
 
             if (bearerToken == null)
             {

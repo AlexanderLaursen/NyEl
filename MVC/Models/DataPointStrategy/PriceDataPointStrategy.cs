@@ -17,7 +17,7 @@ namespace MVC.Controllers
             }
 
             public override async Task<List<DataPoint>> GetDataPoints(DateTime dateTime,
-            TimeframeOptions timeframeOptions, string? bearerToken = default)
+            TimeframeOptions timeframeOptions, BearerToken? bearerToken)
             {
                 IPriceInfoService priceInfoService = _serviceProvider.GetRequiredService<IPriceInfoService>();
 

@@ -63,7 +63,7 @@ namespace API.Services
                     throw new ServiceException();
                 }
 
-                PdfGenerationJob job = new PdfGenerationJob
+                PdfInvoiceJob job = new PdfInvoiceJob
                 {
                     Invoice = invoice,
                     Consumer = consumer
@@ -151,9 +151,9 @@ namespace API.Services
             await _invoiceRepository.UploadInvoicePdf(invoicePdf);
         }
 
-        public async Task HandlePdfGenerated(object? sender, PdfGeneratedEventArgs e)
+        public async Task HandlePdfGenerated(object? sender, PdfInvoiceEventArgs e)
         {
-            await UploadInvoicePdf(e.InvoiceId, e.Pdf);
+            await UploadInvoicePdf(e.Invoice.Id, e.Pdf);
         }
     }
 }
