@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using API.Models;
 using Common.Models;
 
 namespace Api.Models
@@ -7,9 +8,9 @@ namespace Api.Models
     {
         public int Count => _queue.Count;
 
-        private readonly ConcurrentQueue<PdfGenerationJob> _queue = new ();
+        private readonly ConcurrentQueue<PdfJob> _queue = new ();
 
-        public void AddJob(PdfGenerationJob job)
+        public void AddJob(PdfJob job)
         {
             if (job == null)
             {
@@ -19,7 +20,7 @@ namespace Api.Models
             _queue.Enqueue(job);
         }
 
-        public bool TryTakeJob(out PdfGenerationJob job)
+        public bool TryTakeJob(out PdfJob job)
         {
             return _queue.TryDequeue(out job);
         }

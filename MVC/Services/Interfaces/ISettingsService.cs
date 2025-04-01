@@ -8,7 +8,7 @@ namespace MVC.Services.Interfaces
 {
     public interface ISettingsService
     {
-        public Task<Result<ConsumerDtoFull>> GetSettingsAsync(string bearerToken);
-        public Task<Result<bool>> UpdateSettingsAsync(InvoicePreferenceListDto invoicePreferenceListDto, BillingModelDto billingMethod, string bearerToken);
+        public Task<Result<ConsumerDtoFull>> GetSettingsAsync(BearerToken? bearerToken);
+        public Task<Result<bool>> UpdateSettingsAsync(InvoicePreferenceListDto invoicePreferenceListDto, BillingModelDto billingMethod, BearerToken? bearerToken);
     }
 }

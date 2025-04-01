@@ -4,6 +4,6 @@ namespace API.Services.Interfaces
 {
     public interface INotificationService
     {
-        public Task HandlePdfGenerated(object? sender, PdfGeneratedEventArgs eventArgs);
+        public Task HandlePdfGenerated(object? sender, PdfInvoiceEventArgs eventArgs);
     }
 }

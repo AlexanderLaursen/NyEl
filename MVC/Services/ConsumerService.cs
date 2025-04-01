@@ -11,7 +11,7 @@ namespace MVC.Services
         {
         }
 
-        public async Task<Result<ConsumerDtoFull>> GetConsumerAsync(string bearerToken)
+        public async Task<Result<ConsumerDtoFull>> GetConsumerAsync(BearerToken? bearerToken)
         {
             return await GetAsync<ConsumerDtoFull>($"{CONSUMER}", bearerToken);
         }

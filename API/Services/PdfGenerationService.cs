@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Api.Models;
+using API.Models;
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Common.Enums;
@@ -14,20 +15,20 @@ namespace API.Services
     {
         private readonly ILogger<PdfGenerationService> _logger;
         private readonly IPdfGenerationQueue _queue;
-        private readonly IPdfGeneratedNotifier _pdfGeneratedNotifier;
-        private readonly TemplateFactory _templateFactory;
+        private readonly PdfInvoiceEventHandler _pdfInvoiceEventHandler;
 
         private ServiceStatus _status = ServiceStatus.Stopped;
+        private int queueCheckInterval = 5000;
         private int delay = 5000;
         private bool delayActive;
 
-        public PdfGenerationService(TemplateFactory templateFactory, IPdfGeneratedNotifier pdfGeneratedNotifier,
-            IPdfGenerationQueue queue, ILogger<PdfGenerationService> logger)
+        public PdfGenerationService(IPdfGenerationQueue queue,
+            ILogger<PdfGenerationService> logger,
+            PdfInvoiceEventHandler pdfInvoiceEventHandler)
         {
             _logger = logger;
-            _templateFactory = templateFactory;
-            _pdfGeneratedNotifier = pdfGeneratedNotifier;
             _queue = queue;
+            _pdfInvoiceEventHandler = pdfInvoiceEventHandler;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -37,21 +38,25 @@ namespace API.Services
 
             while (!stoppingToken.IsCancellationRequested)
             {
-               if (_queue.TryTakeJob(out PdfGenerationJob job))
+                if (_queue.TryTakeJob(out PdfJob job))
                 {
                     try
                     {
-                        string htmlContent = CreateInvoiceHtml(job.Invoice, job.Consumer);
+                        HtmlContent htmlContent = job.GenerateHtml();
                         Pdf pdf = GeneratePdf(htmlContent);
 
-                        PdfGeneratedEventArgs eventArgs = new PdfGeneratedEventArgs(job.Invoice.Id, job.Consumer, pdf);
+                        RaisePdfGeneratedEvent(job, pdf);
 
-                        _pdfGeneratedNotifier.OnPdfGenerated(this, eventArgs);
+                        if (delayActive)
+                        {
+                            _logger.LogInformation("Delay applied");
+                            await Task.Delay(delay, stoppingToken);
+                        }
                     }
                     catch (OperationCanceledException)
                     {
                         _status = ServiceStatus.Stopped;
-                        _logger.LogInformation("PdfGenerationService stopping.");
+                        _logger.LogInformation("PdfGenerationService stopped by cancellation token.");
                     }
                     catch (Exception ex)
                     {
@@ -61,13 +66,7 @@ namespace API.Services
                 }
                 else
                 {
-                    await Task.Delay(delay, stoppingToken);
-                }
-
-                if (delayActive)
-                {
-                    _logger.LogInformation("Delay applied");
-                    await Task.Delay(delay, stoppingToken);
+                    await Task.Delay(queueCheckInterval, stoppingToken);
                 }
             }
 
@@ -104,26 +103,31 @@ namespace API.Services
             return delayActive;
         }
 
-        public string CreateInvoiceHtml(Invoice invoice, Consumer consumer)
+        public int QueueCheckInterval()
         {
-            try
-            {
-                ITemplateGenerator templateGenerator = _templateFactory.CreateTemplateGenerator(TemplateType.Invoice);
-                string htmlContent = templateGenerator.GenerateTemplate(invoice, consumer);
+            return queueCheckInterval;
+        }
 
-                return htmlContent;
-            }
-            catch (Exception ex)
+        private void RaisePdfGeneratedEvent(PdfJob job, Pdf pdf)
+        {
+            switch (job)
             {
-                _logger.LogError(ex, "Error occurred while generating PDF.");
-                throw new ServiceException("Error occurred while generating PDF.", ex);
+                case PdfInvoiceJob invoiceJob:
+                    var invoiceEventArgs = new PdfInvoiceEventArgs(pdf, invoiceJob.Consumer, invoiceJob.Invoice);
+                    _pdfInvoiceEventHandler.OnPdfGenerated(this, invoiceEventArgs);
+                    break;
+
+                default:
+                    throw new ArgumentException("Event does not exists for this type of pdf job");
             }
         }
 
-        public Pdf GeneratePdf(string htmlContent)
+        public Pdf GeneratePdf(HtmlContent content)
         {
             try
             {
+                string htmlContent = content.Content;
+
                 byte[] pdfBytes;
                 using (var memoryStream = new MemoryStream())
                 {

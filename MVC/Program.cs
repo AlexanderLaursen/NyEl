@@ -12,10 +12,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<CommonApiService>();
 builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IConsumerService, ConsumerService>();
+builder.Services.AddScoped<IPriceInfoService, PriceInfoService>();
 
 builder.Services.AddTransient<AggregationContext>();
 

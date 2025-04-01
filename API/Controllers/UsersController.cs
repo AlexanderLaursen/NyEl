@@ -8,7 +8,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/v1/users")]
-    public class UsersController : ControllerBase
+    public class UsersController : Controller
     {
         private readonly ILogger<UsersController> _logger;
         private readonly ICommonRepository<Consumer> _commonRepository;

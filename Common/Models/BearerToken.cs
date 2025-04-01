@@ -1,4 +1,4 @@
-﻿namespace MVC.Models
+﻿namespace Common.Models
 {
     public class BearerToken
     {

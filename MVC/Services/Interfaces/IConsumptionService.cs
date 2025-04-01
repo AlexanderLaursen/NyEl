@@ -6,6 +6,6 @@ namespace MVC.Services.Interfaces
 {
     public interface IConsumptionService
     {
-        Task<Result<ConsumptionReadingListDto>> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, string bearerToken);
+        Task<Result<ConsumptionReadingListDto>> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, BearerToken? bearerToken);
     }
 }

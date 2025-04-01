@@ -9,7 +9,7 @@ using MVC.Services.Interfaces;
 
 namespace MVC.Controllers
 {
-    public class SettingsController : Controller
+    public class SettingsController : BaseController
     {
         private readonly ISettingsService _settingsService;
 
@@ -21,57 +21,70 @@ namespace MVC.Controllers
         [HttpGet("/settings")]
         public IActionResult Index()
         {
-            string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
+            try
+            {
+                BearerToken? bearerToken = GetBearerToken();
 
-            if (bearerToken == null)
+                Result<ConsumerDtoFull> result = _settingsService.GetSettingsAsync(bearerToken).Result;
+
+                if (!result.IsSuccess)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
+                SettingsViewModel settingsViewModel = new()
+                {
+                    FirstName = result.Value.FirstName,
+                    LastName = result.Value.LastName,
+                    PhoneNumber = result.Value.PhoneNumber,
+                    Email = result.Value.Email,
+                    CPR = result.Value.CPR,
+                    BillingModel = result.Value.BillingModel,
+                    InvoicePreferences = result.Value.InvoicePreferences
+                };
+
+                return View(settingsViewModel);
+            }
+            catch (UnauthorizedAccessException)
             {
                 return RedirectToAction("Index", "Login");
             }
-
-            Result<ConsumerDtoFull> result = _settingsService.GetSettingsAsync(bearerToken).Result;
-
-            if (!result.IsSuccess)
+            catch (Exception)
             {
-                return RedirectToAction("Index", "Home");
+                return View("Error");
             }
-
-            SettingsViewModel settingsViewModel = new()
-            {
-                FirstName = result.Value.FirstName,
-                LastName = result.Value.LastName,
-                PhoneNumber = result.Value.PhoneNumber,
-                Email = result.Value.Email,
-                CPR = result.Value.CPR,
-                BillingModel = result.Value.BillingModel,
-                InvoicePreferences = result.Value.InvoicePreferences
-            };
-
-            return View(settingsViewModel);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost("/settings/update")]
         public async Task<IActionResult> UpdateSettings(SettingsViewModel viewModel)
         {
-            string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
+            try
+            {
+                BearerToken? bearerToken = GetBearerToken();
 
-            if (bearerToken == null)
+                InvoicePreferenceListDto invoicePreferenceListDto = new()
+                {
+                    InvoicePreferences = viewModel.InvoicePreferences
+                };
+
+                BillingModelDto billingModelDto = new()
+                {
+                    BillingModelType = viewModel.BillingModel
+                };
+
+                Result<bool> result = await _settingsService.UpdateSettingsAsync(invoicePreferenceListDto, billingModelDto, bearerToken);
+
+                return RedirectToAction("Index");
+            }
+            catch (UnauthorizedAccessException)
             {
                 return RedirectToAction("Index", "Login");
             }
-
-            InvoicePreferenceListDto invoicePreferenceListDto = new()
+            catch (Exception)
             {
-                InvoicePreferences = viewModel.InvoicePreferences
-            };
-
-            BillingModelDto billingModelDto = new()
-            {
-                BillingModelType = viewModel.BillingModel
-            };
-
-            Result<bool> result = await _settingsService.UpdateSettingsAsync(invoicePreferenceListDto, billingModelDto, bearerToken);
-
-            return RedirectToAction("Index");
+                return View("Error");
+            }
         }
     }
 }

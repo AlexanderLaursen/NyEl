@@ -6,7 +6,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("/ping")]
-    public class PingController : ControllerBase
+    public class PingController : Controller
     {
         private readonly ILogger<PingController> _logger;
         public PingController(ILogger<PingController> logger)
@@ -26,6 +26,14 @@ namespace API.Controllers
         public IActionResult SecurePing()
         {
             _logger.LogInformation("Secure ping...");
+            return Ok();
+        }
+
+        [Authorize(Roles="Admins")]
+        [HttpGet("/admin")]
+        public IActionResult AdminPing()
+        {
+            _logger.LogInformation("Admin ping...");
             return Ok();
         }
     }

@@ -11,7 +11,7 @@ using MVC.Services.Interfaces;
 
 namespace MVC.Controllers
 {
-    public class InvoiceController : Controller
+    public class InvoiceController : BaseController
     {
         private readonly IInvoiceService _invoiceService;
         private readonly IConsumerService _consumerService;
@@ -29,12 +29,7 @@ namespace MVC.Controllers
         {
             try
             {
-                string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
-
-                if (bearerToken == null)
-                {
-                    return RedirectToAction("Index", "Login");
-                }
+                BearerToken? bearerToken = GetBearerToken();
 
                 Result<List<Invoice>> result = await _invoiceService.GetInvoicesAsync(bearerToken);
 
@@ -44,6 +39,10 @@ namespace MVC.Controllers
                 }
 
                 return View(result.Value);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return RedirectToAction("Index", "Login");
             }
             catch (Exception ex)
             {
@@ -57,11 +56,7 @@ namespace MVC.Controllers
         {
             try
             {
-                string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
-                if (bearerToken == null)
-                {
-                    return RedirectToAction("Index", "Login");
-                }
+                BearerToken? bearerToken = GetBearerToken();
 
                 Result<InvoiceDto> invoiceResult = await _invoiceService.GetInvoiceByIdAsync(id, bearerToken);
                 Result<ConsumerDtoFull> consumerResult = await _consumerService.GetConsumerAsync(bearerToken);
@@ -97,6 +92,10 @@ namespace MVC.Controllers
 
                 return View(viewModel);
             }
+            catch (UnauthorizedAccessException)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while fetching invoice details.");
@@ -104,16 +103,13 @@ namespace MVC.Controllers
             }
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost()]
         public async Task<IActionResult> Download(int id)
         {
             try
             {
-                string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
-                if (bearerToken == null)
-                {
-                    return RedirectToAction("Index", "Login");
-                }
+                BearerToken? bearerToken = GetBearerToken();
 
                 Result<byte[]> result = await _invoiceService.GetPdfAsync(id, bearerToken);
 
@@ -123,6 +119,10 @@ namespace MVC.Controllers
                 }
 
                 return File(result.Value, "application/pdf", $"invoice_{id}.pdf");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return RedirectToAction("Index", "Login");
             }
             catch (Exception ex)
             {

@@ -1,9 +1,11 @@
-﻿namespace Api.Models
+﻿using API.Models;
+
+namespace Api.Models
 {
     public interface IPdfGenerationQueue
     {
-        public void AddJob(PdfGenerationJob job);
-        bool TryTakeJob(out PdfGenerationJob job);
+        public void AddJob(PdfJob job);
+        bool TryTakeJob(out PdfJob job);
         int Count {  get; }
     }
 }

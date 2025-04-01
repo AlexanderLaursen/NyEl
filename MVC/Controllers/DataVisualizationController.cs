@@ -1,6 +1,8 @@
-﻿using Common.Dtos.ConsumptionReading;
+﻿using System;
+using Common.Dtos.ConsumptionReading;
 using Common.Enums;
 using Common.Models;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Mvc;
 using MVC.Helpers;
 using MVC.Models;
@@ -10,59 +12,58 @@ using MVC.Services.Interfaces;
 
 namespace MVC.Controllers
 {
-    public class DataVisualizationController : Controller
+    public partial class DataVisualizationController : BaseController
     {
-        private readonly IConsumptionService _consumptionService;
         private readonly AggregationContext _aggregationContext;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly Dictionary<SortingType, Func<List<DataPoint>, decimal>> _sortingDictionary = [];
 
-        public DataVisualizationController(IConsumptionService consumptionService, AggregationContext aggregationContext)
+        public DataVisualizationController(AggregationContext aggregationContext, IServiceProvider serviceProvider)
         {
-            _consumptionService = consumptionService;
             _aggregationContext = aggregationContext;
+            _serviceProvider = serviceProvider;
+
+            _sortingDictionary.Add(SortingType.Sum, AggregationHelper.Sum);
+            _sortingDictionary.Add(SortingType.Avg, AggregationHelper.Average);
+            _sortingDictionary.Add(SortingType.Max, AggregationHelper.Max);
+            _sortingDictionary.Add(SortingType.Min, AggregationHelper.Min);
         }
 
         [HttpGet("/consumption")]
         public async Task<IActionResult> Consumption(DataVisualizationViewModel viewModel)
         {
-            string? bearerToken = HttpContext.Session.GetJson<string>("Bearer");
+            try
+            {
+                BearerToken? bearerToken = GetBearerToken();
 
-            if (bearerToken == null)
+                DataPointStrategyFactory factory = new DataPointStrategyFactory(_serviceProvider);
+                DataPointStrategy strategy = factory.Create(viewModel.RequestedDataType);
+                List<DataPoint> dataPoints = await strategy.GetDataPoints(viewModel.SelectedDate,
+                    viewModel.SelectedTimeframe,bearerToken);
+
+                _aggregationContext.SetStrategy(viewModel.SelectedTimeframe);
+                AggregatedData aggregatedData = _aggregationContext.AggregateData(dataPoints,
+                    _sortingDictionary[viewModel.SortingType]);
+
+                DataVisualizationViewModel consumptionViewModel = new()
+                {
+                    AggregatedData = aggregatedData,
+                    SelectedDate = viewModel.SelectedDate,
+                    SelectedTimeframe = viewModel.SelectedTimeframe,
+                    SortingType = viewModel.SortingType,
+                    RequestedDataType = viewModel.RequestedDataType,
+                };
+
+                return View(consumptionViewModel);
+            }
+            catch (UnauthorizedAccessException)
             {
                 return RedirectToAction("Index", "Login");
             }
-
-            if (viewModel.SelectedDate == DateTime.MinValue)
+            catch (Exception)
             {
-                viewModel.SelectedDate = new DateTime(2025, 03, 23);
+                return View("Error");
             }
-
-            if (viewModel.SelectedTimeframe == TimeframeOptions.None)
-            {
-                viewModel.SelectedTimeframe = TimeframeOptions.Daily;
-            }
-
-            Result<ConsumptionReadingListDto> result = await _consumptionService.GetConsumptionReadingsAsync(viewModel.SelectedDate, viewModel.SelectedTimeframe, bearerToken);
-
-            if (!result.IsSuccess || result.Value == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            List<DataPoint> dataPoints = result.Value.ConsumptionReadings
-                .Select(cr => new DataPoint(cr.Timestamp, cr.Consumption))
-                .ToList();
-
-            _aggregationContext.SetStrategy(viewModel.SelectedTimeframe);
-            AggregatedData aggregatedData = _aggregationContext.AggregateData(dataPoints, AggregationHelper.Sum);
-
-            DataVisualizationViewModel consumptionViewModel = new()
-            {
-                AggregatedData = aggregatedData,
-                SelectedDate = viewModel.SelectedDate,
-                SelectedTimeframe = viewModel.SelectedTimeframe
-            };
-
-            return View(consumptionViewModel);
         }
     }
 }

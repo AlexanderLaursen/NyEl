@@ -11,6 +11,7 @@ using API.Services;
 using API.Services.Interfaces;
 using Common.Models;
 using Common.Models.TemplateGenerator;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -41,8 +42,8 @@ builder.Services.AddSwaggerGen(options =>
 // Auth
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<AppUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>();
-
 
 builder.Services.AddScoped(typeof(ICommonRepository<>), typeof(CommonRepository<>));
 builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
@@ -72,7 +73,7 @@ builder.Services.AddScoped<INotificationStrategyFactory, NotificationStrategyFac
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddSingleton<IPdfGenerationQueue, PdfGenerationQueue>();
-builder.Services.AddSingleton<IPdfGeneratedNotifier, PdfGeneratedNotifier>();
+builder.Services.AddSingleton<PdfInvoiceEventHandler>();
 
 builder.Services.AddHostedService<PdfGenerationService>();
 builder.Services.AddHostedService<EventSubscriptionService>();
@@ -91,6 +92,7 @@ app.MapIdentityApi<AppUser>();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

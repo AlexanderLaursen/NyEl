@@ -26,6 +26,7 @@ namespace API.Controllers
             _consumerService = consumerService;
         }
 
+        [Authorize]
         [HttpGet()]
         public async Task<IActionResult> GetByUserClaims()
         {

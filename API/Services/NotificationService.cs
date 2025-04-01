@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using API.Models;
+﻿using API.Models;
 using API.Models.NotificationStrategy;
 using API.Services.Interfaces;
 using Common.Enums;
@@ -7,7 +6,7 @@ using Common.Models;
 
 namespace API.Services
 {
-    public class NotificationService : INotificationService
+    public class NotificationService : INotificationService, IHandlePdfGenerated
     {
         private readonly INotificationStrategyFactory _strategyFactory;
         private readonly ILogger<NotificationService> _logger;
@@ -46,7 +45,7 @@ namespace API.Services
             }
         }
 
-        public async Task HandlePdfGenerated(object? sender, PdfGeneratedEventArgs eventArgs)
+        public async Task HandlePdfGenerated(object? sender, PdfInvoiceEventArgs eventArgs)
         {
             await SendNotifications(eventArgs.Consumer, eventArgs.Pdf);
         }

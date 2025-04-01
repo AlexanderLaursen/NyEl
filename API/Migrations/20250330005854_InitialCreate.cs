@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class IntialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -324,6 +324,26 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InvoicePdfs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    InvoiceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoicePdfs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InvoicePdfs_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "InvoicePeriodDatas",
                 columns: table => new
                 {
@@ -418,6 +438,11 @@ namespace API.Migrations
                 column: "ConsumerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InvoicePdfs_InvoiceId",
+                table: "InvoicePdfs",
+                column: "InvoiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InvoicePeriodDatas_InvoiceId",
                 table: "InvoicePeriodDatas",
                 column: "InvoiceId");
@@ -465,6 +490,9 @@ namespace API.Migrations
 
             migrationBuilder.DropTable(
                 name: "FixedPriceInfos");
+
+            migrationBuilder.DropTable(
+                name: "InvoicePdfs");
 
             migrationBuilder.DropTable(
                 name: "InvoicePeriodDatas");

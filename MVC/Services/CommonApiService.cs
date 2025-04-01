@@ -19,15 +19,12 @@ namespace MVC.Services
             _apiBaseUrl = configuration["ApiBaseUrl"];
         }
 
-        public async Task<Result<T>> GetAsync<T>(string url, string? bearerToken = default)
+        public async Task<Result<T>> GetAsync<T>(string url, BearerToken? bearerToken = null)
         {
             string fullUrl = $"{_apiBaseUrl}{url}";
             try
             {
-                if (!string.IsNullOrEmpty(bearerToken))
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                }
+                AddAuthHeader(bearerToken);
 
                 HttpResponseMessage response = await _httpClient.GetAsync(fullUrl);
 
@@ -68,15 +65,12 @@ namespace MVC.Services
             }
         }
 
-        public async Task<Result<T>> PostAsync<T>(string url, object data, string? bearerToken = default)
+        public async Task<Result<T>> PostAsync<T>(string url, object data, BearerToken? bearerToken = null)
         {
             string fullUrl = $"{_apiBaseUrl}{url}";
             try
             {
-                if (!string.IsNullOrEmpty(bearerToken))
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                }
+                AddAuthHeader(bearerToken);
 
                 HttpResponseMessage response = await _httpClient.PostAsJsonAsync(fullUrl, data);
 
@@ -117,15 +111,12 @@ namespace MVC.Services
             }
         }
 
-        public async Task<Result<T>> PutAsync<T>(string url, object data, string? bearerToken = default)
+        public async Task<Result<T>> PutAsync<T>(string url, object data, BearerToken? bearerToken = null)
         {
             string fullUrl = $"{_apiBaseUrl}{url}";
             try
             {
-                if (!string.IsNullOrEmpty(bearerToken))
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                }
+                AddAuthHeader(bearerToken);
 
                 HttpResponseMessage response = await _httpClient.PutAsJsonAsync(fullUrl, data);
 
@@ -166,15 +157,12 @@ namespace MVC.Services
             }
         }
 
-        public async Task<Result<bool>> DeleteAsync(string url, string? bearerToken = default)
+        public async Task<Result<bool>> DeleteAsync(string url, BearerToken? bearerToken = null)
         {
             string fullUrl = $"{_apiBaseUrl}{url}";
             try
             {
-                if (!string.IsNullOrEmpty(bearerToken))
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                }
+                AddAuthHeader(bearerToken);
 
                 HttpResponseMessage response = await _httpClient.DeleteAsync(fullUrl);
 
@@ -197,14 +185,11 @@ namespace MVC.Services
             }
         }
 
-        public async Task<Result<T>> PostCustomUrlAsync<T>(string url, object data, string? bearerToken = default)
+        public async Task<Result<T>> PostCustomUrlAsync<T>(string url, object data, BearerToken? bearerToken = null)
         {
             try
             {
-                if (!string.IsNullOrEmpty(bearerToken))
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                }
+                AddAuthHeader(bearerToken);
 
                 HttpResponseMessage response = await _httpClient.PostAsJsonAsync(url, data);
 
@@ -245,15 +230,12 @@ namespace MVC.Services
             }
         }
 
-        public async Task<Result<byte[]>> GetPdfAsync(string url, string? bearerToken = default)
+        public async Task<Result<byte[]>> GetPdfAsync(string url, BearerToken? bearerToken = null)
         {
             string fullUrl = $"{_apiBaseUrl}{url}";
             try
             {
-                if (!string.IsNullOrEmpty(bearerToken))
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                }
+                AddAuthHeader(bearerToken);
 
                 HttpResponseMessage response = await _httpClient.GetAsync(fullUrl);
 
@@ -276,6 +258,23 @@ namespace MVC.Services
                 _logger.LogError(ex, "Unkown error occured while fetching from API.");
                 return Result<byte[]>.Failure();
             }
+        }
+
+        public void AddAuthHeader(BearerToken? bearerToken)
+        {
+            if (bearerToken == null)
+            {
+                return;
+            }
+
+            string accessToken = bearerToken.AccessToken;
+
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
+
+            return;
         }
 
         public Result<T> HandleError<T>(HttpStatusCode statusCode)
