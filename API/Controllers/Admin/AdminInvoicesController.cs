@@ -5,7 +5,6 @@ using API.Services.Interfaces;
 using Common.Dtos.Invoice;
 using Common.Exceptions;
 using Common.Models;
-using Common.Models.TemplateGenerator;
 using iText.Html2pdf;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -32,6 +31,7 @@ namespace API.Controllers
             _consumerService = consumerService;
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpPost("generate/{consumerId}")]
         public async Task<IActionResult> GenerateInvoice(Timeframe timeframe, int consumerId)
         {
@@ -58,6 +58,8 @@ namespace API.Controllers
             }
         }
 
+
+        [Authorize(Roles = "Admins")]
         [HttpPost("generate/all")]
         public async Task<IActionResult> GenerateAllInvoices(Timeframe timeframe)
         {
@@ -88,6 +90,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
@@ -114,7 +117,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admins")]
         [HttpGet("consumer/{id:int}")]
         public async Task<IActionResult> GetInvoices(int id)
         {
@@ -135,7 +138,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admins")]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetInvoice(int id)
         {
@@ -176,7 +179,7 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admins")]
         [HttpGet("download/{id}")]
         public async Task<IActionResult> DownloadInvoicePdf(int id)
         {

@@ -10,6 +10,7 @@ namespace MVC.Controllers
             public abstract Task<List<DataPoint>> GetDataPoints(DateTime dateTime,
                 TimeframeOptions timeframeOptions, BearerToken? bearerToken);
 
+            // Sorts data by timestamp
             protected virtual List<DataPoint> SortList(List<DataPoint> dataPoints)
             {
                 dataPoints.Sort((x, y) => x.Timestamp.CompareTo(y.Timestamp));
@@ -23,11 +24,18 @@ namespace MVC.Controllers
 
                 if (list1.Count != list2.Count)
                 {
-                    throw new Exception();
+                    // Implement robust error handling
                 }
 
                 for (int i = 0; i < list1.Count; i ++)
                 {
+                    // Remove when robust error handling is implemented
+                    if (list1[i].Value == 0 || list1[i].Timestamp == DateTime.MinValue
+                        || list2[i].Value == 0 || list2[i].Timestamp == DateTime.MinValue)
+                    {
+                        continue;
+                    }
+
                     dataPoints.Add(new DataPoint(
                         list1[i].Timestamp,
                         list1[i].Value * list2[i].Value

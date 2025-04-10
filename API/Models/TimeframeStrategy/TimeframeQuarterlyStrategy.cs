@@ -4,6 +4,7 @@ namespace API.Models.TimeframeStrategy
 {
     public class TimeframeQuarterlyStrategy : ITimeframeStrategy
     {
+        // Gets the quarter from the start date and returns a Timeframe object representing the whole quarter
         public Timeframe GetTimeframe(DateTime start)
         {
             int currentMonth = start.Month;
@@ -28,7 +29,7 @@ namespace API.Models.TimeframeStrategy
             }
 
             var startDate = new DateTime(start.Year, startMonth, 1);
-            var endDate = startDate.AddMonths(3).AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
+            var endDate = startDate.AddMonths(3).AddSeconds(-1);
             return new Timeframe(startDate, endDate);
         }
     }

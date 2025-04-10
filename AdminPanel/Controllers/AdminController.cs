@@ -28,6 +28,7 @@ namespace AdminPanel.Controllers
             return View();
         }
 
+        // Login
         [HttpPost()]
         public async Task<IActionResult> AdminLogin(LoginDto loginDto)
         {

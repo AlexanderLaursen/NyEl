@@ -1,7 +1,6 @@
 ﻿using API.Services.Interfaces;
-using Common.Models;
 
-namespace API.Models
+namespace API.Models.PdfGeneration.InvoiceGeneration
 {
     public class PdfInvoiceEventHandler : IPdfEventHandler
     {

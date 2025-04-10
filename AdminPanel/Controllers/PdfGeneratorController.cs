@@ -18,6 +18,7 @@ namespace AdminPanel.Controllers
             _pdfService = pdfService;
         }
 
+        // Retrieves full status from the pdf generator service running on the API
         [HttpGet()]
         public async Task<IActionResult> Index()
         {
@@ -48,6 +49,7 @@ namespace AdminPanel.Controllers
                 return StatusCode(500, "An unexpected error occurred.");
             }
         }
+
 
         [HttpPost]
         public async Task<IActionResult> SetTestDelay(int delay)

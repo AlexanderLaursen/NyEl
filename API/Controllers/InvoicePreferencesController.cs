@@ -64,6 +64,7 @@ namespace API.Controllers
             }
         }
 
+        // Removes all old preferences and inserts the new
         [Authorize]
         [HttpPost()]
         public async Task<IActionResult> UpdatePreferences(InvoicePreferenceListDto preferencesDto)

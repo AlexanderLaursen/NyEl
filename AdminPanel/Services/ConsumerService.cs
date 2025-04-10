@@ -11,6 +11,7 @@ namespace AdminPanel.Services
         {
         }
 
+        // Returns full consumer dto
         public async Task<Result<ConsumerDtoFull>> GetConsumerAsync(int consumerId, BearerToken bearerToken)
         {
             return await GetAsync<ConsumerDtoFull>($"/admin/consumers/{consumerId}", bearerToken);

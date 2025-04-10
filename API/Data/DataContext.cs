@@ -26,22 +26,26 @@ namespace API.Data
         {
             base.OnModelCreating(builder);
 
+            // Handles deletion of related entities
             builder.Entity<Invoice>()
                 .HasOne(i => i.Consumer)
                 .WithMany(c => c.Invoices)
                 .HasForeignKey(i => i.ConsumerId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            // Handles deletion of related entities
             builder.Entity<Invoice>()
                 .HasOne(i => i.BillingModel)
                 .WithMany()
                 .HasForeignKey(i => i.BillingModelId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            // Makes sure that each billing model is unique on a database level
             builder.Entity<BillingModel>()
                 .HasIndex(b => b.BillingModelType)
                 .IsUnique();
 
+            // Makes sure that each invoice preference is unique such that a user is not subscribed multiple times
             builder.Entity<InvoicePreference>()
                 .HasIndex(ip => ip.InvoicePreferenceType)
                 .IsUnique();

@@ -14,6 +14,7 @@ namespace API.Controllers
             _logger = logger;
         }
 
+        // Ping endpoint open to all
         [HttpGet]
         public IActionResult Index()
         {
@@ -21,6 +22,7 @@ namespace API.Controllers
             return Ok();
         }
 
+        // Ping endpoint that requires authentication
         [Authorize]
         [HttpGet("secure")]
         public IActionResult SecurePing()
@@ -29,6 +31,7 @@ namespace API.Controllers
             return Ok();
         }
 
+        // Ping endpoint that requires authentication and a admin role
         [Authorize(Roles="Admins")]
         [HttpGet("admin")]
         public IActionResult AdminPing()

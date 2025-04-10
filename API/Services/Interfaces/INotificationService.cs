@@ -1,4 +1,4 @@
-﻿using Common.Models;
+﻿using API.Models.PdfGeneration.InvoiceGeneration;
 
 namespace API.Services.Interfaces
 {

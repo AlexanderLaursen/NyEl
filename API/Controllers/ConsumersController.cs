@@ -33,6 +33,7 @@ namespace API.Controllers
             _logger = logger;
         }
 
+        // Returns consumer DTO while getting consumer id from claims
         [Authorize]
         [HttpGet()]
         public async Task<IActionResult> GetConsumerByClaims()
@@ -88,6 +89,7 @@ namespace API.Controllers
             }
         }
 
+        // Creates new consumer - note this has to happend after the consumer is registered in the UserManager
         [HttpPost]
         public async Task<IActionResult> Post(CreateConsumerDto createConsumerDto)
         {
@@ -120,6 +122,7 @@ namespace API.Controllers
             }
         }
 
+        // Updates billing for the user
         [Authorize]
         [HttpPost("update-billing")]
         public async Task<IActionResult> UpdateBilling(BillingModelDto billingModelDto)

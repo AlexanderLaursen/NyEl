@@ -11,6 +11,7 @@ using MVC.Controllers;
 
 namespace AdminPanel.Controllers
 {
+    // Handles admin access to consumer invoices
     public class AdminConsumerInvoiceController : BaseController
     {
         private readonly IInvoiceService _invoiceService;
@@ -40,6 +41,7 @@ namespace AdminPanel.Controllers
             }
         }
 
+        // Return all invoices by consumer id
         [HttpPost()]
         public async Task<IActionResult> GetInvoices(int consumerId)
         {
@@ -72,6 +74,7 @@ namespace AdminPanel.Controllers
             }
         }
 
+        // Return single invoice by invoice id
         [HttpGet("/invoice/{id}")]
         public async Task<IActionResult> Detailed(int id)
         {
@@ -123,6 +126,7 @@ namespace AdminPanel.Controllers
             }
         }
 
+        // Download invoice as pdf
         [HttpPost()]
         public async Task<IActionResult> Download(int id)
         {

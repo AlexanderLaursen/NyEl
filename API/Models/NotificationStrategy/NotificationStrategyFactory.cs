@@ -1,7 +1,6 @@
-﻿using API.Models.NotificationStrategy;
-using Common.Enums;
+﻿using Common.Enums;
 
-namespace API.Models
+namespace API.Models.NotificationStrategy
 {
     public class NotificationStrategyFactory : INotificationStrategyFactory
     {
@@ -12,6 +11,7 @@ namespace API.Models
             _serviceProvider = serviceProvider;
         }
 
+        // Creates a notification strategy based on the invoice preference type using dependency injection
         public INotificationStrategy Create(InvoicePreferenceType invoicePreferenceType)
         {
             return invoicePreferenceType switch

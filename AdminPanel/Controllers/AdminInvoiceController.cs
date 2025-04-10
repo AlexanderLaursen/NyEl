@@ -35,6 +35,7 @@ namespace AdminPanel.Controllers
             }
         }
 
+        // Generate single invoice including adding to the pdf queue. Requires timeframe and consumer id
         [HttpPost]
         public async Task<IActionResult> GenerateSingle(InvoiceViewModel viewModel)
         {
@@ -68,6 +69,7 @@ namespace AdminPanel.Controllers
             }
         }
 
+        // Generates all invoices for the given timeframe including adding to the pdf queue
         [HttpPost]
         public async Task<IActionResult> GenerateAll(InvoiceViewModel viewModel)
         {
@@ -101,6 +103,7 @@ namespace AdminPanel.Controllers
             }
         }
 
+        // Deletes single invoice
         [HttpPost]
         public async Task<IActionResult> Delete(InvoiceViewModel viewModel)
         {

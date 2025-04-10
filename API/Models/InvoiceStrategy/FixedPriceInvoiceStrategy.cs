@@ -19,8 +19,10 @@ namespace API.Models.InvoiceStrategy
             _logger = logger;
         }
 
+        // Generates invoice for the given consumer and timeframe using fixed price strategy
         public async Task<Invoice> GenerateInvoice(Timeframe timeframe, Consumer consumer)
         {
+            // Gets consumption information
             List<ConsumptionReading> consumptionReadings = await _consumptionRepository.GetConsumptionAsync(consumer.Id, timeframe);
             if (consumptionReadings == null || consumptionReadings.Count == 0)
             {
@@ -28,6 +30,7 @@ namespace API.Models.InvoiceStrategy
                 throw new ServiceException("Consumption readings not found for the specified timeframe.");
             }
 
+            // Gets fixed price information
             FixedPriceInfo fixedPriceInfo = await _priceRepository.GetFixedPriceAsync();
             if (fixedPriceInfo == null)
             {
@@ -37,8 +40,10 @@ namespace API.Models.InvoiceStrategy
 
             decimal fixedPrice = fixedPriceInfo.FixedPrice;
 
+            // Sorts consumption readings by timestamp
             consumptionReadings.Sort((x, y) => x.Timestamp.CompareTo(y.Timestamp));
 
+            // Group consumption readings by month to seperate each monthly period
             List<List<ConsumptionReading>> consumptionByPeriod = consumptionReadings
                 .GroupBy(p => p.Timestamp.Month)
                 .Select(group => group.ToList())
@@ -46,6 +51,7 @@ namespace API.Models.InvoiceStrategy
 
             List<InvoicePeriodData> periodInvoiceData = new List<InvoicePeriodData>();
 
+            // Calculate cost and consumption for each period by iterating through the grouped consumption readings
             for (int i = 0; i < consumptionByPeriod.Count; i++)
             {
                 decimal periodCost = consumptionByPeriod[i].Select(c => c.Consumption * fixedPrice).Sum();
@@ -62,6 +68,7 @@ namespace API.Models.InvoiceStrategy
                 });
             }
 
+            // Calculate total cost and consumption for the invoice
             decimal totalCost = 0;
             decimal totalConsumption = 0;
 

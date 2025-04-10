@@ -1,7 +1,6 @@
-﻿using API.Models.NotificationStrategy;
-using Common.Enums;
+﻿using Common.Enums;
 
-namespace API.Models
+namespace API.Models.NotificationStrategy
 {
     public interface INotificationStrategyFactory
     {

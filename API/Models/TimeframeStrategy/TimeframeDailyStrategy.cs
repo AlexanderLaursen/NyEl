@@ -4,6 +4,7 @@ namespace API.Models.TimeframeStrategy
 {
     public class TimeframeDailyStrategy : ITimeframeStrategy
     {
+        // Returns a Timeframe object representing a single day
         public Timeframe GetTimeframe(DateTime start)
         {
             DateTime startDate = new DateTime(start.Year, start.Month, start.Day);

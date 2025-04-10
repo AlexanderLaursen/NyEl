@@ -1,12 +1,11 @@
-﻿using Api.Models;
-using API.Models.InvoiceStrategy;
+﻿using API.Models.InvoiceStrategy;
+using API.Models.PdfGeneration.InvoiceGeneration;
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Common.Dtos.Invoice;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
-using Common.Models.TemplateGenerator;
 using Mapster;
 
 namespace API.Services
@@ -17,28 +16,28 @@ namespace API.Services
         private readonly IConsumerRepository _consumerRepository;
         private readonly ILogger<InvoiceService> _logger;
         private readonly InvoiceStrategyContext _invoiceStrategy;
-        private readonly TemplateFactory _templateFactory;
         private readonly IPdfGenerationQueue _pdfGenerationQueue;
 
         public InvoiceService(IInvoiceRepository invoiceRepository, IConsumerRepository consumerRepository,
             InvoiceStrategyContext invoiceStrategy, IPdfGenerationQueue pdfGenerationQueue,
-            TemplateFactory templateFactory,
             ILogger<InvoiceService> logger)
         {
             _invoiceRepository = invoiceRepository;
             _consumerRepository = consumerRepository;
             _invoiceStrategy = invoiceStrategy;
-            _templateFactory = templateFactory;
             _logger = logger;
             _pdfGenerationQueue = pdfGenerationQueue;
         }
 
+        // Generate an invoice for a consumer based on the provided timeframe
         public async Task<Invoice> GenerateInvoice(Timeframe fullTimeframe, int consumerId)
         {
             try
             {
+                // Fixes timeframe
                 Timeframe timeframe = new Timeframe(fullTimeframe.Start, fullTimeframe.End.AddSeconds(-1));
 
+                // Check if invoice already exists
                 bool alreadyExists = await _invoiceRepository.InvoiceExistsAsync(timeframe, consumerId);
                 if (alreadyExists)
                 {
@@ -46,6 +45,7 @@ namespace API.Services
                     throw new ServiceException("Invoice already exists for the specified timeframe and consumer.");
                 }
 
+                // Get consumer including billing model
                 Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
                 if (consumer == null || consumer.BillingModel == null)
                 {
@@ -53,9 +53,13 @@ namespace API.Services
                     throw new UnkownUserException("Consumer not found.");
                 }
 
+                // Set the invoice strategy based on the billing model type
                 _invoiceStrategy.SetInvoiceStrategy(consumer.BillingModel.BillingModelType);
+
+                // Generate invoice using the selected strategy
                 Invoice generatedInvoice = await _invoiceStrategy.GenerateInvoice(timeframe, consumer);
 
+                // Saves the invoice to the DB
                 Invoice invoice = await _invoiceRepository.CreateInvoiceAsync(generatedInvoice, consumerId);
 
                 if (invoice == null)
@@ -63,12 +67,14 @@ namespace API.Services
                     throw new ServiceException();
                 }
 
+                // Creates a job for the PDF generation queue
                 PdfInvoiceJob job = new PdfInvoiceJob
                 {
                     Invoice = invoice,
                     Consumer = consumer
                 };
 
+                // Adds the job to the async queue
                 _pdfGenerationQueue.AddJob(job);
 
                 return invoice;
@@ -100,25 +106,7 @@ namespace API.Services
             return _invoiceRepository.GetInvoicesByIdAsync(consumerId);
         }
 
-        public async Task<string> CreateInvoiceHtml(int invoiceId, int consumerId)
-        {
-            try
-            {
-                Consumer consumer = await _consumerRepository.GetConsumerByConsumerIdAsync(consumerId);
-                Invoice invoice = await _invoiceRepository.GetInvoiceAsync(invoiceId);
-
-                ITemplateGenerator templateGenerator = _templateFactory.CreateTemplateGenerator(TemplateType.Invoice);
-                string htmlContent = templateGenerator.GenerateTemplate(invoice, consumer);
-
-                return htmlContent;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while generating PDF.");
-                throw new ServiceException("Error occurred while generating PDF.", ex);
-            }
-        }
-
+        // Returns a downloadable PDF file for the specified invoice
         public async Task<Pdf> GetPdfAsync(int consumerId, int invoiceId)
         {
             Invoice invoice = await _invoiceRepository.GetInvoiceAsync(invoiceId);
@@ -160,6 +148,7 @@ namespace API.Services
             await _invoiceRepository.UploadInvoicePdf(invoicePdf);
         }
 
+        // Handles the event when a PDF is generated
         public async Task HandlePdfGenerated(object? sender, PdfInvoiceEventArgs e)
         {
             await UploadInvoicePdf(e.Invoice.Id, e.Pdf);

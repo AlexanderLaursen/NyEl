@@ -259,6 +259,7 @@ namespace MVC.Services
             }
         }
 
+        // Adds auth header if bearer token is provided
         public void AddAuthHeader(BearerToken? bearerToken)
         {
             if (bearerToken == null)
@@ -276,6 +277,7 @@ namespace MVC.Services
             return;
         }
 
+        // Handles the error based on the status code
         public Result<T> HandleError<T>(HttpStatusCode statusCode)
         {
             switch (statusCode)

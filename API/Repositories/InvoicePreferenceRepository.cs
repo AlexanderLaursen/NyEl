@@ -85,12 +85,14 @@ namespace API.Repositories
         {
             try
             {
+                // Gets and removes all old invoice preferences for the consumer
                 List<ConsumerInvoicePreference> oldConsumerInvoicePreferences = await _context.ConsumerInvoicePreferences
                     .Where(cip => cip.ConsumerId == consumerId)
                     .ToListAsync();
 
                 _context.ConsumerInvoicePreferences.RemoveRange(oldConsumerInvoicePreferences);
 
+                // Adds each new invoice preference for the consumer
                 List<InvoicePreference> allInvoicePreferences = await _context.InvoicePreferences.ToListAsync();
 
                 foreach (InvoicePreferenceType invoicePreferenceEnum in invoicePreferences)

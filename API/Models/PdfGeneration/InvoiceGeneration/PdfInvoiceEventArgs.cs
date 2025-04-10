@@ -1,6 +1,7 @@
 ﻿using API.Models;
+using Common.Models;
 
-namespace Common.Models
+namespace API.Models.PdfGeneration.InvoiceGeneration
 {
     public class PdfInvoiceEventArgs(Pdf pdf, Consumer consumer, Invoice invoice)
     {

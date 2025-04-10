@@ -21,7 +21,7 @@ namespace API.Controllers.Admin
             _invoicePreferenceRepository = invoicePreferenceRepository;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admins")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetConsumerByClaims(int id)
         {

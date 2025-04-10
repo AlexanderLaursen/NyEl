@@ -29,6 +29,7 @@ namespace MVC.Controllers
             _sortingDictionary.Add(SortingType.Min, AggregationHelper.Min);
         }
 
+        // Shows consumption data
         [HttpGet("/consumption")]
         public async Task<IActionResult> Consumption(DataVisualizationViewModel viewModel)
         {
@@ -36,12 +37,21 @@ namespace MVC.Controllers
             {
                 BearerToken? bearerToken = GetBearerToken();
 
+                // Strategy factory
                 DataPointStrategyFactory factory = new DataPointStrategyFactory(_serviceProvider);
+
+                // Creates the strategy based on the requested data type
+                // Changes for different data types (consumption, price, cost)
                 DataPointStrategy strategy = factory.Create(viewModel.RequestedDataType);
+
+                // The strategy handles retrieving the correct data depending on the parameters
                 List<DataPoint> dataPoints = await strategy.GetDataPoints(viewModel.SelectedDate,
                     viewModel.SelectedTimeframe,bearerToken);
 
+                // Different timeframes handles the data differently
                 _aggregationContext.SetStrategy(viewModel.SelectedTimeframe);
+
+                // Aggregates the data using the strategy and looks up the sorting function in the dictionary
                 AggregatedData aggregatedData = _aggregationContext.AggregateData(dataPoints,
                     _sortingDictionary[viewModel.SortingType]);
 

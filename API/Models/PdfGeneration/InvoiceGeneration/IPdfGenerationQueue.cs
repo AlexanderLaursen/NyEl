@@ -1,6 +1,4 @@
-﻿using API.Models;
-
-namespace Api.Models
+﻿namespace API.Models.PdfGeneration.InvoiceGeneration
 {
     public interface IPdfGenerationQueue
     {

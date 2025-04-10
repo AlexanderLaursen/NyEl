@@ -25,6 +25,7 @@ namespace API.Controllers
             _logger = logger;
         }
 
+        // Post new price info
         [HttpPost]
         public async Task<IActionResult> Post(CreatePriceInfoDto createPriceInfoDto)
         {
@@ -52,6 +53,7 @@ namespace API.Controllers
             }
         }
 
+        // Get priceinfo by timeframe
         [HttpGet()]
         public async Task<IActionResult> GetByTimeframe(DateTime startDate, TimeframeOptions timeframeOptions)
         {

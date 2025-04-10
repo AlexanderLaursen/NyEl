@@ -1,6 +1,6 @@
-﻿using Api.Models;
-using API.HostedServices.Interfaces;
-using API.Models;
+﻿using API.HostedServices.Interfaces;
+using API.Models.PdfGeneration;
+using API.Models.PdfGeneration.InvoiceGeneration;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
@@ -14,7 +14,7 @@ namespace API.HostedServices
         private readonly IPdfGenerationQueue _queue;
         private readonly PdfInvoiceEventHandler _pdfInvoiceEventHandler;
 
-        private Guid guid;
+        private Guid Guid;
         private ServiceStatus _status = ServiceStatus.Stopped;
         private int queueCheckInterval = 5000;
         private int delay = 5000;
@@ -28,7 +28,7 @@ namespace API.HostedServices
             _queue = queue;
             _pdfInvoiceEventHandler = pdfInvoiceEventHandler;
 
-            guid = Guid.NewGuid();
+            Guid = Guid.NewGuid();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -36,15 +36,22 @@ namespace API.HostedServices
             _logger.LogInformation("PdfGenerationService started.");
             _status = ServiceStatus.Running;
 
+            // Loop runs until cancellation token
             while (!stoppingToken.IsCancellationRequested)
             {
+                // Tries to take job from queue
                 if (_queue.TryTakeJob(out PdfJob job))
                 {
                     try
                     {
+                        // Generates HTML content
                         HtmlContent htmlContent = job.GenerateHtml();
+
+                        // Converts HTML to PDF
                         Pdf pdf = GeneratePdf(htmlContent);
 
+                        // Raise event
+                        // TODO find better solution
                         RaisePdfGeneratedEvent(job, pdf);
 
                         if (delayActive)
@@ -64,6 +71,7 @@ namespace API.HostedServices
                         _logger.LogError(ex, "Error processing PDF generation job.");
                     }
                 }
+                // If no job is available, wait for the specified interval
                 else
                 {
                     await Task.Delay(queueCheckInterval, stoppingToken);
@@ -80,7 +88,7 @@ namespace API.HostedServices
 
         public Guid GetGuid()
         {
-            return guid;
+            return Guid;
         }
 
         public int GetQueueLength()

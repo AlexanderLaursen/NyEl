@@ -3,6 +3,7 @@ using API.HostedServices.Interfaces;
 using Common.Dtos.PdfGenerator;
 using Common.Enums;
 using Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Admin
@@ -11,13 +12,14 @@ namespace API.Controllers.Admin
     [Route("api/v1/admin/pdf-generator")]
     public class AdminPdfGeneratorController : BaseController
     {
-        private readonly IPdfGenerationService _pdfGenerationService;
+        private readonly PdfGenerationService _pdfGenerationService;
 
-        public AdminPdfGeneratorController(IPdfGenerationService pdfGenerationService)
+        public AdminPdfGeneratorController(PdfGenerationService pdfGenerationService)
         {
             _pdfGenerationService = pdfGenerationService;
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpGet("full-status")]
         public IActionResult GetFullStatus()
         {
@@ -42,24 +44,28 @@ namespace API.Controllers.Admin
             return Ok(fullStatus);
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpGet("status")]
         public IActionResult GetStatus()
         {
             return Ok(_pdfGenerationService.GetStatus());
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpGet("queue-length")]
         public IActionResult GetQueueLength()
         {
             return Ok(_pdfGenerationService.GetQueueLength());
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpGet("test-delay/time")]
         public IActionResult GetTestDelay()
         {
             return Ok(_pdfGenerationService.GetDelay());
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpPost("test-delay/time")]
         public IActionResult SetTestDelay(DelayDto delayDto)
         {
@@ -73,12 +79,14 @@ namespace API.Controllers.Admin
             return Ok(true);
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpGet("test-delay/active")]
         public IActionResult GetTestDelayActive()
         {
             return Ok(_pdfGenerationService.GetDelayActive());
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpPost("test-delay/active")]
         public IActionResult SetTestDelayActive(DelayActiveDto delayActiveDto)
         {
@@ -92,12 +100,14 @@ namespace API.Controllers.Admin
             return Ok(true);
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpGet("queue-interval")]
         public IActionResult GetQueueCheckInterval()
         {
             return Ok(_pdfGenerationService.GetQueueCheckInterval());
         }
 
+        [Authorize(Roles = "Admins")]
         [HttpPost("queue-interval")]
         public IActionResult SetQueueCheckInterval(QueueIntervalDto queueIntervalDto)
         {

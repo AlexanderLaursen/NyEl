@@ -23,6 +23,7 @@ namespace API.Controllers
             _logger = logger;
         }
 
+        // Register user with full details. Has to happen after the user has been created through UserManager
         [HttpPost("/api/v1/register-full")]
         public async Task<IActionResult> RegisterUserFull(RegisterFullDto registerFullDto)
         {

@@ -5,7 +5,6 @@ using API.Services.Interfaces;
 using Common.Dtos.Invoice;
 using Common.Exceptions;
 using Common.Models;
-using Common.Models.TemplateGenerator;
 using iText.Html2pdf;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +29,7 @@ namespace API.Controllers
             _invoiceService = invoiceService;
         }
 
+        // Return all invoices for a specific consumer
         [Authorize]
         [HttpGet()]
         public async Task<IActionResult> GetInvoices()
@@ -53,6 +53,7 @@ namespace API.Controllers
             }
         }
 
+        // Return specific invoice from invoice id and consumer claims
         [Authorize]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetInvoice(int id)
@@ -101,6 +102,7 @@ namespace API.Controllers
             }
         }
 
+        // Download invoice as PDF
         [Authorize]
         [HttpGet("download/{id}")]
         public async Task<IActionResult> DownloadInvoicePdf(int id)

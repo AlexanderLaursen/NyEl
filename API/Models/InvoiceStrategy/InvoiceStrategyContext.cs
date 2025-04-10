@@ -16,6 +16,7 @@ namespace API.Models.InvoiceStrategy
             _marketPriceStrategy = marketPriceStrategy;
         }
 
+        // Generates invoice for the given consumer and timeframe using the selected strategy
         public Task<Invoice> GenerateInvoice(Timeframe timeframe, Consumer consumer)
         {
             if (_invoiceStrategy == null)
@@ -26,6 +27,7 @@ namespace API.Models.InvoiceStrategy
             return _invoiceStrategy.GenerateInvoice(timeframe, consumer);
         }
 
+        // Sets the invoice strategy based on the billing model type
         public void SetInvoiceStrategy(BillingModelType billingModelType)
         {
             switch (billingModelType)

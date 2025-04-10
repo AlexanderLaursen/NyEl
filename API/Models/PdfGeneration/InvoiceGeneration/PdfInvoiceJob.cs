@@ -1,18 +1,26 @@
-﻿using Common.Enums;
+﻿using System;
+using API.Services.Interfaces;
+using Common.Enums;
+using Common.Models;
 
-namespace Common.Models.TemplateGenerator
+namespace API.Models.PdfGeneration.InvoiceGeneration
 {
-    public class InvoiceTemplateGenerator : ITemplateGenerator
+    public class PdfInvoiceJob : PdfJob
     {
-        public string GenerateTemplate(Invoice invoice, Consumer consumer)
-        {
-            string Paid = invoice.Paid ? "Ja" : "Nej";
 
+        public Invoice Invoice { get; set; }
+        public Consumer Consumer { get; set; }
+
+        public override HtmlContent GenerateHtml()
+        {
+            string Paid = Invoice.Paid ? "Ja" : "Nej";
+
+            // Holds each (monthly) period
             string table = "";
 
-            if (invoice.InvoicePeriodData != null)
+            if (Invoice.InvoicePeriodData != null)
             {
-                foreach (var period in invoice.InvoicePeriodData)
+                foreach (var period in Invoice.InvoicePeriodData)
                 {
                     table += $@"
                 <tr>
@@ -24,15 +32,15 @@ namespace Common.Models.TemplateGenerator
                 }
             }
 
-            string billingMethodDisplay = invoice.BillingModel?.BillingModelType == BillingModelType.FixedPrice ? "Fast pris" : "Variabel pris";
+            string billingMethodDisplay = Invoice.BillingModel?.BillingModelType == BillingModelType.FixedPrice ? "Fast pris" : "Variabel pris";
 
-            return $@"
+            string content = $@"
         <!DOCTYPE html>
 <html lang=""da"">
 <head>
     <meta charset=""UTF-8"">
     <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-    <title>Faktura #{invoice.Id}</title>
+    <title>Faktura #{Invoice.Id}</title>
     <style>
         body {{
             font-family: sans-serif;
@@ -86,41 +94,41 @@ namespace Common.Models.TemplateGenerator
     <div class=""invoice-container"">
         <div class=""invoice-header"">
             <h1>Faktura</h1>
-            <p>Faktura #{invoice.Id}</p>
+            <p>Faktura #{Invoice.Id}</p>
         </div>
 
         <div class=""consumer-info"">
             <h2>Kundeinformation</h2>
             <div class=""info-line"">
-                <label>Navn:</label> {consumer.FirstName} {consumer.LastName}
+                <label>Navn:</label> {Consumer.FirstName} {Consumer.LastName}
             </div>
             <div class=""info-line"">
-                <label>Adresse:</label> {consumer.Address}
+                <label>Adresse:</label> {Consumer.Address}
             </div>
             <div class=""info-line"">
-                <label>By:</label> {consumer.City}, {consumer.ZipCode}
+                <label>By:</label> {Consumer.City}, {Consumer.ZipCode}
             </div>
             <div class=""info-line"">
-                <label>Telefonnummer:</label> {consumer.PhoneNumber}
+                <label>Telefonnummer:</label> {Consumer.PhoneNumber}
             </div>
             <div class=""info-line"">
-                <label>E-mail:</label> {consumer.Email}
+                <label>E-mail:</label> {Consumer.Email}
             </div>
             <div class=""info-line"">
-                <label>CPR-nummer:</label> {consumer.CPR}
+                <label>CPR-nummer:</label> {Consumer.CPR}
             </div>
             <div class=""info-line"">
-                <label>Kundenummer:</label> {consumer.Id}
+                <label>Kundenummer:</label> {Consumer.Id}
             </div>
         </div>
 
         <div class=""invoice-info"">
             <h2>Fakturaoplysninger</h2>
             <div class=""info-line"">
-                <label>Faktureringsperiode: {invoice.BillingPeriodStart.ToString("dd/MM-yyyy")} - {invoice.BillingPeriodEnd.ToString("dd/MM-yyyy")}</label> 
+                <label>Faktureringsperiode: {Invoice.BillingPeriodStart.ToString("dd/MM-yyyy")} - {Invoice.BillingPeriodEnd.ToString("dd/MM-yyyy")}</label> 
             </div>
             <div class=""info-line"">
-                <label>Total forbrug:</label> {invoice.TotalConsumption.ToString("N2")} kWh
+                <label>Total forbrug:</label> {Invoice.TotalConsumption.ToString("N2")} kWh
             </div>
             <div class=""info-line"">
                 <label>Betalingsmodel:</label> {billingMethodDisplay}
@@ -148,7 +156,7 @@ namespace Common.Models.TemplateGenerator
         </div>
 
         <div class=""total-amount"">
-            <label>Total Beløb:</label> kr {invoice.TotalAmount.ToString("N2")}
+            <label>Total Beløb:</label> kr {Invoice.TotalAmount.ToString("N2")}
         </div>
 
         <div style=""margin-top: 20px; font-size: small;"">
@@ -158,6 +166,8 @@ namespace Common.Models.TemplateGenerator
 </div>
 </body>
 </html>";
+
+            return new HtmlContent(content);
         }
     }
 }
