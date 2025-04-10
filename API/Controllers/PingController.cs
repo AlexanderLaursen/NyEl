@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("/ping")]
+    [Route("/api/v1/ping")]
     public class PingController : Controller
     {
         private readonly ILogger<PingController> _logger;
@@ -22,7 +22,7 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpGet("/secure")]
+        [HttpGet("secure")]
         public IActionResult SecurePing()
         {
             _logger.LogInformation("Secure ping...");
@@ -30,7 +30,7 @@ namespace API.Controllers
         }
 
         [Authorize(Roles="Admins")]
-        [HttpGet("/admin")]
+        [HttpGet("admin")]
         public IActionResult AdminPing()
         {
             _logger.LogInformation("Admin ping...");

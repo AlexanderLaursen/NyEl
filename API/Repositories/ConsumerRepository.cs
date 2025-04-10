@@ -104,5 +104,21 @@ namespace API.Repositories
                 throw new RepositoryException("Error occurred while updating billing model.", ex);
             }
         }
+
+        public async Task<List<int>> GetAllActiveConsumerIdsAsync()
+        {
+            try
+            {
+                return await _context.Consumers
+                    .Where(c => c.Active)
+                    .Select(c => c.Id)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving data from the database.");
+                throw new RepositoryException("Error occurred while retrieving data from the database.", ex);
+            }
+        }
     }
 }

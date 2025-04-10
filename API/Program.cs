@@ -1,6 +1,7 @@
 using Api.Models;
 using API.Data;
 using API.HostedServices;
+using API.HostedServices.Interfaces;
 using API.Models;
 using API.Models.InvoiceStrategy;
 using API.Models.NotificationStrategy;
@@ -74,6 +75,7 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddSingleton<IPdfGenerationQueue, PdfGenerationQueue>();
 builder.Services.AddSingleton<PdfInvoiceEventHandler>();
+builder.Services.AddSingleton<IPdfGenerationService, PdfGenerationService>();
 
 builder.Services.AddHostedService<PdfGenerationService>();
 builder.Services.AddHostedService<EventSubscriptionService>();

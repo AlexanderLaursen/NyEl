@@ -10,7 +10,7 @@ namespace MVC.Services
     {
         const string CONSUMPTION_READINGS_URL = "/consumption-readings";
 
-        public ConsumptionService(HttpClient httpClient, ILogger<CommonApiService> logger, IConfiguration configuration) : base(httpClient, logger, configuration)
+        public ConsumptionService(HttpClient httpClient, ILogger<CommonApiService> logger) : base(httpClient, logger)
         {
         }
 

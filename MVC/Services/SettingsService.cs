@@ -13,7 +13,7 @@ namespace MVC.Services
         const string CONSUMER_BILLING = "/consumers/update-billing";
         const string INVOICE_PREFERENCES = "/invoice-preferences";
 
-        public SettingsService(HttpClient httpClient, ILogger<CommonApiService> logger, IConfiguration configuration) : base(httpClient, logger, configuration)
+        public SettingsService(HttpClient httpClient, ILogger<CommonApiService> logger) : base(httpClient, logger)
         {
         }
 

@@ -1,22 +1,20 @@
-﻿using System.Collections.Concurrent;
-using Api.Models;
+﻿using Api.Models;
+using API.HostedServices.Interfaces;
 using API.Models;
-using API.Repositories.Interfaces;
-using API.Services.Interfaces;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
-using Common.Models.TemplateGenerator;
 using iText.Html2pdf;
 
-namespace API.Services
+namespace API.HostedServices
 {
-    public class PdfGenerationService : BackgroundService
+    public class PdfGenerationService : BackgroundService, IPdfGenerationService
     {
         private readonly ILogger<PdfGenerationService> _logger;
         private readonly IPdfGenerationQueue _queue;
         private readonly PdfInvoiceEventHandler _pdfInvoiceEventHandler;
 
+        private Guid guid;
         private ServiceStatus _status = ServiceStatus.Stopped;
         private int queueCheckInterval = 5000;
         private int delay = 5000;
@@ -29,6 +27,8 @@ namespace API.Services
             _logger = logger;
             _queue = queue;
             _pdfInvoiceEventHandler = pdfInvoiceEventHandler;
+
+            guid = Guid.NewGuid();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -78,6 +78,11 @@ namespace API.Services
             return _status;
         }
 
+        public Guid GetGuid()
+        {
+            return guid;
+        }
+
         public int GetQueueLength()
         {
             return _queue.Count;
@@ -103,7 +108,12 @@ namespace API.Services
             return delayActive;
         }
 
-        public int QueueCheckInterval()
+        public void SetQueueCheckInterval(int interval)
+        {
+            queueCheckInterval = interval;
+        }
+
+        public int GetQueueCheckInterval()
         {
             return queueCheckInterval;
         }

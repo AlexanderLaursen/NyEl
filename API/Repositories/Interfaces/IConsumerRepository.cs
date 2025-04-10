@@ -9,5 +9,6 @@ namespace API.Repositories.Interfaces
         public Task<int> AddConsumerAsync(Consumer consumer);
         public Task<int> UpdateBillingModelAsync(BillingModelType billingModelMethod, int consumerId);
         public Task<int> GetConsumerIdAsync(string userId);
+        public Task<List<int>> GetAllActiveConsumerIdsAsync();
     }
 }

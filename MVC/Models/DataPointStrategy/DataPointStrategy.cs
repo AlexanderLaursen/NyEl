@@ -17,7 +17,7 @@ namespace MVC.Controllers
                 return dataPoints;
             }
 
-            protected virtual List<DataPoint> MatrixMultiplication(List<DataPoint> list1, List<DataPoint> list2)
+            protected virtual List<DataPoint> NestedMultiplication(List<DataPoint> list1, List<DataPoint> list2)
             {
                 List<DataPoint> dataPoints = new List<DataPoint>();
 

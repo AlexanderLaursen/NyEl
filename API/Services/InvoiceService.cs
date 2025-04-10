@@ -140,6 +140,15 @@ namespace API.Services
             return pdf;
         }
 
+        public async Task<Pdf> GetPdfAdminAsync(int invoiceId)
+        {
+            InvoicePdf invoicePdf = await _invoiceRepository.GetPdfAsync(invoiceId);
+
+            Pdf pdf = new Pdf(invoicePdf.Content);
+
+            return pdf;
+        }
+
         public async Task UploadInvoicePdf(int invoiceId, Pdf pdf)
         {
             InvoicePdf invoicePdf = new InvoicePdf

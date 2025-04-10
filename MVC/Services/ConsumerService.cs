@@ -7,7 +7,7 @@ namespace MVC.Services
     public class ConsumerService : CommonApiService, IConsumerService
     {
         const string CONSUMER = "/consumers";
-        public ConsumerService(HttpClient httpClient, ILogger<CommonApiService> logger, IConfiguration configuration) : base(httpClient, logger, configuration)
+        public ConsumerService(HttpClient httpClient, ILogger<CommonApiService> logger) : base(httpClient, logger)
         {
         }
 

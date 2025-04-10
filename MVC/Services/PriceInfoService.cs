@@ -11,7 +11,7 @@ namespace MVC.Services
     {
         const string PRICE_INFO_URL = "/price-info";
 
-        public PriceInfoService(HttpClient httpClient, ILogger<CommonApiService> logger, IConfiguration configuration) : base(httpClient, logger, configuration)
+        public PriceInfoService(HttpClient httpClient, ILogger<CommonApiService> logger) : base(httpClient, logger)
         {
         }
 

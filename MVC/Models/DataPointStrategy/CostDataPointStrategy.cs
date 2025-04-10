@@ -42,7 +42,7 @@ namespace MVC.Controllers
                      .Select(cr => new DataPoint(cr.Timestamp, cr.PricePerKwh))
                      .ToList();
 
-                List<DataPoint> dataPoints = MatrixMultiplication(priceDataPoints, consumptionDataPoints);
+                List<DataPoint> dataPoints = NestedMultiplication(priceDataPoints, consumptionDataPoints);
                 List<DataPoint> sortedDatapoints = SortList(dataPoints);
 
                 return dataPoints;

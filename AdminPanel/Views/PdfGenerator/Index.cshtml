@@ -1,0 +1,113 @@
+﻿@model PdfStatusViewModel
+
+<div class="container mt-5 w-75">
+    <h2>PDF Generator Service Status</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Service Status</h5>
+                    <p class="card-text">
+                        <strong>Status:</strong> @Model.Status
+                    </p>
+                    <p class="card-text">
+                        <strong>GUID:</strong> @Model.GUID
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Kø Information</h5>
+                    <p class="card-text">
+                        <strong>Kø længde:</strong> @Model.QueueLength
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Ventetid (test)</h5>
+                    <p class="card-text">
+                        <strong>Ventetid:</strong> @(Model.DelayActive ? "Aktiv" : "Inaktiv")
+                    </p>
+                    <p class="card-text">
+                        <strong>Ventetid (millisekunder):</strong> @Model.Delay
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Kø Check Interval</h5>
+                    <p class="card-text">
+                        <strong>Interval (millisekunder):</strong> @Model.QueueCheckInterval
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-4">Kontrol Parametre</h3>
+    <hr />
+
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Vælg Ventetid</h5>
+                    <form asp-controller="PdfGenerator" asp-action="SetTestDelay" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Ventetid (millisekunder):</label>
+                            <input type="number" class="form-control" name="delay" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Aktiver / Deaktiver Ventetid</h5>
+                    <form asp-action="SetDelayActive" method="post">
+                        <div class="mb-3">
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" name="delayActive" value="true" @(Model.DelayActive ? "checked" : "")> Aktiv
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" name="delayActive" value="false" @(!Model.DelayActive ? "checked" : "")> Inaktiv
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Vælg Kø Check Interval</h5>
+                    <form asp-action="SetQueueCheckInterval" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Interval (millisekunder):</label>
+                            <input type="number" class="form-control" name="queueInterval" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
