@@ -1,6 +1,5 @@
 using API.Data;
 using API.HostedServices;
-using API.HostedServices.Interfaces;
 using API.Models.InvoiceStrategy;
 using API.Models.NotificationStrategy;
 using API.Models.PdfGeneration.InvoiceGeneration;

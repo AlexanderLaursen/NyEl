@@ -1,5 +1,4 @@
 ﻿using API.HostedServices;
-using API.HostedServices.Interfaces;
 using Common.Dtos.PdfGenerator;
 using Common.Enums;
 using Common.Models;

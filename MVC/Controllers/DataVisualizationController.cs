@@ -44,7 +44,7 @@ namespace MVC.Controllers
                 // Changes for different data types (consumption, price, cost)
                 DataPointStrategy strategy = factory.Create(viewModel.RequestedDataType);
 
-                // The strategy handles retrieving the correct data depending on the parameters
+                // The strategy retrieves the correct data depending on the parameters
                 List<DataPoint> dataPoints = await strategy.GetDataPoints(viewModel.SelectedDate,
                     viewModel.SelectedTimeframe,bearerToken);
 

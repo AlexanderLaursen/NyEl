@@ -28,8 +28,8 @@ namespace API.HostedServices
             {
                 using (var scope = _serviceProvider.CreateScope())
                 {
-                    var invoiceService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-                    await invoiceService.HandlePdfGenerated(sender, eventArgs);
+                    var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+                    await notificationService.HandlePdfGenerated(sender, eventArgs);
                 }
             };
 

@@ -19,7 +19,6 @@ namespace API.UnitTests.Controllers
         private readonly Mock<ILogger<ConsumptionReadingsController>> _mockLogger;
         private readonly Mock<ICommonRepository<ConsumptionReading>> _mockCommonRepository;
 
-        // Mock controller
         public ConsumptionReadingsControllerTests()
         {
             _mockConsumptionService = new Mock<IConsumptionService>();

@@ -1,5 +1,4 @@
-﻿using API.HostedServices.Interfaces;
-using API.Models.PdfGeneration;
+﻿using API.Models.PdfGeneration;
 using API.Models.PdfGeneration.InvoiceGeneration;
 using Common.Enums;
 using Common.Exceptions;
@@ -8,7 +7,7 @@ using iText.Html2pdf;
 
 namespace API.HostedServices
 {
-    public class PdfGenerationService : BackgroundService, IPdfGenerationService
+    public class PdfGenerationService : BackgroundService
     {
         private readonly ILogger<PdfGenerationService> _logger;
         private readonly IPdfGenerationQueue _queue;
@@ -131,7 +130,7 @@ namespace API.HostedServices
             switch (job)
             {
                 case PdfInvoiceJob invoiceJob:
-                    var invoiceEventArgs = new PdfInvoiceEventArgs(pdf, invoiceJob.Consumer, invoiceJob.Invoice);
+                    PdfInvoiceEventArgs invoiceEventArgs = new PdfInvoiceEventArgs(pdf, invoiceJob.Consumer, invoiceJob.Invoice);
                     _pdfInvoiceEventHandler.OnPdfGenerated(this, invoiceEventArgs);
                     break;
 
