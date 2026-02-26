@@ -1,16 +1,14 @@
-using Api.Models;
 using API.Data;
 using API.HostedServices;
-using API.Models;
 using API.Models.InvoiceStrategy;
 using API.Models.NotificationStrategy;
+using API.Models.PdfGeneration.InvoiceGeneration;
 using API.Models.TimeframeStrategy;
 using API.Repositories;
 using API.Repositories.Interfaces;
 using API.Services;
 using API.Services.Interfaces;
 using Common.Models;
-using Common.Models.TemplateGenerator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -58,7 +56,6 @@ builder.Services.AddScoped<IConsumptionService, ConsumptionService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 builder.Services.AddTransient<TimeframeContext>();
-builder.Services.AddTransient<TemplateFactory>();
 
 builder.Services.AddTransient<FixedPriceInvoiceStrategy>();
 builder.Services.AddTransient<MarketPriceInvoiceStrategy>();
@@ -74,8 +71,9 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddSingleton<IPdfGenerationQueue, PdfGenerationQueue>();
 builder.Services.AddSingleton<PdfInvoiceEventHandler>();
+builder.Services.AddSingleton<PdfGenerationService>();
 
-builder.Services.AddHostedService<PdfGenerationService>();
+builder.Services.AddHostedService<PdfGenerationService>(provider => provider.GetRequiredService<PdfGenerationService>());
 builder.Services.AddHostedService<EventSubscriptionService>();
 
 // Build

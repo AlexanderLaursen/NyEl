@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("/ping")]
+    [Route("/api/v1/ping")]
     public class PingController : Controller
     {
         private readonly ILogger<PingController> _logger;
@@ -14,6 +14,7 @@ namespace API.Controllers
             _logger = logger;
         }
 
+        // Ping endpoint open to all
         [HttpGet]
         public IActionResult Index()
         {
@@ -21,16 +22,18 @@ namespace API.Controllers
             return Ok();
         }
 
+        // Ping endpoint that requires authentication
         [Authorize]
-        [HttpGet("/secure")]
+        [HttpGet("secure")]
         public IActionResult SecurePing()
         {
             _logger.LogInformation("Secure ping...");
             return Ok();
         }
 
+        // Ping endpoint that requires authentication and a admin role
         [Authorize(Roles="Admins")]
-        [HttpGet("/admin")]
+        [HttpGet("admin")]
         public IActionResult AdminPing()
         {
             _logger.LogInformation("Admin ping...");

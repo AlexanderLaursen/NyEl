@@ -23,6 +23,7 @@ namespace API.Models.TimeframeStrategy
             return _strategy.GetTimeframe(startDateTime);
         }
 
+        // Sets the strategy based on the provided TimeframeOptions
         public void SetStrategy(TimeframeOptions timeframeOptions)
         {
             switch (timeframeOptions)

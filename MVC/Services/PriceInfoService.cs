@@ -11,12 +11,13 @@ namespace MVC.Services
     {
         const string PRICE_INFO_URL = "/price-info";
 
-        public PriceInfoService(HttpClient httpClient, ILogger<CommonApiService> logger, IConfiguration configuration) : base(httpClient, logger, configuration)
+        public PriceInfoService(HttpClient httpClient, ILogger<CommonApiService> logger) : base(httpClient, logger)
         {
         }
 
         public async Task<Result<PriceInfoListDto>> GetPriceInfoAsync(DateTime startDate, TimeframeOptions timeframeOptions)
         {
+            // Parse datetime to string readable by the API
             string dateString = startDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
 
             string url = $"{PRICE_INFO_URL}?startDate={dateString}&timeframeOptions={timeframeOptions}";

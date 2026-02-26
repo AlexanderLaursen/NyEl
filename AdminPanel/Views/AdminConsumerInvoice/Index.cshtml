@@ -1,0 +1,62 @@
+﻿@using Common.Models
+@using Common.Enums
+@model ConsumerInvoiceViewModel
+
+<div class="container mt-5 mb-5 w-75">
+	<h1>Fakturaoversigt</h1>
+	<div class="row">
+		<div class="col-md-6">
+			<div class="card mb-4">
+				<div class="card-body">
+					<h5 class="card-title">Vælg bruger</h5>
+					<form asp-contoller="AdminConsumerInvoice" asp-action="GetInvoices" method="post">
+						<div class="mb-3">
+							<label class="form-label">Bruger ID:</label>
+							<input type="number" class="form-control" name="consumerId" required>
+						</div>
+						<button type="submit" class="btn btn-primary">Hent faktura</button>
+					</form>
+				</div>
+			</div>
+			</div>
+	</div>
+	<div class="row">
+		<table class="table table-hover mt-5">
+			<thead>
+				<tr>
+					<th>Startdato</th>
+					<th>Slutdato</th>
+					<th>Beløb</th>
+					<th>Forbrug</th>
+					<th>Betalt</th>
+					<th>Betalingsmodel</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var invoice in Model.Invoices)
+				{
+					<tr style="cursor: pointer;" onclick="window.location='@Url.Action("Detailed", "AdminConsumerInvoice", new { id = invoice.Id })'">
+						<td>@invoice.BillingPeriodStart.ToShortDateString()</td>
+						<td>@invoice.BillingPeriodEnd.ToShortDateString()</td>
+						<td>kr @invoice.TotalAmount.ToString("N2")</td>
+						<td>@invoice.TotalConsumption.ToString("N2") kWh</td>
+						<td>@(invoice.Paid ? "Ja" : "Nej")</td>
+						<td>@(invoice.BillingModel?.BillingModelType == BillingModelType.FixedPrice ? "Fast pris" : "Variabel pris")</td>
+						<td>
+							<div class="d-flex justify-content-end">
+								<form asp-controller="AdminConsumerInvoice" asp-action="Download" method="post" class="me-2">
+									<input type="hidden" name="id" value="@invoice.Id" />
+									<button type="submit" class="btn btn-primary btn-sm">
+										Download
+									</button>
+								</form>
+								<a href="@Url.Action("Detailed", "AdminConsumerInvoice", new { id = invoice.Id })" class="btn btn-sm btn-outline-primary">Vis</a>
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

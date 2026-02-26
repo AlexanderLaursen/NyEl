@@ -1,4 +1,5 @@
-﻿using Common.Dtos.Invoice;
+﻿using API.Models.PdfGeneration.InvoiceGeneration;
+using Common.Dtos.Invoice;
 using Common.Enums;
 using Common.Models;
 
@@ -11,9 +12,9 @@ namespace API.Services.Interfaces
         public Task<List<Invoice>> GetInvoicesByIdAsync(int consumerId);
         public Task<List<Invoice>> GetInvoiceListAsync(Timeframe timeframe, int consumerId);
         public Task<bool> DeleteInvoice (int invoiceId);
-        public Task<string> CreateInvoiceHtml(int invoiceId, int consumerId);
         public Task UploadInvoicePdf(int invoiceId, Pdf pdf);
         public Task HandlePdfGenerated(object? sender, PdfInvoiceEventArgs e);
         public Task<Pdf> GetPdfAsync(int consumerId, int invoiceId);
+        public Task<Pdf> GetPdfAdminAsync(int invoiceId);
     }
 }

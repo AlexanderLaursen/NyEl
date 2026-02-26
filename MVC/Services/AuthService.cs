@@ -12,7 +12,7 @@ namespace MVC.Services
     {
         public const string LOGIN_URL = "/login";
 
-        public AuthService(HttpClient httpClient, ILogger<CommonApiService> logger, IConfiguration configuration) : base(httpClient, logger, configuration)
+        public AuthService(HttpClient httpClient, ILogger<CommonApiService> logger) : base(httpClient, logger)
         {
         }
 

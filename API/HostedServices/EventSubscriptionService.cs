@@ -1,5 +1,4 @@
-﻿using Api.Models;
-using API.Models;
+﻿using API.Models.PdfGeneration.InvoiceGeneration;
 using API.Services;
 using API.Services.Interfaces;
 using Common.Models;
@@ -24,12 +23,13 @@ namespace API.HostedServices
         {
             _logger.LogInformation("EventSubscriptionService started.");
 
+            // Subscribe to the PdfGenerated event. Uses lambda expressions to create a scope for each event handler.
             _pdfInvoiceEventHandler.PdfGenerated += async (sender, eventArgs) =>
             {
                 using (var scope = _serviceProvider.CreateScope())
                 {
-                    var invoiceService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-                    await invoiceService.HandlePdfGenerated(sender, eventArgs);
+                    var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+                    await notificationService.HandlePdfGenerated(sender, eventArgs);
                 }
             };
 

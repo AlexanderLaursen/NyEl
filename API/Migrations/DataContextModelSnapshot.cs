@@ -119,6 +119,9 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Address")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");

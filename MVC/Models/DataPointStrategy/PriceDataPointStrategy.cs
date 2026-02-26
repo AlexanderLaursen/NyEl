@@ -16,11 +16,14 @@ namespace MVC.Controllers
                 _serviceProvider = serviceProvider;
             }
 
+            // Gets price data
             public override async Task<List<DataPoint>> GetDataPoints(DateTime dateTime,
             TimeframeOptions timeframeOptions, BearerToken? bearerToken)
             {
+                // Prepares services from dependency injection
                 IPriceInfoService priceInfoService = _serviceProvider.GetRequiredService<IPriceInfoService>();
 
+                // Gets price information
                 Result<PriceInfoListDto> result = await priceInfoService.GetPriceInfoAsync(
                         dateTime, timeframeOptions);
 
@@ -29,6 +32,7 @@ namespace MVC.Controllers
                     throw new Exception();
                 }
 
+                // Unwrap and map price information
                 List<DataPoint> dataPoints = result.Value.PriceInfoList
                     .Select(cr => new DataPoint(cr.Timestamp, cr.PricePerKwh))
                     .ToList();

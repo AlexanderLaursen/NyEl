@@ -6,17 +6,21 @@ namespace MVC.Models.AggregationStrategy
     {
         public AggregatedData Aggregate(List<DataPoint> data, Func<List<DataPoint>, decimal> operation)
         {
+            // Group the data by date
             var groupedData = data.GroupBy(dataPoint => dataPoint.Timestamp.Date);
             var aggregatedResults = new AggregatedData();
 
             foreach (var group in groupedData)
             {
+                // Create label (day of the week)
                 DayOfWeek day = group.First().Timestamp.DayOfWeek;
                 string label = ProduceLabel(day);
 
+                // Calculate the value using the func
                 List<DataPoint> dataPoints = group.ToList();
                 decimal aggregatedValue = operation(dataPoints);
 
+                // Add the new (graph ready) datapoint
                 GraphDataPoint aggregatedDataPoint = new GraphDataPoint(label, aggregatedValue);
                 aggregatedResults.GraphDataPoints.Add(aggregatedDataPoint);
             }
@@ -24,6 +28,7 @@ namespace MVC.Models.AggregationStrategy
             return aggregatedResults;
         }
 
+        // Helper method to retrieve day of the week
         private string ProduceLabel(DayOfWeek day)
         {
             switch (day)

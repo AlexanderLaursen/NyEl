@@ -18,6 +18,7 @@ namespace API.Controllers
         {
         }
 
+        // Returns consumer id based on the user claims
         protected virtual async Task<int> GetConsumerId()
         {
             string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

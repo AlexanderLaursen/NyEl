@@ -10,18 +10,17 @@ namespace MVC.Services
     {
         protected readonly HttpClient _httpClient;
         private readonly ILogger<CommonApiService> _logger;
-        private readonly string _apiBaseUrl;
+        private const string API_BASE_URL = "https://localhost:7231/api/v1";
 
-        public CommonApiService(HttpClient httpClient, ILogger<CommonApiService> logger, IConfiguration configuration)
+        public CommonApiService(HttpClient httpClient, ILogger<CommonApiService> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
-            _apiBaseUrl = configuration["ApiBaseUrl"];
         }
 
         public async Task<Result<T>> GetAsync<T>(string url, BearerToken? bearerToken = null)
         {
-            string fullUrl = $"{_apiBaseUrl}{url}";
+            string fullUrl = $"{API_BASE_URL}{url}";
             try
             {
                 AddAuthHeader(bearerToken);
@@ -67,7 +66,7 @@ namespace MVC.Services
 
         public async Task<Result<T>> PostAsync<T>(string url, object data, BearerToken? bearerToken = null)
         {
-            string fullUrl = $"{_apiBaseUrl}{url}";
+            string fullUrl = $"{API_BASE_URL}{url}";
             try
             {
                 AddAuthHeader(bearerToken);
@@ -113,7 +112,7 @@ namespace MVC.Services
 
         public async Task<Result<T>> PutAsync<T>(string url, object data, BearerToken? bearerToken = null)
         {
-            string fullUrl = $"{_apiBaseUrl}{url}";
+            string fullUrl = $"{API_BASE_URL}{url}";
             try
             {
                 AddAuthHeader(bearerToken);
@@ -159,7 +158,7 @@ namespace MVC.Services
 
         public async Task<Result<bool>> DeleteAsync(string url, BearerToken? bearerToken = null)
         {
-            string fullUrl = $"{_apiBaseUrl}{url}";
+            string fullUrl = $"{API_BASE_URL}{url}";
             try
             {
                 AddAuthHeader(bearerToken);
@@ -232,7 +231,7 @@ namespace MVC.Services
 
         public async Task<Result<byte[]>> GetPdfAsync(string url, BearerToken? bearerToken = null)
         {
-            string fullUrl = $"{_apiBaseUrl}{url}";
+            string fullUrl = $"{API_BASE_URL}{url}";
             try
             {
                 AddAuthHeader(bearerToken);
@@ -260,6 +259,7 @@ namespace MVC.Services
             }
         }
 
+        // Adds auth header if bearer token is provided
         public void AddAuthHeader(BearerToken? bearerToken)
         {
             if (bearerToken == null)
@@ -277,6 +277,7 @@ namespace MVC.Services
             return;
         }
 
+        // Handles the error based on the status code
         public Result<T> HandleError<T>(HttpStatusCode statusCode)
         {
             switch (statusCode)

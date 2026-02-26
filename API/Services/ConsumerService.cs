@@ -29,5 +29,17 @@ namespace API.Services
 
             return consumerId;
         }
+
+        public async Task<List<int>> GetAllActiveConsumerIds()
+        {
+            List<int> consumerIds = await _consumerRepository.GetAllActiveConsumerIdsAsync();
+
+            if (consumerIds == null || consumerIds.Count == 0)
+            {
+                throw new UnkownUserException("No active consumers found.");
+            }
+
+            return consumerIds;
+        }
     }
 }

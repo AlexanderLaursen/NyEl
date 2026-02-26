@@ -32,6 +32,7 @@ namespace API.Controllers
             _consumptionService = consumptionService;
         }
 
+        // Return consumption readings for a specific consumer in a specific timeframe
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetByTimeframe(DateTime startDate, TimeframeOptions timeframeOptions)
@@ -65,6 +66,7 @@ namespace API.Controllers
             }
         }
 
+        // Post a new consumption for the provided user id
         [HttpPost]
         public async Task<IActionResult> Post(CreateConsumptionReadingDto createConsumptionReadingDto)
         {
@@ -93,6 +95,7 @@ namespace API.Controllers
             }
         }
 
+        // Post a range of consumption readings
         [HttpPost("range")]
         public async Task<IActionResult> PostRange(CreateConsumptionReadingListDto createConsumptionReadingListDto)
         {

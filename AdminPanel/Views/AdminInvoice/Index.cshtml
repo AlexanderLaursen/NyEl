@@ -1,0 +1,67 @@
+﻿@model InvoiceViewModel
+
+<div class="container mt-5 w-75">
+    <h2>Faktura Administration</h2>
+    <hr />
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Opret en enkelt faktura</h5>
+                    <form asp-controller="AdminInvoice" asp-action="GenerateSingle" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Periode start:</label>
+                            <input type="date" class="form-control" asp-for="StartDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Periode slut:</label>
+                            <input type="date" class="form-control" asp-for="EndDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Bruger ID:</label>
+                            <input type="number" class="form-control" asp-for="ConsumerId" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Opret faktura</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Opret faktura for alle aktive brugere</h5>
+                    <form asp-controller="AdminInvoice" asp-action="GenerateAll" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Periode start:</label>
+                            <input type="date" class="form-control" asp-for="StartDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Periode slut:</label>
+                            <input type="date" class="form-control" asp-for="EndDate" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Opret alle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Slet faktura</h5>
+                    <form asp-controller="AdminInvoice" asp-action="Delete" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Faktura ID:</label>
+                            <input type="number" class="form-control" name="InvoiceId" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Slet faktura</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

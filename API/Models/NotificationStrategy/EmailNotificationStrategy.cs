@@ -11,6 +11,7 @@ namespace API.Models.NotificationStrategy
             _logger = logger;
         }
 
+        // Simulates sending a notification to the consumer via email
         public async Task SendNotification(Consumer consumer, Pdf pdf)
         {
             _logger.LogInformation($"Simulate email notification sent to consumer with id: {consumer.Id}. Included pdf");

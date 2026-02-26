@@ -39,6 +39,7 @@ namespace MVC.Controllers
                 return View("Index");
             }
 
+            // Handles users by saving to the session
             HttpContext.Session.SetJson("BearerToken", result.Value);
             HttpContext.Session.SetJson("Username", loginDto.Email);
             return RedirectToAction("Index", "Home");

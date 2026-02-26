@@ -13,6 +13,7 @@ namespace API.UnitTests.Controllers
 {
     public class ConsumptionReadingsControllerTests
     {
+        // Mock all services
         private readonly Mock<IConsumptionService> _mockConsumptionService;
         private readonly Mock<IConsumerService> _mockConsumerService;
         private readonly Mock<ILogger<ConsumptionReadingsController>> _mockLogger;

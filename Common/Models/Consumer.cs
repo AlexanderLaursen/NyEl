@@ -8,6 +8,8 @@ namespace Common.Models
         [Key]
         public int Id { get; set; }
 
+        public bool Active { get; set; } = true;
+
         [MaxLength(255)]
         public string? FirstName { get; set; }
 

@@ -24,11 +24,15 @@ namespace API.Services
 
         public async Task<ConsumptionReadingListDto> GetConsumptionReadingsAsync(DateTime startDate, TimeframeOptions timeframeOptions, int userId)
         {
+            // Decides the timeframe by setting the strategy based on the provided TimeframeOptions
             _timeframeContext.SetStrategy(timeframeOptions);
+
+            // Gets the timeframe based on the start date and selected strategy
             Timeframe timeframe = _timeframeContext.GetTimeframe(startDate);
 
             try
             {
+                // Uses the newly created timeframe to get the consumption readings
                 var result = await _consumptionRepository.GetConsumptionAsync(userId, timeframe);
 
                 ConsumptionReadingListDto consumptionReadingListDto = new()

@@ -20,7 +20,7 @@ namespace DatabaseSeeder
 
         public async Task<bool> PingApiAsync(string url)
         {
-            string pingUrl = url + "/ping";
+            string pingUrl = url + "/api/v1/ping";
 
             using (var httpClient = new HttpClient())
             {

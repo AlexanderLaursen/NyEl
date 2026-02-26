@@ -6,6 +6,7 @@ namespace MVC.Controllers
 {
     public class BaseController : Controller
     {
+        // Retrives the BearerToken from the session
         protected virtual BearerToken GetBearerToken()
         {
             BearerToken? bearerToken = HttpContext.Session.GetJson<BearerToken>("BearerToken");

@@ -9,7 +9,7 @@ namespace MVC.Services
         const string INVOICES_URL = "/invoices";
         const string INVOICE_DOWNLOAD_URL = "/invoices/download";
 
-        public InvoiceService(HttpClient httpClient, ILogger<CommonApiService> logger, IConfiguration configuration) : base(httpClient, logger, configuration)
+        public InvoiceService(HttpClient httpClient, ILogger<CommonApiService> logger) : base(httpClient, logger)
         {
         }
 

@@ -11,7 +11,7 @@ namespace MVC.Models.ViewModels
         public string XAxisLabel { get; set; }
         public string YAxisLabel { get; set; }
         public TimeframeOptions SelectedTimeframe { get; set; } = TimeframeOptions.Daily;
-        public DateTime SelectedDate { get; set; } = new DateTime(2025, 03, 24);
+        public DateTime SelectedDate { get; set; } = new DateTime(2025, 04, 11);
         public RequestedDataType RequestedDataType { get; set; } = RequestedDataType.Consumption;
         public SortingType SortingType { get; set; } = SortingType.Sum;
     }
